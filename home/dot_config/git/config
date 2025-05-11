@@ -1,35 +1,35 @@
 [core]
-	autocrlf = false
-	excludesfile = ~/.gitignore
+  autocrlf = false
+  fsmonitor = true
+  untrackedCache = true
 [include]
   path = conf.d/local.conf
 [alias]
-	# https://gist.github.com/teppeis/4117588
-	alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
-	st = status
-	info = remote show origin
-	l  = log --graph -n 20 --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
+  # https://gist.github.com/teppeis/4117588
+  alias = !git config --list | grep 'alias\\.' | sed 's/alias\\.\\([^=]*\\)=\\(.*\\)/\\1\\\t => \\2/' | sort
+  st = status
+  info = remote show origin
+  l  = log --graph -n 20 --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset'
   ln = log --graph -n 20 --pretty=format:'%C(yellow)%h%C(cyan)%d%Creset %s %C(green)- %an, %cr%Creset' --name-status
   lc = log --graph -n 20 --pretty=format:'%C(yellow)%h%Creset %s'
-	lp = log --oneline -n 20 -p
+  lp = log --oneline -n 20 -p
   la = log --oneline --decorate --graph --branches --tags --remotes --all
   ls = log --stat --abbrev-commit -n 1 # display previous log
 
-	# https://gist.github.com/azu/09dd6f27f52e2e8d9978
+  # https://gist.github.com/azu/09dd6f27f52e2e8d9978
   branch-name = symbolic-ref --short HEAD
-	pushup = !git push --set-upstream origin `git branch-name`
-	# https://qiita.com/makoto_kw/items/c825e17e2a577bb83e19
-	delete-merged-branches = !git branch --merged | grep -v \\* | xargs -I % git branch -d %
-	merged-list = !git branch -r --list --merged
-	no-merged-list = "!git branch -r --list --no-merged | grep -v '*' | xargs -Ibranch git log -1 --pretty=format:'|branch|%an|%ad|%s|%n' --date=short branch | cat"
+  # https://qiita.com/makoto_kw/items/c825e17e2a577bb83e19
+  delete-merged-branches = !git branch --merged | grep -v \\* | xargs -I % git branch -d %
+  merged-list = !git branch -r --list --merged
+  no-merged-list = "!git branch -r --list --no-merged | grep -v '*' | xargs -Ibranch git log -1 --pretty=format:'|branch|%an|%ad|%s|%n' --date=short branch | cat"
   # https://qiita.com/Yinaura/items/30992f25b87f76af3ba2
   force-pull = !git fetch && git reset --hard origin/`git branch-name`
-	# https://qiita.com/yuichielectric/items/84cd61915a1236f19221
-	rprune = remote prune origin
-	br = !gh browse
+  # https://qiita.com/yuichielectric/items/84cd61915a1236f19221
+  rprune = remote prune origin
+  br = !gh browse
   # https://tech-broccoli.life/articles/engineer/recommend-git-aliases/
   see = !gh repo view --web
-	# https://qiita.com/awakia/items/f14dc6310e469964a8f7
+  # https://qiita.com/awakia/items/f14dc6310e469964a8f7
   showpr = "!f() { git log --merges --oneline --reverse --ancestry-path $1...master | grep 'Merge pull request #' | head -n 1; }; f"
   openpr = "!f() { gh browse -- `git showpr $1 | cut -f5 -d' ' | sed -e 's%#%%'`; }; f"
 
@@ -41,26 +41,38 @@
   swd = !git switch `git default-branch`
   # トピックブランチで作業中、default branchの変更を取り入れたいとき
   rebd = !git swd && git pull && git switch - && git rebase --rebase-merges `git default-branch`
-[color]
-	ui = auto
+[column]
+  ui = auto
 [push]
-	default = simple
+  default = simple
+  autoSetupRemote = true
+  followTags = true
 [commit]
-	verbose = true
+  verbose = true
 [rebase]
-	autosquash = true
-	autostash = true
+  autoSquash = true
+  autoStash = true
+  updateRefs = true
 [merge]
-	ff = false
+  ff = false
+  conflictstyle = zdiff3
 [pull]
-	rebase = merges
+  rebase = merges
 [fetch]
-	prune = true
-[pager]
-	log = diff-highlight | less
-	show = diff-highlight | less
-	diff = diff-highlight | less
-[interactive]
-	diffFilter = diff-highlight
-[init]
-	defaultBranch = main
+  prune = true
+  pruneTags = true
+  all = true
+[branch]
+  sort = -committerdate
+[tag]
+  sort = version:refname
+[diff]
+  algorithm = histogram
+  colorMoved = plain
+  mnemonicPrefix = true
+  renames = true
+[help]
+  autocorrect = prompt
+[rerere]
+  enabled = true
+  autoupdate = true

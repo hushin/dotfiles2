@@ -127,5 +127,12 @@ flycheck_*.el
 /network-security.data
 
 
-### git worktree 用
+# git worktree 用
 git-worktrees/*
+
+# ai
+ref-docs/
+ai-out/
+ai-docs/
+.clinerules
+memory-bank/

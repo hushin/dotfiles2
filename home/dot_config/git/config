@@ -42,6 +42,9 @@
 	# トピックブランチで作業中、default branchの変更を取り入れたいとき
 	rebd = !git swd && git pull && git switch - && git rebase --rebase-merges `git default-branch`
 
+	df = diff --word-diff # 単語単位の差分表示
+	undo = reset HEAD~1 --mixed # 直前のコミットを取り消し、変更は保持
+
 [column]
 	ui = auto
 [push]

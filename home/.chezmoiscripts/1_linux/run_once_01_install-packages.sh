@@ -6,6 +6,13 @@ has() {
 }
 
 sudo apt update
+
+# cmake
+if ! has "cmake"; then
+  echo "install cmake"
+  sudo apt install -y cmake
+fi
+
 # mise
 if ! has "mise"; then
   echo "innstall mise"

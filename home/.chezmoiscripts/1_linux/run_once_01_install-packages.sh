@@ -19,9 +19,7 @@ if ! has "mise"; then
   curl https://mise.run | sh
   sudo apt install -y libyaml-dev libevent-dev ncurses-dev build-essential bison pkg-config
 fi
-mise self-update
 mise install
-mise upgrade
 
 # fish
 if ! has "fish"; then

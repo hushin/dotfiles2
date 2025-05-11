@@ -10,11 +10,11 @@ sudo apt update
 if ! has "mise"; then
   echo "innstall mise"
   curl https://mise.run | sh
-  # for ruby
-  sudo apt-get install libyaml-dev
+  sudo apt install -y libyaml-dev libevent-dev ncurses-dev build-essential bison pkg-config
 fi
 mise self-update
 mise install
+mise upgrade
 
 # fish
 if ! has "fish"; then

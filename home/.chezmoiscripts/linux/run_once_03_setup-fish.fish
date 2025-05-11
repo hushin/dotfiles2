@@ -13,4 +13,5 @@ end
 echo "install fish plugins"
 fisher update
 
+mise completion fish > ~/.config/fish/completions/mise.fish
 fish_update_completions

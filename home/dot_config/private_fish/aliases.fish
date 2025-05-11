@@ -9,7 +9,11 @@ abbr -a rgh 'rg --hidden'
 
 abbr -a ch 'chezmoi'
 abbr -a cha 'chezmoi add'
+abbr -a che 'chezmoi edit'
+abbr -a chm 'chezmoi merge'
+abbr -a chd 'chezmoi diff'
 abbr -a chp 'chezmoi apply'
+abbr -a chu 'chezmoi update'
 
 type -qa tac || abbr -a tac 'tail -r'
 

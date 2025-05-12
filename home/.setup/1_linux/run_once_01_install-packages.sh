@@ -20,6 +20,11 @@ if ! has "mise"; then
   # sudo apt install -y libyaml-dev libevent-dev ncurses-dev build-essential bison pkg-config
 fi
 
+if ! has "yacc"; then
+  echo "install tmux build dependencies"
+  sudo apt install -y libevent-dev ncurses-dev build-essential bison pkg-config
+fi
+
 # fish
 if ! has "fish"; then
   echo "install fish"

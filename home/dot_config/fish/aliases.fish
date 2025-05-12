@@ -18,7 +18,8 @@ abbr -a chu 'chezmoi update'
 type -qa tac || abbr -a tac 'tail -r'
 
 abbr -a reload 'source ~/.config/fish/config.fish'
-abbr -a diff 'diff -u'
+abbr -a diff 'delta'
+abbr -a find 'fd'
 abbr -a cdu 'cd-gitroot'
 abbr -a tree "tree -NC" # N: 文字化け対策, C:色をつける
 abbr -a notes 'rg "TODO|HACK|FIXME|OPTIMIZE"'

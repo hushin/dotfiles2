@@ -2,6 +2,7 @@
 	autocrlf = false
 	fsmonitor = true
 	untrackedCache = true
+	pager = delta
 [include]
 	path = conf.d/local.conf
 [alias]
@@ -44,7 +45,11 @@
 
 	df = diff --word-diff # 単語単位の差分表示
 	undo = reset HEAD~1 --mixed # 直前のコミットを取り消し、変更は保持
-
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true  # use n and N to move between diff sections
+	dark = true      # or light = true, or omit for auto-detection
 [column]
 	ui = auto
 [push]

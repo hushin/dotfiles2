@@ -1,11 +1,13 @@
 {{ if ne .chezmoi.os "darwin" }}
 .chezmoiscripts/1_darwin/**
-.chezmoiscripts/2_fish/**
 .config/karabiner
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}
 .chezmoiscripts/1_linux/**
+{{ end }}
+
+{{ if and (ne .chezmoi.os "darwin") (ne .chezmoi.os "linux") }}
 .chezmoiscripts/2_fish/**
 {{ end }}
 

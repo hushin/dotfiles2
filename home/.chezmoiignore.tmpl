@@ -1,14 +1,14 @@
 {{ if ne .chezmoi.os "darwin" }}
-.chezmoiscripts/1_darwin/**
-.chezmoiscripts/2_fish/**
+setup/1_darwin/**
+setup/2_fish/**
 .config/karabiner
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}
-.chezmoiscripts/1_linux/**
-.chezmoiscripts/2_fish/**
+setup/1_linux/**
+setup/2_fish/**
 {{ end }}
 
 {{ if ne .chezmoi.os "windows" }}
-.chezmoiscripts/1_windows/**
+setup/1_windows/**
 {{ end }}

@@ -17,9 +17,8 @@ fi
 if ! has "mise"; then
   echo "innstall mise"
   curl https://mise.run | sh
-  sudo apt install -y libyaml-dev libevent-dev ncurses-dev build-essential bison pkg-config
+  # sudo apt install -y libyaml-dev libevent-dev ncurses-dev build-essential bison pkg-config
 fi
-mise install
 
 # fish
 if ! has "fish"; then

@@ -4,7 +4,7 @@ node = "lts"
 deno = "latest"
 python = "latest"
 go = "latest"
-ruby = "latest"
+# ruby = "latest"
 rust = "latest"
 bun = "latest"
 

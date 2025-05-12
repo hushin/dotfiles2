@@ -7,6 +7,6 @@ end
 # fisher
 if not has "fisher"
   echo "install fisher"
-  curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source && fisher install jorgebucaran/fisher
+  curl -sL https://raw.githubusercontent.com/jorgebucaran/fisher/main/functions/fisher.fish | source
 end
 mise completion fish > ~/.config/fish/completions/mise.fish

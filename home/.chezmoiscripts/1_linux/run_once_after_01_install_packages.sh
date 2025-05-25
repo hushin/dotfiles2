@@ -21,6 +21,12 @@ if ! has "mise"; then
   # sudo apt install -y libyaml-dev libevent-dev ncurses-dev build-essential bison pkg-config
 fi
 
+# homebrew
+if ! has "brew"; then
+  echo "install homebrew"
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+fi
+
 # fish
 if ! has "fish"; then
   echo "install fish"

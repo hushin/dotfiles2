@@ -1,0 +1,5 @@
+brew "curl"
+brew "emojify"
+brew "gibo"
+brew "git-secrets"
+brew "git"

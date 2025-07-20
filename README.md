@@ -13,13 +13,9 @@ chezmoi init --apply git@github.com:hushin/dotfiles2.git
 
 ```
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
-winget install twpayne.chezmoi
-winget install --id Git.Git -e --source winget
-winget install --id=AgileBits.1Password -e
-winget install --id=AgileBits.1Password.CLI -e
+winget install -e --id Git.Git --source winget
+winget install -e --id twpayne.chezmoi --source winget
 ```
-
-1Password 手動設定後
 
 ```
 chezmoi init --apply hushin/dotfiles2

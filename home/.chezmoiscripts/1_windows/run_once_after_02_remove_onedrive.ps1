@@ -48,13 +48,7 @@ Write-Status "現在のユーザーのOneDriveをアンインストール中..."
 # Wingetを使用してアンインストール（Microsoft.OneDrive）
 try {
   Write-Status "Microsoft.OneDriveをアンインストール中..."
-  $wingetResult1 = winget uninstall Microsoft.OneDrive --force 2>&1
-  if ($LASTEXITCODE -eq 0) {
-    Write-Status "Microsoft.OneDriveのアンインストールが完了しました" "SUCCESS"
-  }
-  else {
-    Write-Status "Microsoft.OneDriveのアンインストールに失敗しました" "WARNING"
-  }
+  winget uninstall Microsoft.OneDrive
 }
 catch {
   Write-Status "Microsoft.OneDriveのアンインストール中にエラーが発生しました" "WARNING"
@@ -63,13 +57,7 @@ catch {
 # Wingetを使用してアンインストール（onedrive）
 try {
   Write-Status "onedriveをアンインストール中..."
-  $wingetResult2 = winget uninstall onedrive --force 2>&1
-  if ($LASTEXITCODE -eq 0) {
-    Write-Status "onedriveのアンインストールが完了しました" "SUCCESS"
-  }
-  else {
-    Write-Status "onedriveのアンインストールに失敗しました" "WARNING"
-  }
+  winget uninstall onedrive
 }
 catch {
   Write-Status "onedriveのアンインストール中にエラーが発生しました" "WARNING"
@@ -121,31 +109,7 @@ catch {
   Write-Status "OneDrive統合機能の無効化に失敗しました: $($_.Exception.Message)" "ERROR"
 }
 
-# 6. Navigation PaneからOneDriveアイコンを削除
-Write-Status "Navigation PaneからOneDriveアイコンを削除中..."
-try {
-  $clsidPath = "HKCR:\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}"
-  $userClsidPath = "HKCU:\SOFTWARE\Classes\CLSID\{018D5C66-4533-4307-9B53-224DE2ED1FE6}"
-
-  # システムワイド設定
-  if (-not (Test-Path $clsidPath)) {
-    New-Item -Path $clsidPath -Force | Out-Null
-  }
-  Set-ItemProperty -Path $clsidPath -Name "System.IsPinnedToNameSpaceTree" -Value 0 -Type DWord
-
-  # ユーザー設定
-  if (-not (Test-Path $userClsidPath)) {
-    New-Item -Path $userClsidPath -Force | Out-Null
-  }
-  Set-ItemProperty -Path $userClsidPath -Name "System.IsPinnedToNameSpaceTree" -Value 0 -Type DWord
-
-  Write-Status "Navigation PaneからOneDriveアイコンを削除しました" "SUCCESS"
-}
-catch {
-  Write-Status "Navigation Paneアイコンの削除に失敗しました: $($_.Exception.Message)" "ERROR"
-}
-
-# 7. OneDriveのスタートアップエントリを削除
+# 6. OneDriveのスタートアップエントリを削除
 Write-Status "OneDriveのスタートアップエントリを削除中..."
 try {
   $runPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
@@ -162,7 +126,7 @@ catch {
   Write-Status "スタートアップエントリの削除に失敗しました: $($_.Exception.Message)" "WARNING"
 }
 
-# 8. エクスプローラーの再起動
+# 7. エクスプローラーの再起動
 Write-Status "エクスプローラーを再起動中..."
 try {
   Stop-Process -Name "explorer" -Force
@@ -183,7 +147,6 @@ Write-Host "- OneDriveのアンインストール（現在のユーザー）" -F
 Write-Host "- OneDriveのアンインストール（全ユーザー）" -ForegroundColor White
 Write-Host "- 新規ユーザーへの自動インストール防止" -ForegroundColor White
 Write-Host "- OneDrive統合機能の無効化" -ForegroundColor White
-Write-Host "- Navigation Paneからアイコン削除" -ForegroundColor White
 Write-Host "- スタートアップエントリの削除" -ForegroundColor White
 Write-Host ""
 Write-Host "注意: 変更を完全に反映するには手動で再起動してください。" -ForegroundColor Yellow

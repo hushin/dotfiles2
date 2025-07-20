@@ -46,20 +46,19 @@ Write-Host "`n不要なアプリを除去中..." -ForegroundColor Green
 $AppsToRemove = @(
   "Microsoft.BingNews",
   "Microsoft.BingWeather",
-  "Microsoft.GetHelp",
-  "Microsoft.Getstarted",
+  # "Microsoft.GetHelp",
+  # "Microsoft.Getstarted",
   "Microsoft.Microsoft3DViewer",
   "Microsoft.MicrosoftOfficeHub",
   "Microsoft.MicrosoftSolitaireCollection",
   "Microsoft.MixedReality.Portal",
-  "Microsoft.Office.OneNote",
+  # "Microsoft.Office.OneNote",
   "Microsoft.People",
   "Microsoft.PowerAutomateDesktop",
   "Microsoft.Print3D",
   "Microsoft.Todos",
   # "Microsoft.WindowsAlarms",
-  "Microsoft.WindowsFeedbackHub",
-  "Microsoft.WindowsMaps",
+  # "Microsoft.WindowsFeedbackHub",
   # "Microsoft.WindowsSoundRecorder",
   # "Microsoft.ZuneMusic",
   # "Microsoft.ZuneVideo",
@@ -80,63 +79,6 @@ foreach ($App in $AppsToRemove) {
     Write-Host "   ✗ $App の除去に失敗" -ForegroundColor Red
   }
 }
-
-# プライバシー設定の最適化
-Write-Host "`nプライバシー設定を最適化中..." -ForegroundColor Green
-
-# テレメトリーの最小化（完全無効化はしない）
-if (-not (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection")) {
-  New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Force | Out-Null
-}
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection" -Name "AllowTelemetry" -Value 1 -Type DWord
-
-if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection")) {
-  New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Force | Out-Null
-}
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\DataCollection" -Name "AllowTelemetry" -Value 1 -Type DWord
-
-# 広告IDの無効化
-if (-not (Test-Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo")) {
-  New-Item -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Force | Out-Null
-}
-Set-ItemProperty -Path "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo" -Name "Enabled" -Value 0 -Type DWord
-
-# 位置情報の制限
-if (-not (Test-Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location")) {
-  New-Item -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Force | Out-Null
-}
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\CapabilityAccessManager\ConsentStore\location" -Name "Value" -Value "Deny" -Type String
-
-# アクティビティ履歴の無効化
-if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System")) {
-  New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Force | Out-Null
-}
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "EnableActivityFeed" -Value 0 -Type DWord
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name "PublishUserActivities" -Value 0 -Type DWord
-
-Write-Host "   ✓ プライバシー設定完了" -ForegroundColor Green
-
-# ログイン画面・ロック画面の最適化
-Write-Host "`nログイン画面・ロック画面を最適化中..." -ForegroundColor Green
-
-# Windows Spotlightの無効化（ログイン画面の天気・クイズなど）
-if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent")) {
-  New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Force | Out-Null
-}
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsSpotlightFeatures" -Value 1 -Type DWord
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsSpotlightOnLockScreen" -Value 1 -Type DWord
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableSoftLanding" -Value 1 -Type DWord
-Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsConsumerFeatures" -Value 1 -Type DWord
-
-# ロック画面のスポットライト機能を無効化
-$lockScreenRegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
-Set-ItemProperty -Path $lockScreenRegistryPath -Name "RotatingLockScreenEnabled" -Value 0
-Set-ItemProperty -Path $lockScreenRegistryPath -Name "RotatingLockScreenOverlayEnabled" -Value 0
-Set-ItemProperty -Path $lockScreenRegistryPath -Name "SubscribedContent-338387Enabled" -Value 0
-Set-ItemProperty -Path $lockScreenRegistryPath -Name "SubscribedContent-310093Enabled" -Value 0
-Set-ItemProperty -Path $lockScreenRegistryPath -Name "SubscribedContent-338389Enabled" -Value 0
-
-Write-Host "   ✓ ログイン画面・ロック画面最適化完了" -ForegroundColor Green
 
 # UI最適化
 Write-Host "`nUI設定を最適化中..." -ForegroundColor Green
@@ -196,23 +138,6 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer
 
 Write-Host "   ✓ UI最適化完了" -ForegroundColor Green
 
-# パフォーマンス最適化
-Write-Host "`nパフォーマンス設定を最適化中..." -ForegroundColor Green
-
-# 視覚効果の最適化
-if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects")) {
-  New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Force | Out-Null
-}
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\VisualEffects" -Name "VisualFXSetting" -Value 2 -Type DWord
-
-# スタートアップアプリの最適化
-if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize")) {
-  New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize" -Force | Out-Null
-}
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Serialize" -Name "StartupDelayInMSec" -Value 0 -Type DWord
-
-Write-Host "   ✓ パフォーマンス最適化完了" -ForegroundColor Green
-
 # Bing検索の無効化
 Write-Host "`nWindows検索からBingを除去中..." -ForegroundColor Green
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "BingSearchEnabled" -Value 0 -Type DWord
@@ -220,28 +145,29 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" 
 Write-Host "   ✓ Bing検索除去完了" -ForegroundColor Green
 
 # 不要なサービスの無効化（慎重な選択）
-Write-Host "`n不要なサービスを無効化中..." -ForegroundColor Green
+# Write-Host "`n不要なサービスを無効化中..." -ForegroundColor Green
 
-$ServicesToDisable = @(
-  "DiagTrack",            # Connected User Experiences and Telemetry
-  "dmwappushservice",     # WAP Push Message Routing Service
-  "SysMain",              # Superfetch (必要に応じて)
-  "TrkWks"                # Distributed Link Tracking Client
-)
+# $ServicesToDisable = @(
+#   "DiagTrack",            # Connected User Experiences and Telemetry
+#   "dmwappushservice",     # WAP Push Message Routing Service
+#   "SysMain",              # Superfetch (必要に応じて)
+#   "TrkWks",               # Distributed Link Tracking Client
+#   "CDPUserSvc"            # Connected Devices Platform User Service
+# )
 
-foreach ($Service in $ServicesToDisable) {
-  try {
-    $ServiceObj = Get-Service -Name $Service -ErrorAction SilentlyContinue
-    if ($ServiceObj) {
-      Set-Service -Name $Service -StartupType Disabled -ErrorAction SilentlyContinue
-      Stop-Service -Name $Service -Force -ErrorAction SilentlyContinue
-      Write-Host "   ✓ $Service サービスを無効化" -ForegroundColor Green
-    }
-  }
-  catch {
-    Write-Host "   ✗ $Service の無効化に失敗" -ForegroundColor Red
-  }
-}
+# foreach ($Service in $ServicesToDisable) {
+#   try {
+#     $ServiceObj = Get-Service -Name $Service -ErrorAction SilentlyContinue
+#     if ($ServiceObj) {
+#       Set-Service -Name $Service -StartupType Disabled -ErrorAction SilentlyContinue
+#       Stop-Service -Name $Service -Force -ErrorAction SilentlyContinue
+#       Write-Host "   ✓ $Service サービスを無効化" -ForegroundColor Green
+#     }
+#   }
+#   catch {
+#     Write-Host "   ✗ $Service の無効化に失敗" -ForegroundColor Red
+#   }
+# }
 
 # セキュリティ設定の確認・強化
 Write-Host "`nセキュリティ設定を確認中..." -ForegroundColor Green
@@ -290,6 +216,5 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Clipboard" -Name "EnableClipboa
 Write-Host "   ✓ クリップボード履歴を有効化しました" -ForegroundColor Green
 
 Write-Host "`n================================================" -ForegroundColor Cyan
-Write-Host "  Debloat完了しました" -ForegroundColor Green
-Write-Host "  再起動後にログイン画面の変更が適用されます" -ForegroundColor Yellow
+Write-Host "  Debloat完了しました" -ForegroundColor Greens
 Write-Host "================================================" -ForegroundColor Cyan

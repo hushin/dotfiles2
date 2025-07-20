@@ -6,7 +6,7 @@
     セキュリティ機能は維持し、システム安定性を重視
 .NOTES
     Author: Custom Script
-    Version: 1.1
+    Version: 1.2
     Requires: Administrator権限
 #>
 
@@ -116,6 +116,28 @@ Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\System" -Name 
 
 Write-Host "   ✓ プライバシー設定完了" -ForegroundColor Green
 
+# ログイン画面・ロック画面の最適化
+Write-Host "`nログイン画面・ロック画面を最適化中..." -ForegroundColor Green
+
+# Windows Spotlightの無効化（ログイン画面の天気・クイズなど）
+if (-not (Test-Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent")) {
+  New-Item -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Force | Out-Null
+}
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsSpotlightFeatures" -Value 1 -Type DWord
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsSpotlightOnLockScreen" -Value 1 -Type DWord
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableSoftLanding" -Value 1 -Type DWord
+Set-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\CloudContent" -Name "DisableWindowsConsumerFeatures" -Value 1 -Type DWord
+
+# ロック画面のスポットライト機能を無効化
+$lockScreenRegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\ContentDeliveryManager"
+Set-ItemProperty -Path $lockScreenRegistryPath -Name "RotatingLockScreenEnabled" -Value 0
+Set-ItemProperty -Path $lockScreenRegistryPath -Name "RotatingLockScreenOverlayEnabled" -Value 0
+Set-ItemProperty -Path $lockScreenRegistryPath -Name "SubscribedContent-338387Enabled" -Value 0
+Set-ItemProperty -Path $lockScreenRegistryPath -Name "SubscribedContent-310093Enabled" -Value 0
+Set-ItemProperty -Path $lockScreenRegistryPath -Name "SubscribedContent-338389Enabled" -Value 0
+
+Write-Host "   ✓ ログイン画面・ロック画面最適化完了" -ForegroundColor Green
+
 # UI最適化
 Write-Host "`nUI設定を最適化中..." -ForegroundColor Green
 
@@ -123,10 +145,17 @@ Write-Host "`nUI設定を最適化中..." -ForegroundColor Green
 if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced")) {
   New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Force | Out-Null
 }
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_AccountNotifications" -Value 0 -Type DWord
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_IrisRecommendations" -Value 0 -Type DWord
 
+# Windows設定完了の提案を無効化
+if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement")) {
+  New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" -Force | Out-Null
+}
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" -Name "ScoobeSystemSettingEnabled" -Value 0
+
 # タスクバーからWidget除去
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Value 0 -Type DWord
+# Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Value 0 -Type DWord
 
 # タスクバーからチャット除去
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Value 0 -Type DWord
@@ -158,6 +187,12 @@ Set-ItemProperty -Path $explorerRegistryPath -Name "ShowRecent" -Value 0 -Type D
 Set-ItemProperty -Path $explorerRegistryPath -Name "ShowFrequent" -Value 0 -Type DWord
 # Office.comのファイルを表示する（無効化）
 Set-ItemProperty -Path $explorerRegistryPath -Name "ShowCloudFilesInQuickAccess" -Value 0 -Type DWord
+
+# タスクバーのタスクビューボタンを非表示
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
+
+# エクスプローラー起動時にPCを表示
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Value 1
 
 Write-Host "   ✓ UI最適化完了" -ForegroundColor Green
 
@@ -250,6 +285,11 @@ catch {
   Write-Host "   ⚠ 除外設定の追加に失敗しました" -ForegroundColor Yellow
 }
 
+# クリップボード履歴を有効化
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Clipboard" -Name "EnableClipboardHistory" -Value 1
+Write-Host "   ✓ クリップボード履歴を有効化しました" -ForegroundColor Green
+
 Write-Host "`n================================================" -ForegroundColor Cyan
 Write-Host "  Debloat完了しました" -ForegroundColor Green
+Write-Host "  再起動後にログイン画面の変更が適用されます" -ForegroundColor Yellow
 Write-Host "================================================" -ForegroundColor Cyan

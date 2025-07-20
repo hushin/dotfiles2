@@ -216,5 +216,5 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Clipboard" -Name "EnableClipboa
 Write-Host "   ✓ クリップボード履歴を有効化しました" -ForegroundColor Green
 
 Write-Host "`n================================================" -ForegroundColor Cyan
-Write-Host "  Debloat完了しました" -ForegroundColor Greens
+Write-Host "  Debloat完了しました" -ForegroundColor Green
 Write-Host "================================================" -ForegroundColor Cyan

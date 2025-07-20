@@ -25,6 +25,13 @@ winget install --id=AgileBits.1Password.CLI -e
 chezmoi init --apply hushin/dotfiles2
 ```
 
+JIS キーボードの時
+
+```
+cd win-setup
+.\change-jis-key.ps1
+```
+
 ## memo
 
 ### tmux

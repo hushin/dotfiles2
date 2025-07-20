@@ -44,19 +44,19 @@ catch {
 Write-Host "`n不要なアプリを除去中..." -ForegroundColor Green
 
 $AppsToRemove = @(
-  "Microsoft.BingNews",
-  "Microsoft.BingWeather",
+  # "Microsoft.BingNews",
+  # "Microsoft.BingWeather",
   # "Microsoft.GetHelp",
   # "Microsoft.Getstarted",
-  "Microsoft.Microsoft3DViewer",
-  "Microsoft.MicrosoftOfficeHub",
-  "Microsoft.MicrosoftSolitaireCollection",
-  "Microsoft.MixedReality.Portal",
+  # "Microsoft.Microsoft3DViewer",
+  # "Microsoft.MicrosoftOfficeHub",
+  # "Microsoft.MicrosoftSolitaireCollection",
+  # "Microsoft.MixedReality.Portal",
   # "Microsoft.Office.OneNote",
-  "Microsoft.People",
-  "Microsoft.PowerAutomateDesktop",
-  "Microsoft.Print3D",
-  "Microsoft.Todos",
+  # "Microsoft.People",
+  # "Microsoft.PowerAutomateDesktop",
+  # "Microsoft.Print3D",
+  # "Microsoft.Todos",
   # "Microsoft.WindowsAlarms",
   # "Microsoft.WindowsFeedbackHub",
   # "Microsoft.WindowsSoundRecorder",
@@ -100,7 +100,10 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProf
 # Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Value 0 -Type DWord
 
 # タスクバーからチャット除去
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Value 0 -Type DWord
+# Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Value 0 -Type DWord
+
+# タスクバーのタスクビューボタンを非表示
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
 
 # 検索ボックスを無効化
 if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search")) {
@@ -117,7 +120,7 @@ Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name
 # ファイル拡張子の表示
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Value 0 -Type DWord
 
-# 隠しファイルの表示（コメントアウト）
+# 隠しファイルの表示
 # Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Value 1 -Type DWord
 
 # エクスプローラーのプライバシー設定
@@ -130,9 +133,6 @@ Set-ItemProperty -Path $explorerRegistryPath -Name "ShowFrequent" -Value 0 -Type
 # Office.comのファイルを表示する（無効化）
 Set-ItemProperty -Path $explorerRegistryPath -Name "ShowCloudFilesInQuickAccess" -Value 0 -Type DWord
 
-# タスクバーのタスクビューボタンを非表示
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
-
 # エクスプローラー起動時にPCを表示
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "LaunchTo" -Value 1
 
@@ -141,7 +141,7 @@ Write-Host "   ✓ UI最適化完了" -ForegroundColor Green
 # Bing検索の無効化
 Write-Host "`nWindows検索からBingを除去中..." -ForegroundColor Green
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "BingSearchEnabled" -Value 0 -Type DWord
-Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaConsent" -Value 0 -Type DWord
+# Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaConsent" -Value 0 -Type DWord
 Write-Host "   ✓ Bing検索除去完了" -ForegroundColor Green
 
 # 不要なサービスの無効化（慎重な選択）

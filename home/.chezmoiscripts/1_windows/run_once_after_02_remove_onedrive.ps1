@@ -162,28 +162,7 @@ catch {
   Write-Status "スタートアップエントリの削除に失敗しました: $($_.Exception.Message)" "WARNING"
 }
 
-# 8. OneDriveフォルダとキャッシュのクリーンアップ
-Write-Status "OneDriveフォルダとキャッシュのクリーンアップ中..."
-
-$foldersToRemove = @(
-  "$env:USERPROFILE\OneDrive",
-  "$env:LOCALAPPDATA\Microsoft\OneDrive",
-  "$env:APPDATA\Microsoft\OneDrive"
-)
-
-foreach ($folder in $foldersToRemove) {
-  if (Test-Path $folder) {
-    try {
-      Remove-Item -Path $folder -Recurse -Force -ErrorAction SilentlyContinue
-      Write-Status "削除しました: $folder" "SUCCESS"
-    }
-    catch {
-      Write-Status "削除に失敗しました: $folder - $($_.Exception.Message)" "WARNING"
-    }
-  }
-}
-
-# 9. エクスプローラーの再起動
+# 8. エクスプローラーの再起動
 Write-Status "エクスプローラーを再起動中..."
 try {
   Stop-Process -Name "explorer" -Force
@@ -206,7 +185,6 @@ Write-Host "- 新規ユーザーへの自動インストール防止" -Foregroun
 Write-Host "- OneDrive統合機能の無効化" -ForegroundColor White
 Write-Host "- Navigation Paneからアイコン削除" -ForegroundColor White
 Write-Host "- スタートアップエントリの削除" -ForegroundColor White
-Write-Host "- OneDriveフォルダとキャッシュの削除" -ForegroundColor White
 Write-Host ""
 Write-Host "注意: 変更を完全に反映するには手動で再起動してください。" -ForegroundColor Yellow
 Write-Host "=======================================================" -ForegroundColor Green

@@ -48,7 +48,7 @@ Write-Status "現在のユーザーのOneDriveをアンインストール中..."
 # Wingetを使用してアンインストール（Microsoft.OneDrive）
 try {
   Write-Status "Microsoft.OneDriveをアンインストール中..."
-  $wingetResult1 = winget uninstall Microsoft.OneDrive --silent 2>&1
+  $wingetResult1 = winget uninstall Microsoft.OneDrive --force 2>&1
   if ($LASTEXITCODE -eq 0) {
     Write-Status "Microsoft.OneDriveのアンインストールが完了しました" "SUCCESS"
   }
@@ -63,7 +63,7 @@ catch {
 # Wingetを使用してアンインストール（onedrive）
 try {
   Write-Status "onedriveをアンインストール中..."
-  $wingetResult2 = winget uninstall onedrive --silent 2>&1
+  $wingetResult2 = winget uninstall onedrive --force 2>&1
   if ($LASTEXITCODE -eq 0) {
     Write-Status "onedriveのアンインストールが完了しました" "SUCCESS"
   }

@@ -149,6 +149,16 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer
 # 隠しファイルの表示（コメントアウト）
 # Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Value 1 -Type DWord
 
+# エクスプローラーのプライバシー設定
+$explorerRegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"
+
+# 最近使用したファイルを表示する（無効化）
+Set-ItemProperty -Path $explorerRegistryPath -Name "ShowRecent" -Value 0 -Type DWord
+# 頻繁に使用されるフォルダーを表示する（無効化）
+Set-ItemProperty -Path $explorerRegistryPath -Name "ShowFrequent" -Value 0 -Type DWord
+# Office.comのファイルを表示する（無効化）
+Set-ItemProperty -Path $explorerRegistryPath -Name "ShowCloudFilesInQuickAccess" -Value 0 -Type DWord
+
 Write-Host "   ✓ UI最適化完了" -ForegroundColor Green
 
 # パフォーマンス最適化

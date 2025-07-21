@@ -19,5 +19,5 @@ Documents/
 {{ end }}
 
 {{ if not (or (eq .chezmoi.os "linux") (and (hasKey .chezmoi.kernel "osrelease") (.chezmoi.kernel.osrelease | lower | contains "microsoft"))) }}
-.chezmoiscripts/2_wsl_docker/**
+.chezmoiscripts/2_wsl/**
 {{ end }}

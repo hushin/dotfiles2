@@ -96,11 +96,8 @@ if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfile
 }
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" -Name "ScoobeSystemSettingEnabled" -Value 0
 
-# タスクバーからWidget除去
+# タスクバーからWidget除去 (レジストリ編集がエラーでできない。手動で消す必要あり)
 # Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarDa" -Value 0 -Type DWord
-
-# タスクバーからチャット除去
-# Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "TaskbarMn" -Value 0 -Type DWord
 
 # タスクバーのタスクビューボタンを非表示
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "ShowTaskViewButton" -Value 0
@@ -115,7 +112,7 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" 
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "HideFileExt" -Value 0 -Type DWord
 
 # 隠しファイルの表示
-# Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Value 1 -Type DWord
+Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Hidden" -Value 1 -Type DWord
 
 # エクスプローラーのプライバシー設定
 $explorerRegistryPath = "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer"
@@ -135,10 +132,9 @@ Write-Host "   ✓ UI最適化完了" -ForegroundColor Green
 # Bing検索の無効化
 Write-Host "`nWindows検索からBingを除去中..." -ForegroundColor Green
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "BingSearchEnabled" -Value 0 -Type DWord
-# Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "CortanaConsent" -Value 0 -Type DWord
 Write-Host "   ✓ Bing検索除去完了" -ForegroundColor Green
 
-# 不要なサービスの無効化（慎重な選択）
+# 不要なサービスの無効化
 # Write-Host "`n不要なサービスを無効化中..." -ForegroundColor Green
 
 # $ServicesToDisable = @(

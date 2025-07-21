@@ -6,7 +6,7 @@
 
 ### JIS キーボード
 
-```
+```powershell
 cd $HOME
 .\win-setup\change-jis-key.ps1
 ```
@@ -17,7 +17,7 @@ ref. [WSL のインストール | Microsoft Learn](https://learn.microsoft.com/j
 
 `Win-X Alt-A` ターミナル（管理者）を立ち上げて実行
 
-```
+```powershell
 wsl --install
 ```
 

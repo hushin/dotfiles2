@@ -32,20 +32,20 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin
 chezmoi init --apply hushin/dotfiles2
 ```
 
-### 共通
+## 手動設定
 
-chezmoi デフォルトだと https なので `--ssh` をつけたいが、1password など初期設定が面倒。
-push する前に remote を git に変更する。
+### このリポジトリ
+
+chezmoi デフォルトだと https なので init 時に `--ssh` をつけたいが、1password など初期設定が面倒なのでやっていない。
+push する前に remote を ssh のものに変更する。
 
 ```sh
 git remote set-url origin git@github.com:hushin/dotfiles2.git
 ```
 
-## 手動設定
-
 ### SSH
 
-こういったエラーが出たら `~/.ssh/known_hosts` にホストキーを追加する
+push 時こういったエラーが出たら `~/.ssh/known_hosts` にホストキーを追加する
 
 > No ED25519 host key is known for github.com and you have requested strict checking.
 > Host key verification failed.

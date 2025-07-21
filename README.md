@@ -6,6 +6,8 @@
 
 ## Setup
 
+TODO chezmoiデフォルトだとhttpsなのでssh用にコマンド変えたい
+
 ### Windows
 
 `Win-X Alt-A` ターミナル（管理者）を立ち上げて実行
@@ -36,6 +38,10 @@ chezmoi init --apply hushin/dotfiles2
 
 ### SSH
 
+こういったエラーが出たら `~/.ssh/known_hosts` にホストキーを追加する
+> No ED25519 host key is known for github.com and you have requested strict checking.
+> Host key verification failed.
+
 ```sh
 ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
 ```
@@ -63,4 +69,4 @@ ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
 cd ~/.config/tmux/plugins/tmux-mem-cpu-load && cmake . && make
 ```
 
-`Ctrl-t I` で プラグインインストール
+tmux を起動し、`Ctrl-t I` で プラグインインストール

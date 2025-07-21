@@ -13,6 +13,7 @@
   "jdx.mise",
   "Starship.Starship",
   "rsteube.Carapace",
+  "junegunn.fzf",
   "uutils.coreutils"
 )
 

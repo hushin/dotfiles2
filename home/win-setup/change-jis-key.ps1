@@ -24,6 +24,14 @@ Write-Host "  ￥\を見た目の位置で打てるようにする" -ForegroundC
 Write-Host "  ]の位置で半角全角(\`) " -ForegroundColor White
 Write-Host ""
 
+# 実行確認
+Write-Host "この設定を実行しますか？ (y/N): " -NoNewline -ForegroundColor Yellow
+$confirmation = Read-Host
+if ($confirmation -ne 'y' -and $confirmation -ne 'Y') {
+    Write-Host "キャンセルしました。" -ForegroundColor Red
+    exit 0
+}
+
 # レジストリパス
 $registryPath = "HKLM:\SYSTEM\CurrentControlSet\Control\Keyboard Layout"
 $valueName = "Scancode Map"

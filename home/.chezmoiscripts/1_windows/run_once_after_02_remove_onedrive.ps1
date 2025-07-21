@@ -253,17 +253,6 @@ catch {
   Write-Status "OneDriveフォルダーのクリーンアップ中にエラーが発生しました: $($_.Exception.Message)" "WARNING"
 }
 
-# 9. エクスプローラーの再起動
-Write-Status "エクスプローラーを再起動中..."
-try {
-  Stop-Process -Name "explorer" -Force
-  Start-Sleep -Seconds 2
-  Start-Process "explorer.exe"
-  Write-Status "エクスプローラーを再起動しました" "SUCCESS"
-}
-catch {
-  Write-Status "エクスプローラーの再起動に失敗しました: $($_.Exception.Message)" "WARNING"
-}
 
 Write-Host ""
 Write-Host "=======================================================" -ForegroundColor Green

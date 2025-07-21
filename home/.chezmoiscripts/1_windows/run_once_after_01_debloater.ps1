@@ -1,9 +1,8 @@
 ﻿<#
 .SYNOPSIS
-    Windows 11 Simple Debloater - セキュリティを保ちつつシンプルな設定に
+    Windows 11 Simple Debloater
 .DESCRIPTION
-    必要最小限のブロートウェア除去と設定変更を行う軽量スクリプト
-    セキュリティ機能は維持し、システム安定性を重視
+    必要最小限のブロートウェア除去とUI設定を行う
 .NOTES
     Author: Custom Script
     Version: 1.2
@@ -158,36 +157,6 @@ Write-Host "   ✓ Bing検索除去完了" -ForegroundColor Green
 #     Write-Host "   ✗ $Service の無効化に失敗" -ForegroundColor Red
 #   }
 # }
-
-# セキュリティ設定の確認・強化
-Write-Host "`nセキュリティ設定を確認中..." -ForegroundColor Green
-
-# Windows Defenderが有効か確認
-$DefenderStatus = Get-MpPreference -ErrorAction SilentlyContinue
-if ($DefenderStatus) {
-  Write-Host "   ✓ Windows Defender有効" -ForegroundColor Green
-}
-else {
-  Write-Host "   ⚠ Windows Defenderの状態を確認してください" -ForegroundColor Yellow
-}
-
-# UACが有効か確認
-$UACStatus = Get-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System" -Name "EnableLUA" -ErrorAction SilentlyContinue
-if ($UACStatus.EnableLUA -eq 1) {
-  Write-Host "   ✓ UAC有効" -ForegroundColor Green
-}
-else {
-  Write-Host "   ⚠ UACが無効になっています" -ForegroundColor Yellow
-}
-
-# Windows Updateの自動更新確認
-$WUStatus = Get-ItemProperty -Path "HKLM:\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU" -Name "NoAutoUpdate" -ErrorAction SilentlyContinue
-if (-not $WUStatus -or $WUStatus.NoAutoUpdate -eq 0) {
-  Write-Host "   ✓ Windows Update自動更新有効" -ForegroundColor Green
-}
-else {
-  Write-Host "   ⚠ Windows Update自動更新が無効です" -ForegroundColor Yellow
-}
 
 # Microsoft Defenderの除外設定追加
 Write-Host "`nMicrosoft Defender: 除外設定を追加中..." -ForegroundColor Green

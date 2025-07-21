@@ -36,6 +36,13 @@ chezmoi init --apply git@github.com:hushin/dotfiles2.git
     - ユーザースクリプトを許可する
   - Advanced mode:
     - https://raw.githubusercontent.com/hushin/dotfiles2/refs/heads/main/etc/SurfingkeysSetting.js
+    - [src](./etc/SurfingkeysSetting.js)
+- Tampermonkey
+  - ダッシュボード → ユーティリティ → クラウド → Google Drive からインポート
+- Stylebot
+  - Google ドライブを介した手動同期
+- [Mouse Dictionary](https://qiita.com/wtetsu/items/c43232c6c44918e977c9)
+  - 英辞郎 の 辞書データをインポート
 
 ### tmux
 

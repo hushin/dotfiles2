@@ -41,7 +41,7 @@ Where-Object { ! @('tee', 'sort', 'sleep').Contains($_) } |
 ForEach-Object {
   $cmd = $_
   if (Test-Path Alias:$cmd) { Remove-Item -Path Alias:$cmd }
-  $fn = '$input | uutils ' + $cmd + ' $args'
+  $fn = '$input | coreutils ' + $cmd + ' $args'
   Invoke-Expression "function global:$cmd { $fn }"
 }
 
@@ -98,8 +98,8 @@ function crrepo {
   }
 
   # リポジトリ名を取得（owner/repo形式）
-  $pwd = (Get-Location).Path -replace '\\', '/'
-  if ($pwd -match '[^/]*/[^/]*$') {
+  $currentPath = (Get-Location).Path -replace '\\', '/'
+  if ($currentPath -match '[^/]*/[^/]*$') {
     $repoName = $Matches[0]
     gh repo create $repoName --source=. $args
   }
@@ -108,17 +108,22 @@ function crrepo {
   }
 }
 
-function reload {
-  Update-PathVariable
-  # プロファイルを再読み込み
-  . $PROFILE.CurrentUserCurrentHost
+function which($cmdname) {
+  Get-Command $cmdname | Select-Object -ExpandProperty Definition
 }
 
 # key binding
 # 実行後入力待ちになるため、AcceptLine を実行する
 Set-PSReadLineKeyHandler -Chord 'Ctrl+]' -ScriptBlock { gf; [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine() }
-Set-PSReadLineKeyHandler -Chord 'Ctrl+j' -ScriptBlock { Invoke-FuzzyZLocation; [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine() }
-# Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
+# Ctrl+j: zoxideの履歴からディレクトリを選択して移動
+Set-PSReadLineKeyHandler -Chord 'Ctrl+j' -ScriptBlock {
+  $selection = zoxide query --list | fzf
+  if ($selection) {
+    Set-Location $selection
+    [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+  }
+}
+Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
 
 $localrc = "$env:HOMEPATH/.profile.local.ps1"
 

@@ -125,3 +125,13 @@ chezmoi execute-template
 ```bash
 chezmoi update
 ```
+
+## ファイル属性の変更
+
+### テンプレート機能の追加
+
+すでに chezmoi 管理のファイルにテンプレート機能を追加する場合
+
+```bash
+chezmoi chattr +t ~/.zshrc
+```

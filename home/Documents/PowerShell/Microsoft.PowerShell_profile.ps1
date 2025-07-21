@@ -46,6 +46,7 @@ ForEach-Object {
 }
 
 Set-Alias grep rg
+Set-Alias open Invoke-Item
 
 function cd {
   if ($args.Length -gt 0) {

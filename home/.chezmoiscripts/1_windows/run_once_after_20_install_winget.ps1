@@ -4,6 +4,7 @@ winget install -e --id AgileBits.1Password.CLI
 winget install -e --id Google.Chrome
 winget install -e --id Google.JapaneseIME
 winget install -e --id Microsoft.VisualStudioCode
+winget install -e --id Microsoft.PowerShell
 winget install -e --id Microsoft.PowerToys
 winget install -e --id Microsoft.PCManager
 winget install -e --id Dropbox.Dropbox

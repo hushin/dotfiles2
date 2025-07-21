@@ -6,7 +6,7 @@
 
 `Win-X Alt-A` ターミナル（管理者）を立ち上げて実行
 
-```
+```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 winget install -e --id Git.Git --source winget
 winget install -e --id twpayne.chezmoi --source winget
@@ -14,17 +14,18 @@ winget install -e --id twpayne.chezmoi --source winget
 
 chezmoi のパス解決のため新しいタブを開いて実行
 
-```
+```powershell
 chezmoi init --apply hushin/dotfiles2
 ```
 
 [他の設定](./docs/windows.md)
 
-### Ubuntu(Devcontainer)
+### Ubuntu
 
-```
+```sh
 sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin
-chezmoi init --apply git@github.com:hushin/dotfiles2.git
+# chezmoi パス解決に source ~/.profile 必要かも。もしくはshellを新しく開く
+chezmoi init --apply hushin/dotfiles2
 ```
 
 ## 手動設定
@@ -44,12 +45,12 @@ chezmoi init --apply git@github.com:hushin/dotfiles2.git
 - [Mouse Dictionary](https://qiita.com/wtetsu/items/c43232c6c44918e977c9)
   - 英辞郎 の 辞書データをインポート
 
-### tmux
+### tmux(Ubuntu)
+
+ビルド
+
+```sh
+cd ~/.config/tmux/plugins/tmux-mem-cpu-load && cmake . && make
+```
 
 `Ctrl-t I` で プラグインインストール
-
-```
-cd ~/.config/tmux/plugins/tmux-mem-cpu-load
-cmake .
-make
-```

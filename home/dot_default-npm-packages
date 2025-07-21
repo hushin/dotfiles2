@@ -1,5 +1,11 @@
-# corepack
-# czg
-# cz-git
-# commitizen
-# prettier
+corepack
+
+# AI
+@anthropic-ai/claude-code
+@google/gemini-cli
+
+# commit
+czg
+cz-git
+commitizen
+prettier

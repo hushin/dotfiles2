@@ -34,6 +34,12 @@ chezmoi init --apply hushin/dotfiles2
 
 ## 手動設定
 
+### SSH
+
+```sh
+ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+```
+
 ### Chrome
 
 - Surfingkeys

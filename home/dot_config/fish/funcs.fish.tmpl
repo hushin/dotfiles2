@@ -97,7 +97,7 @@ function gwt -d "git work tree" -a branch
     git worktree add {$gitCdupDir}git-worktrees/$branch -b $branch
 end
 
-{{ if (eq .chezmoi.os "darwin") }}
+{{- if (eq .chezmoi.os "darwin") }}
 function joinpdf
     mkdir -p formatted
     "/System/Library/Automator/Combine PDF Pages.action/Contents/Resources/join.py" --output formatted/output(date "+%Y%m%d_%H%M%S").pdf $argv
@@ -108,4 +108,4 @@ function hlcopy -d "Code highlighting" --argument language theme
     set -q theme[1] || set theme Zenburn
     pbpaste | highlight -S $language -s $theme -O rtf -k 'Source Han Code JP' -K 24 | pbcopy
 end
-{{ end }}
+{{- end }}

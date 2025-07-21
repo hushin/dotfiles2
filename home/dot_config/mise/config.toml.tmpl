@@ -18,7 +18,9 @@ ctop = "latest"
 fzf = "latest"
 ghq = "latest"
 github-cli = "latest"
-# "cargo:eza" = "latest" # TODO template化して windows以外はインストールする
+{{- if ne .chezmoi.os "windows" }}
+"cargo:eza" = "latest"
+{{- end }}
 # shellcheck = "latest"
 # terraform = "latest"
 1password = "latest"

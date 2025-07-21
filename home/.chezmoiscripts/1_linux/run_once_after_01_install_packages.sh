@@ -35,5 +35,5 @@ if ! has "fish"; then
   sudo apt update
   sudo apt install -y fish
   echo "set fish as default shell"
-  sudo chsh -s $(which fish)
+  chsh -s $(which fish)
 fi

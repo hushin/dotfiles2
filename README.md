@@ -6,8 +6,6 @@
 
 ## Setup
 
-TODO chezmoiデフォルトだとhttpsなのでssh用にコマンド変えたい
-
 ### Windows
 
 `Win-X Alt-A` ターミナル（管理者）を立ち上げて実行
@@ -34,11 +32,21 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin
 chezmoi init --apply hushin/dotfiles2
 ```
 
+### 共通
+
+chezmoi デフォルトだと https なので `--ssh` をつけたいが、1password など初期設定が面倒。
+push する前に remote を git に変更する。
+
+```sh
+git remote set-url origin git@github.com:hushin/dotfiles2.git
+```
+
 ## 手動設定
 
 ### SSH
 
 こういったエラーが出たら `~/.ssh/known_hosts` にホストキーを追加する
+
 > No ED25519 host key is known for github.com and you have requested strict checking.
 > Host key verification failed.
 

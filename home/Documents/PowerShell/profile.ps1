@@ -6,4 +6,12 @@ function Update-PathVariable {
   [System.Environment]::GetEnvironmentVariable("Path", "User")
 }
 
+Set-PSReadLineOption -EditMode Emacs
+Set-PSReadLineOption -BellStyle None
 
+$env:CARAPACE_BRIDGES = "zsh,fish,bash,inshellisense" # optional
+Set-PSReadLineOption -Colors @{ "Selection" = "`e[7m" }
+Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
+carapace _carapace | Out-String | Invoke-Expression
+
+Invoke-Expression (& { (zoxide init powershell | Out-String) })

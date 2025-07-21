@@ -1,5 +1,9 @@
 # dotfiles
 
+## 日常
+
+[chezmoi コマンド](./docs/chezmoi-commands.md)
+
 ## Setup
 
 ### Windows

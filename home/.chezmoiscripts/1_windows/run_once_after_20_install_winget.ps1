@@ -10,3 +10,4 @@ winget install -e --id Microsoft.PowerToys
 winget install -e --id Dropbox.Dropbox
 winget install -e --id MartiCliment.UniGetUI --source winget
 winget install -e --id jdx.mise
+winget install -e --id Starship.Starship

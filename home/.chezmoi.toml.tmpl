@@ -1,5 +1,5 @@
-{{- $gituser := "hushin" -}}
-{{- $email := "ngtv.hsn@gmail.com" -}}
+{{- $gituser := promptString "gituser name" "hushin" -}}
+{{- $email := promptString "email" "ngtv.hsn@gmail.com" -}}
 
 [data]
   command = "code"

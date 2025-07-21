@@ -299,7 +299,7 @@ F13 & n:: Send("^+n")
 F13 & t:: Send("^+t")
 F13 & w:: Send("^+w")
 F13 & f:: Send("^+f")
-F13 & d:: Send("^+d")
+F13 & d:: Send("!+d")
 #HotIf
 
 #HotIf WinActive("ahk_exe chrome.exe")

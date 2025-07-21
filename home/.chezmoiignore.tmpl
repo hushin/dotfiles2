@@ -18,6 +18,6 @@ win-setup/
 Documents/
 {{ end }}
 
-{{ if not (and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft")) }}
-2_wsl_docker
+{{ if not (or (eq .chezmoi.os "linux") (and (hasKey .chezmoi.kernel "osrelease") (.chezmoi.kernel.osrelease | lower | contains "microsoft"))) }}
+.chezmoiscripts/2_wsl_docker/**
 {{ end }}

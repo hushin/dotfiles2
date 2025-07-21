@@ -1,3 +1,7 @@
 [user]
 	name  = {{ .gituser }}
 	email = {{ .email }}
+[includeIf "gitdir:~/ghq/github.com/hushin/"]
+	path = hushin.conf
+[includeIf "gitdir:~/ghq/github.com/hushin-sandbox/"]
+	path = hushin.conf

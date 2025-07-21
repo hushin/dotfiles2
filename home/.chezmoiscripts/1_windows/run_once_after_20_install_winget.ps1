@@ -12,7 +12,8 @@
   "MartiCliment.UniGetUI",
   "jdx.mise",
   "Starship.Starship",
-  "rsteube.Carapace"
+  "rsteube.Carapace",
+  "uutils.coreutils"
 )
 
 foreach ($package in $packages) {

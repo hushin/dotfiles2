@@ -4,7 +4,7 @@
 
 ### Windows
 
-`Win-X　Alt-A` ターミナル（管理者）を立ち上げて実行
+`Win-X Alt-A` ターミナル（管理者）を立ち上げて実行
 
 ```
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser

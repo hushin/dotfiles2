@@ -6,7 +6,7 @@ winget install -e --id Google.JapaneseIME
 winget install -e --id Microsoft.VisualStudioCode
 winget install -e --id Microsoft.PowerShell
 winget install -e --id Microsoft.PowerToys
-winget install -e --id Microsoft.PCManager
+# winget install -e --id Microsoft.PCManager
 winget install -e --id Dropbox.Dropbox
 winget install -e --id MartiCliment.UniGetUI --source winget
 winget install -e --id jdx.mise

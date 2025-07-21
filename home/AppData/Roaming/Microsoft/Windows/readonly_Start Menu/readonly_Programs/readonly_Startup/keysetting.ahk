@@ -119,7 +119,7 @@ F13 & BackSpace:: Send("+{Home}{BackSpace}")
 F14 & a::#a
 F14 & b::#b
 F14 & c::#c
-F14 & d::#d
+; F14 & d::#d ; デスクトップ表示 誤爆するので無効化
 F14 & e::#e
 F14 & f::#f
 F14 & g::#g
@@ -128,7 +128,7 @@ F14 & i::#i
 F14 & j::#j
 F14 & k::#k
 F14 & l::#l
-F14 & m::#m
+; F14 & m::#m ; すべてのウィンドウの最小化 誤爆するので無効化
 F14 & n::#n
 F14 & o::#o
 F14 & p::#p
@@ -239,12 +239,19 @@ F13 & Tab::AltTab
 F13 & LButton::
 {
     MouseGetPos(&x, &y)
-    Send "{ControlDown}{Click %x% %y%}{CtrlUp}"
+    Send "{Ctrl down}{Click %x% %y%}{Ctrl up}"
+}
+
+; RWin+Click -> Win+Click
+F14 & LButton::
+{
+    MouseGetPos(&x, &y)
+    Send "{LWin Down}{Click %x% %y%}{LWin Up}"
 }
 
 ; LWin+スクロール -> Ctrl+スクロール
-F13 & WheelUp:: Send "{ControlDown}{WheelUp}{ControlUp}"
-F13 & WheelDown:: Send "{ControlDown}{WheelDown}{ControlUp}"
+F13 & WheelUp:: Send "{Ctrl down}{WheelUp}{Ctrl up}"
+F13 & WheelDown:: Send "{Ctrl down}{WheelDown}{Ctrl up}"
 
 ; sound volume
 RShift & F12::

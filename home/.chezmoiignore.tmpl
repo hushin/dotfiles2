@@ -17,3 +17,7 @@ AppData/
 win-setup/
 Documents/
 {{ end }}
+
+{{ if not (and (eq .chezmoi.os "linux") (.chezmoi.kernel.osrelease | lower | contains "microsoft")) }}
+2_wsl_docker
+{{ end }}

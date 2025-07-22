@@ -61,6 +61,15 @@ chezmoi init --apply hushin/dotfiles2
 
 - Setting Sync
 
+### gh CLI
+
+```sh
+gh auth login
+? Where do you use GitHub? GitHub.com
+? What is your preferred protocol for Git operations on this host? SSH
+? Generate a new SSH key to add to your GitHub account? No
+```
+
 ### tmux(Ubuntu)
 
 ビルド

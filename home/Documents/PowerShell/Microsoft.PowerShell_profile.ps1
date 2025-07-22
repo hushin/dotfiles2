@@ -138,7 +138,7 @@ Set-PSReadLineOption -Colors @{ "Selection" = "`e[7m" }
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 carapace _carapace | Out-String | Invoke-Expression
 
+# Starship の初期化
+Invoke-Expression (&starship init powershell)
 # zoxide (cdの改良) の初期化
 Invoke-Expression (& { (zoxide init powershell | Out-String) })
-# Starship の初期化 (最後に追加)
-Invoke-Expression (&starship init powershell)

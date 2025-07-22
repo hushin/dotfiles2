@@ -7,6 +7,8 @@
 - [ ] git リポジトリ
   - [ ] ghq 管理（後述）
   - [ ] dotfiles
+    - `chezmoi diff` があって取り込みたかったら `chezmoi re-add`
+    - git push
 - [ ] ファイル(ホームディレクトリ以下)
   - [ ] デスクトップ
   - [ ] ドキュメント
@@ -19,6 +21,8 @@
   - [ ] OneTab URL
   - [ ] Tampermonkey
   - [ ] Stylebot
+- [ ] インストール済みのアプリをメモ TODO 確認用コマンド
+  - [ ] 必要に応じて dotfiles 更新
 - [ ] アプリの設定
   - [ ] Blender
   - Steam … 基本的に別ディスクに退避させているので不要

@@ -7,8 +7,7 @@
 ### JIS キーボード
 
 ```powershell
-cd $HOME
-.\win-setup\change-jis-key.ps1
+change-jis-key.ps1
 ```
 
 ## WSL

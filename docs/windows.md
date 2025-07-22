@@ -51,3 +51,14 @@ wsl --install
 - 設定
   - ウィジェットのチェックを外す
 - 不要なピン留めを削除
+
+### Steam
+
+- 設定 > ストレージ > ドライブを追加 で 外付け SSD 指定、デフォルトに設定
+
+## クリーンインストール手順
+
+- [事前にバックアップする](backup.md)
+- 初期化時、念のため外付け SDD 等は外しておく。
+
+[Windows 11 Clean Installation](https://www.microsoft.com/ja-jp/windowsinsider/cleaninstall) にあるように、USB フラッシュ ドライブに Windows インストール メディアを入れて実行する。

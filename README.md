@@ -22,7 +22,7 @@ chezmoi のパス解決のため新しいタブを開いて実行
 chezmoi init --apply hushin/dotfiles2
 ```
 
-[他の設定](./docs/windows.md)
+[以降の Windows 設定](./docs/windows.md)
 
 ### Ubuntu
 
@@ -33,27 +33,6 @@ chezmoi init --apply hushin/dotfiles2
 ```
 
 ## 手動設定
-
-### このリポジトリ
-
-chezmoi デフォルトだと https なので init 時に `--ssh` をつけたいが、1Password など初期設定が面倒なのでやっていない。
-push する前に remote を ssh のものに変更する。
-
-```sh
-chezmoi cd
-git remote set-url origin git@github.com:hushin/dotfiles2.git
-```
-
-### SSH
-
-push 時こういったエラーが出たら `~/.ssh/known_hosts` にホストキーを追加する
-
-> No ED25519 host key is known for github.com and you have requested strict checking.
-> Host key verification failed.
-
-```sh
-ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
-```
 
 ### 1Password
 
@@ -78,6 +57,10 @@ ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
 - [Mouse Dictionary](https://qiita.com/wtetsu/items/c43232c6c44918e977c9)
   - 英辞郎 の 辞書データをインポート
 
+### VSCode
+
+- Setting Sync
+
 ### tmux(Ubuntu)
 
 ビルド
@@ -87,3 +70,24 @@ cd ~/.config/tmux/plugins/tmux-mem-cpu-load && cmake . && make
 ```
 
 tmux を起動し、`Ctrl-t I` で プラグインインストール
+
+### このリポジトリ
+
+chezmoi デフォルトだと https なので init 時に `--ssh` をつけたいが、1Password など初期設定が面倒なのでやっていない。
+push する前に remote を ssh のものに変更する。
+
+```sh
+chezmoi cd
+git remote set-url origin git@github.com:hushin/dotfiles2.git
+```
+
+### SSH
+
+push 時こういったエラーが出たら `~/.ssh/known_hosts` にホストキーを追加する
+
+> No ED25519 host key is known for github.com and you have requested strict checking.
+> Host key verification failed.
+
+```sh
+ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
+```

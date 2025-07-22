@@ -5,7 +5,9 @@
 ## チェックリスト
 
 - [ ] git リポジトリ
-  - [ ] ghq 管理（後述）
+  - [ ] ghq 管理
+    - 詳しくは後述
+    - Windows の場合、Windows 側と WSL 側両方見る
   - [ ] dotfiles
     - `chezmoi diff` があって取り込みたかったら `chezmoi re-add`
     - git push

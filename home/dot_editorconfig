@@ -13,6 +13,5 @@ trim_trailing_whitespace = false
 indent_style = tab
 indent_size = 4
 
-[{*.py,*.fish,*.fish.tmpl}]
-indent_style = space
+[{*.py,*.ahk,*.fish,*.fish.tmpl}]
 indent_size = 4

@@ -36,7 +36,7 @@ chezmoi init --apply hushin/dotfiles2
 
 ### このリポジトリ
 
-chezmoi デフォルトだと https なので init 時に `--ssh` をつけたいが、1password など初期設定が面倒なのでやっていない。
+chezmoi デフォルトだと https なので init 時に `--ssh` をつけたいが、1Password など初期設定が面倒なのでやっていない。
 push する前に remote を ssh のものに変更する。
 
 ```sh
@@ -54,6 +54,14 @@ push 時こういったエラーが出たら `~/.ssh/known_hosts` にホスト�
 ```sh
 ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts
 ```
+
+### 1Password
+
+- セキュリティ
+  - システムがアイドル状態になるとロックの時間をお好みで変更
+- 開発者
+  - SSH エージェントの設定
+  - CLI と連携
 
 ### Chrome
 

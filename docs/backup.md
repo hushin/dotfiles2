@@ -44,7 +44,8 @@ find . -maxdepth 3 -mindepth 3 -type d | xargs -I@ bash -c '[ -e @/.git ] || ech
 ### uncommitted, untracked, unpushed がないか調べる
 
 ```sh
+# macOS, Linux
 ghq-check.sh
+# Windows
+ghq-check.ps1
 ```
-
-[src](../home/bin/executable_ghq-check.sh)

@@ -14,6 +14,7 @@ $newPath = $currentPath + ";" + $shimPath
 [Environment]::SetEnvironmentVariable('Path', $newPath, 'User')
 
 $env:FZF_DEFAULT_COMMAND = 'rg -g "" --hidden --ignore ".git"'
+$env:FZF_DEFAULT_OPTS = "--height 70% --layout=reverse --border --ansi --inline-info"
 
 # ref. https://secon.dev/entry/2020/08/17/070735/
 Set-PSReadLineOption -EditMode Emacs

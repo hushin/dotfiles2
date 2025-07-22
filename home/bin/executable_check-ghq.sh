@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Create temporary log file
-log_file=$(mktemp /tmp/ghq-check-XXXXXX.txt)
+log_file=$(mktemp /tmp/check-ghq-XXXXXX.txt)
 echo "GHQ Repository Check - $(date)" > "$log_file"
 echo "================================" >> "$log_file"
 

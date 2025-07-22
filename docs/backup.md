@@ -45,7 +45,7 @@ find . -maxdepth 3 -mindepth 3 -type d | xargs -I@ bash -c '[ -e @/.git ] || ech
 
 ```sh
 # macOS, Linux
-ghq-check.sh
+check-ghq.sh
 # Windows
-ghq-check.ps1
+check-ghq.ps1
 ```

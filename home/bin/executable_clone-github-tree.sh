@@ -13,8 +13,8 @@ url=$1
 if [[ $url =~ github\.com/([^/]+)/([^/]+)(/tree/([^/]+)(/(.+))?)?$ ]]; then
     owner=${BASH_REMATCH[1]}
     repo=${BASH_REMATCH[2]}
-    branch=${BASH_REMATCH[4]:-"main"}  # Default to "main" if branch is not specified
-    path=${BASH_REMATCH[6]:-""}        # Empty string if path is not specified
+    branch=${BASH_REMATCH[4]:-"main"} # Default to "main" if branch is not specified
+    path=${BASH_REMATCH[6]:-""}       # Empty string if path is not specified
 else
     echo "Invalid GitHub URL"
     exit 1
@@ -34,7 +34,7 @@ git sparse-checkout set --no-cone '/*'
 if [ -n "$path" ]; then
     git sparse-checkout set "$path"
 else
-    git sparse-checkout disable  # Clone entire repository if no path specified
+    git sparse-checkout disable # Clone entire repository if no path specified
 fi
 # Checkout the specified branch
 git checkout "origin/$branch"

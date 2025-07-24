@@ -17,9 +17,9 @@ for repo in $(ghq list); do
     repo_path="$(ghq root)/$(echo "$repo" | tr ':' '/')"
     cd "$repo_path" || continue
 
-    branch=$(git branch --show-current 2>/dev/null)
-    changes=$(git status --porcelain 2>/dev/null)
-    unpushed=$(git log --branches --not --remotes --oneline --decorate-refs=refs/heads --decorate=short 2>/dev/null)
+    branch=$(git branch --show-current 2> /dev/null)
+    changes=$(git status --porcelain 2> /dev/null)
+    unpushed=$(git log --branches --not --remotes --oneline --decorate-refs=refs/heads --decorate=short 2> /dev/null)
 
     if [[ -n "$changes" || -n "$unpushed" ]]; then
         echo -e "\n${YELLOW}$repo${NC} ${CYAN}[$branch]${NC}"

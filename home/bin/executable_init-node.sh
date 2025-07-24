@@ -10,7 +10,7 @@ npm init -y
 npx mklicense
 # create README
 CURRENT_DIR=$(echo ${PWD##*/})
-cat <<EOF > README.md
+cat << EOF > README.md
 # $CURRENT_DIR
 
 (Overview)

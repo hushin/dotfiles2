@@ -57,32 +57,32 @@ end
 
 # https://gist.github.com/azu/09dd6f27f52e2e8d9978
 function mkdev -a dirName
-	if ! test "$dirName"
-		echo "Usage: mkdev dir-name"
-		return
-	end
-	set -l rootDir (ghq root)
+    if ! test "$dirName"
+        echo "Usage: mkdev dir-name"
+        return
+    end
+    set -l rootDir (ghq root)
     set -l gitUser (git config user.name)
-	set -l githubUser "github.com/$gitUser"
-	set -l devPath "$rootDir/$githubUser/$dirName"
+    set -l githubUser "github.com/$gitUser"
+    set -l devPath "$rootDir/$githubUser/$dirName"
 
-	mkdir -p $devPath
-	cd $devPath
+    mkdir -p $devPath
+    cd $devPath
     git init
 end
 
 function mksandbox -a dirName
-	if ! test "$dirName"
-		echo "Usage: mksandbox dir-name"
-		return
-	end
-	set -l rootDir (ghq root)
+    if ! test "$dirName"
+        echo "Usage: mksandbox dir-name"
+        return
+    end
+    set -l rootDir (ghq root)
     set -l gitUser (git config user.name)
-	set -l githubUser "github.com/$gitUser-sandbox"
-	set -l devPath "$rootDir/$githubUser/$dirName"
+    set -l githubUser "github.com/$gitUser-sandbox"
+    set -l devPath "$rootDir/$githubUser/$dirName"
 
-	mkdir -p $devPath
-	cd $devPath
+    mkdir -p $devPath
+    cd $devPath
     git init
 end
 

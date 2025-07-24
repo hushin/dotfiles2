@@ -2,9 +2,9 @@
 
 # 現在のセッションの PATH 情報を更新するための関数
 function Update-PathVariable {
-  $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") +
-  ";" +
-  [System.Environment]::GetEnvironmentVariable("Path", "User")
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") +
+    ";" +
+    [System.Environment]::GetEnvironmentVariable("Path", "User")
 }
 
 # miseのshimパスを追加
@@ -29,89 +29,89 @@ Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
 
 # uutils-coreutils プロファイルに追加
 @"
-  arch, base32, base64, basename, cat, cksum, comm, cp, cut, date, df, dircolors, dirname,
-  echo, env, expand, expr, factor, false, fmt, fold, hashsum, head, hostname, join, link, ln,
-  ls, md5sum, mkdir, mktemp, more, mv, nl, nproc, od, paste, printenv, printf, ptx, pwd,
-  readlink, realpath, relpath, rm, rmdir, seq, sha1sum, sha224sum, sha256sum, sha3-224sum,
-  sha3-256sum, sha3-384sum, sha3-512sum, sha384sum, sha3sum, sha512sum, shake128sum,
-  shake256sum, shred, shuf, sleep, sort, split, sum, sync, tac, tail, tee, test, touch, tr,
-  true, truncate, tsort, unexpand, uniq, wc, whoami, yes
+    arch, base32, base64, basename, cat, cksum, comm, cp, cut, date, df, dircolors, dirname,
+    echo, env, expand, expr, factor, false, fmt, fold, hashsum, head, hostname, join, link, ln,
+    ls, md5sum, mkdir, mktemp, more, mv, nl, nproc, od, paste, printenv, printf, ptx, pwd,
+    readlink, realpath, relpath, rm, rmdir, seq, sha1sum, sha224sum, sha256sum, sha3-224sum,
+    sha3-256sum, sha3-384sum, sha3-512sum, sha384sum, sha3sum, sha512sum, shake128sum,
+    shake256sum, shred, shuf, sleep, sort, split, sum, sync, tac, tail, tee, test, touch, tr,
+    true, truncate, tsort, unexpand, uniq, wc, whoami, yes
 "@ -split ',' |
 ForEach-Object { $_.trim() } |
 Where-Object { ! @('tee', 'sort', 'sleep').Contains($_) } |
 ForEach-Object {
-  $cmd = $_
-  if (Test-Path Alias:$cmd) { Remove-Item -Path Alias:$cmd }
-  $fn = '$input | coreutils ' + $cmd + ' $args'
-  Invoke-Expression "function global:$cmd { $fn }"
+    $cmd = $_
+    if (Test-Path Alias:$cmd) { Remove-Item -Path Alias:$cmd }
+    $fn = '$input | coreutils ' + $cmd + ' $args'
+    Invoke-Expression "function global:$cmd { $fn }"
 }
 
 Set-Alias grep rg
 Set-Alias open Invoke-Item
 
 function cd {
-  if ($args.Length -gt 0) {
-    Set-Location $args[0]
-  }
-  else {
-    Set-Location $env:HOMEPATH
-  }
+    if ($args.Length -gt 0) {
+        Set-Location $args[0]
+    }
+    else {
+        Set-Location $env:HOMEPATH
+    }
 }
 
 function gf {
-  $path = ghq list | fzf
-  if ($LastExitCode -eq 0) {
-    cd "$(ghq root)\$path"
-  }
+    $path = ghq list | fzf
+    if ($LastExitCode -eq 0) {
+        cd "$(ghq root)\$path"
+    }
 }
 function ghg {
-  ghq get --shallow $args
+    ghq get --shallow $args
 }
 
 function mkdev {
-  if ($args.Length -ne 1) {
-    Write-Output "Usage: mkdev dir-name"
-    return
-  }
-  $dirName = $args[0]
-  $devPath = "$(ghq root)\github.com\$(git config user.name)\$dirName"
-  mkdir -p $devPath
-  cd $devPath
-  git init
+    if ($args.Length -ne 1) {
+        Write-Output "Usage: mkdev dir-name"
+        return
+    }
+    $dirName = $args[0]
+    $devPath = "$(ghq root)\github.com\$(git config user.name)\$dirName"
+    mkdir -p $devPath
+    cd $devPath
+    git init
 }
 
 function mksandbox {
-  if ($args.Length -ne 1) {
-    Write-Output "Usage: mksandbox dir-name"
-    return
-  }
-  $dirName = $args[0]
-  $devPath = "$(ghq root)\github.com\$(git config user.name)-sandbox\$dirName"
-  mkdir -p $devPath
-  cd $devPath
-  git init
+    if ($args.Length -ne 1) {
+        Write-Output "Usage: mksandbox dir-name"
+        return
+    }
+    $dirName = $args[0]
+    $devPath = "$(ghq root)\github.com\$(git config user.name)-sandbox\$dirName"
+    mkdir -p $devPath
+    cd $devPath
+    git init
 }
 
 function crrepo {
-  # Gitリポジトリのルートに移動
-  $gitRoot = git rev-parse --show-toplevel 2>$null
-  if ($gitRoot) {
-    Set-Location $gitRoot
-  }
+    # Gitリポジトリのルートに移動
+    $gitRoot = git rev-parse --show-toplevel 2>$null
+    if ($gitRoot) {
+        Set-Location $gitRoot
+    }
 
-  # リポジトリ名を取得（owner/repo形式）
-  $currentPath = (Get-Location).Path -replace '\\', '/'
-  if ($currentPath -match '[^/]*/[^/]*$') {
-    $repoName = $Matches[0]
-    gh repo create $repoName --source=. $args
-  }
-  else {
-    Write-Error "Could not determine repository name from current directory"
-  }
+    # リポジトリ名を取得（owner/repo形式）
+    $currentPath = (Get-Location).Path -replace '\\', '/'
+    if ($currentPath -match '[^/]*/[^/]*$') {
+        $repoName = $Matches[0]
+        gh repo create $repoName --source=. $args
+    }
+    else {
+        Write-Error "Could not determine repository name from current directory"
+    }
 }
 
 function which($cmdname) {
-  Get-Command $cmdname | Select-Object -ExpandProperty Definition
+    Get-Command $cmdname | Select-Object -ExpandProperty Definition
 }
 
 # key binding
@@ -119,18 +119,18 @@ function which($cmdname) {
 Set-PSReadLineKeyHandler -Chord 'Ctrl+]' -ScriptBlock { gf; [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine() }
 # Ctrl+j: zoxideの履歴からディレクトリを選択して移動
 Set-PSReadLineKeyHandler -Chord 'Ctrl+j' -ScriptBlock {
-  $selection = zoxide query --list | fzf
-  if ($selection) {
-    Set-Location $selection
-    [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
-  }
+    $selection = zoxide query --list | fzf
+    if ($selection) {
+        Set-Location $selection
+        [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine()
+    }
 }
 Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+t' -PSReadlineChordReverseHistory 'Ctrl+r'
 
 $localrc = "$env:HOMEPATH/.profile.local.ps1"
 
 if (Test-Path $localrc) {
-  . $localrc
+    . $localrc
 }
 
 # carapace (補完ツール) の設定

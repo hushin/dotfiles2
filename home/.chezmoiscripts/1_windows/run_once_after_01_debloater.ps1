@@ -11,11 +11,11 @@
 
 # Self-elevate the script if required
 if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
-  if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000) {
-    $CommandLine = "-NoExit -File `"" + $MyInvocation.MyCommand.Path + "`" " + $MyInvocation.UnboundArguments
-    Start-Process -Wait -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
-    Exit
-  }
+    if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000) {
+        $CommandLine = "-NoExit -File `"" + $MyInvocation.MyCommand.Path + "`" " + $MyInvocation.UnboundArguments
+        Start-Process -Wait -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
+        Exit
+    }
 }
 
 # カラー出力設定
@@ -32,51 +32,51 @@ Write-Host ""
 # 復元ポイント作成
 Write-Host "システム復元ポイントを作成中..." -ForegroundColor Green
 try {
-  Checkpoint-Computer -Description "Debloater_Before_$(Get-Date -Format 'yyyyMMdd_HHmm')" -RestorePointType "MODIFY_SETTINGS"
-  Write-Host "   ✓ 復元ポイント作成完了" -ForegroundColor Green
+    Checkpoint-Computer -Description "Debloater_Before_$(Get-Date -Format 'yyyyMMdd_HHmm')" -RestorePointType "MODIFY_SETTINGS"
+    Write-Host "   ✓ 復元ポイント作成完了" -ForegroundColor Green
 }
 catch {
-  Write-Host "   ⚠ 復元ポイント作成に失敗しました" -ForegroundColor Yellow
+    Write-Host "   ⚠ 復元ポイント作成に失敗しました" -ForegroundColor Yellow
 }
 
 # 不要なプリインストールアプリの除去（安全なもののみ）
 Write-Host "`n不要なアプリを除去中..." -ForegroundColor Green
 
 $AppsToRemove = @(
-  # "Microsoft.BingNews",
-  # "Microsoft.BingWeather",
-  # "Microsoft.GetHelp",
-  # "Microsoft.Getstarted",
-  # "Microsoft.Microsoft3DViewer",
-  # "Microsoft.MicrosoftOfficeHub",
-  # "Microsoft.MicrosoftSolitaireCollection",
-  # "Microsoft.MixedReality.Portal",
-  # "Microsoft.Office.OneNote",
-  # "Microsoft.People",
-  # "Microsoft.PowerAutomateDesktop",
-  # "Microsoft.Print3D",
-  # "Microsoft.Todos",
-  # "Microsoft.WindowsAlarms",
-  # "Microsoft.WindowsFeedbackHub",
-  # "Microsoft.WindowsSoundRecorder",
-  # "Microsoft.ZuneMusic",
-  # "Microsoft.ZuneVideo",
-  "MicrosoftTeams"
-  # "Clipchamp.Clipchamp"
+    # "Microsoft.BingNews",
+    # "Microsoft.BingWeather",
+    # "Microsoft.GetHelp",
+    # "Microsoft.Getstarted",
+    # "Microsoft.Microsoft3DViewer",
+    # "Microsoft.MicrosoftOfficeHub",
+    # "Microsoft.MicrosoftSolitaireCollection",
+    # "Microsoft.MixedReality.Portal",
+    # "Microsoft.Office.OneNote",
+    # "Microsoft.People",
+    # "Microsoft.PowerAutomateDesktop",
+    # "Microsoft.Print3D",
+    # "Microsoft.Todos",
+    # "Microsoft.WindowsAlarms",
+    # "Microsoft.WindowsFeedbackHub",
+    # "Microsoft.WindowsSoundRecorder",
+    # "Microsoft.ZuneMusic",
+    # "Microsoft.ZuneVideo",
+    "MicrosoftTeams"
+    # "Clipchamp.Clipchamp"
 )
 
 foreach ($App in $AppsToRemove) {
-  try {
-    $Package = Get-AppxPackage -Name $App -AllUsers -ErrorAction SilentlyContinue
-    if ($Package) {
-      Remove-AppxPackage -Package $Package.PackageFullName -ErrorAction SilentlyContinue
-      Get-AppxProvisionedPackage -Online | Where-Object DisplayName -EQ $App | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
-      Write-Host "   ✓ $App を除去しました" -ForegroundColor Green
+    try {
+        $Package = Get-AppxPackage -Name $App -AllUsers -ErrorAction SilentlyContinue
+        if ($Package) {
+            Remove-AppxPackage -Package $Package.PackageFullName -ErrorAction SilentlyContinue
+            Get-AppxProvisionedPackage -Online | Where-Object DisplayName -EQ $App | Remove-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue
+            Write-Host "   ✓ $App を除去しました" -ForegroundColor Green
+        }
     }
-  }
-  catch {
-    Write-Host "   ✗ $App の除去に失敗" -ForegroundColor Red
-  }
+    catch {
+        Write-Host "   ✗ $App の除去に失敗" -ForegroundColor Red
+    }
 }
 
 # UI最適化
@@ -84,14 +84,14 @@ Write-Host "`nUI設定を最適化中..." -ForegroundColor Green
 
 # スタートメニューからおすすめを除去
 if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced")) {
-  New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Force | Out-Null
+    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Force | Out-Null
 }
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_AccountNotifications" -Value 0 -Type DWord
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced" -Name "Start_IrisRecommendations" -Value 0 -Type DWord
 
 # Windows設定完了の提案を無効化
 if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement")) {
-  New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" -Force | Out-Null
+    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" -Force | Out-Null
 }
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\UserProfileEngagement" -Name "ScoobeSystemSettingEnabled" -Value 0
 
@@ -103,7 +103,7 @@ Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Explorer
 
 # 検索ボックスを無効化
 if (-not (Test-Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search")) {
-  New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Force | Out-Null
+    New-Item -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Force | Out-Null
 }
 Set-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Search" -Name "SearchboxTaskbarMode" -Value 0 -Type DWord
 
@@ -161,13 +161,13 @@ Write-Host "   ✓ Bing検索除去完了" -ForegroundColor Green
 # Microsoft Defenderの除外設定追加
 Write-Host "`nMicrosoft Defender: 除外設定を追加中..." -ForegroundColor Green
 try {
-  Add-MpPreference -ExclusionPath "$env:USERPROFILE\.config" -ErrorAction SilentlyContinue
-  Add-MpPreference -ExclusionPath "$env:USERPROFILE\bin" -ErrorAction SilentlyContinue
-  Add-MpPreference -ExclusionPath "$env:USERPROFILE\ghq" -ErrorAction SilentlyContinue
-  Write-Host "   ✓ 除外設定追加完了" -ForegroundColor Green
+    Add-MpPreference -ExclusionPath "$env:USERPROFILE\.config" -ErrorAction SilentlyContinue
+    Add-MpPreference -ExclusionPath "$env:USERPROFILE\bin" -ErrorAction SilentlyContinue
+    Add-MpPreference -ExclusionPath "$env:USERPROFILE\ghq" -ErrorAction SilentlyContinue
+    Write-Host "   ✓ 除外設定追加完了" -ForegroundColor Green
 }
 catch {
-  Write-Host "   ⚠ 除外設定の追加に失敗しました" -ForegroundColor Yellow
+    Write-Host "   ⚠ 除外設定の追加に失敗しました" -ForegroundColor Yellow
 }
 
 # クリップボード履歴を有効化

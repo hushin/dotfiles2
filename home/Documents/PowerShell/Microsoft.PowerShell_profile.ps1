@@ -198,6 +198,7 @@ abbr 'find' 'fd'
 abbr 'cdu' 'cd (git rev-parse --show-toplevel)'
 abbr 'tree' 'tree -N'
 abbr 'notes' 'rg "TODO|HACK|FIXME|OPTIMIZE"'
+abbr 'cd' 'z'
 
 # Editor abbreviations (Windows adapted)
 abbr 'e' 'code'

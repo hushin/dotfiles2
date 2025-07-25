@@ -49,19 +49,10 @@ ForEach-Object {
 Set-Alias grep rg
 Set-Alias open Invoke-Item
 
-function cd {
-    if ($args.Length -gt 0) {
-        Set-Location $args[0]
-    }
-    else {
-        Set-Location $env:HOMEPATH
-    }
-}
-
 function gf {
     $path = ghq list | fzf
     if ($LastExitCode -eq 0) {
-        cd "$(ghq root)\$path"
+        Set-Location "$(ghq root)\$path"
     }
 }
 function ghg {
@@ -76,7 +67,7 @@ function mkdev {
     $dirName = $args[0]
     $devPath = "$(ghq root)\github.com\$(git config user.name)\$dirName"
     mkdir -p $devPath
-    cd $devPath
+    Set-Location $devPath
     git init
 }
 
@@ -88,7 +79,7 @@ function mksandbox {
     $dirName = $args[0]
     $devPath = "$(ghq root)\github.com\$(git config user.name)-sandbox\$dirName"
     mkdir -p $devPath
-    cd $devPath
+    Set-Location $devPath
     git init
 }
 

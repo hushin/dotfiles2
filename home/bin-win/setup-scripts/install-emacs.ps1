@@ -7,7 +7,6 @@ if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     }
 }
 
-
 # org-protocol
 Write-Output "org-protocol: レジストリに登録"
 New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT

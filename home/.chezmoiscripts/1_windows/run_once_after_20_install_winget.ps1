@@ -14,7 +14,7 @@
     "Starship.Starship",
     "rsteube.Carapace",
     "junegunn.fzf",
-    "uutils.coreutils"
+    "eza-community.eza"
 )
 
 foreach ($package in $packages) {

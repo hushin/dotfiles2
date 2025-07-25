@@ -1,14 +1,18 @@
 # Windows セットアップ
 
-## キーボード レジストリのキーリマップ
+## セットアップ script
 
-実行後再起動して反映
-
-### JIS キーボード
+個人用のセットアップ script を選択して実行します
 
 ```powershell
-change-jis-key.ps1
+my-setup.ps1
 ```
+
+## キーボード レジストリのキーリマップ
+
+- `change-jis-key`: JIS キーボードを個人用に設定
+
+実行後再起動して反映
 
 ## WSL
 

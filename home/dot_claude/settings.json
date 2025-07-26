@@ -41,6 +41,7 @@
       "WebFetch(domain:tailwindcss.com)",
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:hono.dev)",
+      "WebFetch(domain:raw.githubusercontent.com)",
       "WebSearch(*)"
     ],
     "deny": [

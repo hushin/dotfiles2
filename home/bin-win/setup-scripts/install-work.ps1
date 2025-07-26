@@ -6,6 +6,7 @@
     "TheDocumentFoundation.LibreOffice",
     "DevToys-app.DevToys",
     "JohnMacFarlane.Pandoc",
+    "Graphviz.Graphviz",
     "WinDirStat.WinDirStat"
 )
 

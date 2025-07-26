@@ -7,6 +7,7 @@ if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     }
 }
 
+Write-Host "ユーザー環境変数PATHを追加します" -ForegroundColor Green
 $binWinPath = "$HOME/bin-win"
 $currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
 if ($currentPath -notlike "*$binWinPath*") {

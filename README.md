@@ -32,11 +32,6 @@ sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin
 chezmoi init --apply hushin/dotfiles2
 ```
 
-```sh
-# デフォルトシェルをfishに設定
-chsh -s $(which fish)
-```
-
 ## 手動設定
 
 ### 1Password

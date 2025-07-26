@@ -35,3 +35,12 @@ if ! has "fish"; then
     sudo apt update
     sudo apt install -y fish
 fi
+
+if [ "$SHELL" != "$(which fish)" ]; then
+    echo "set fish as default shell"
+{{   if eq (env "REMOTE_CONTAINERS") "true" }}
+    sudo chsh -s $(which fish)
+{{   else }}
+    chsh -s $(which fish)
+{{   end }}
+fi

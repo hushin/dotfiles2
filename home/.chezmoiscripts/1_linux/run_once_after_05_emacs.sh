@@ -5,4 +5,7 @@ has() {
     type "$1" > /dev/null 2>&1
 }
 
-~/.config/emacs/bin/doom install
+if has "emacs"; then
+    echo "install doom emacs"
+    ~/.config/emacs/bin/doom install
+fi

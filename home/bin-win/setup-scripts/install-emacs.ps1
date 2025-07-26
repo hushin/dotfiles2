@@ -7,6 +7,54 @@ if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
     }
 }
 
+winget install -e --id GNU.Emacs --source winget
+
+function Add-ToUserPath {
+    param(
+        [string]$Path
+    )
+
+    $currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+    if ($currentPath -notlike "*$Path*") {
+        [Environment]::SetEnvironmentVariable("PATH", "$currentPath;$Path", "User")
+        Write-Output "PATHに追加しました: $Path"
+    } else {
+        Write-Output "PATHに既に存在します: $Path"
+    }
+}
+
+
+# Add Emacs bin to PATH
+Write-Output "Emacs binディレクトリをPATHに追加"
+$emacsBasePath = "C:\Program Files\Emacs"
+if (Test-Path $emacsBasePath) {
+    $emacsBinPath = Get-ChildItem -Path $emacsBasePath -Directory |
+        Sort-Object Name -Descending |
+        Select-Object -First 1 |
+        ForEach-Object { Join-Path $_.FullName "bin" }
+
+    if ($emacsBinPath -and (Test-Path $emacsBinPath)) {
+        Add-ToUserPath -Path $emacsBinPath
+    }
+}
+
+# Add .config/emacs/bin to PATH
+$emacsDotdBinPath = "$env:USERPROFILE\.config\emacs\bin"
+if (Test-Path $emacsDotdBinPath) {
+    Add-ToUserPath -Path $emacsDotdBinPath
+}
+
+function Update-PathVariable {
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") +
+    ";" +
+    [System.Environment]::GetEnvironmentVariable("Path", "User")
+}
+Update-PathVariable
+
+# Install Doom Emacs
+doom install
+doom doctor
+
 # org-protocol
 Write-Output "org-protocol: レジストリに登録"
 New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT

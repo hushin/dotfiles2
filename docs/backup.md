@@ -23,7 +23,7 @@
   - [ ] OneTab URL
   - [ ] Tampermonkey
   - [ ] Stylebot
-- [ ] インストール済みのアプリをメモ TODO 確認用コマンド
+- [ ] インストール済みのアプリをメモ
   - [ ] 必要に応じて dotfiles 更新
 - [ ] アプリの設定
   - [ ] Blender
@@ -50,4 +50,12 @@ find . -maxdepth 3 -mindepth 3 -type d | xargs -I@ bash -c '[ -e @/.git ] || ech
 check-ghq.sh
 # Windows
 check-ghq.ps1
+```
+
+## インストール済みアプリの確認
+
+### Windows
+
+```powershell
+dump-installed-apps.ps1
 ```

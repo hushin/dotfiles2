@@ -33,6 +33,11 @@ wsl --install
 > 必要な機能がインストールされていないため、操作を開始できませんでした。
 > エラー コード: Wsl\InstallDistro\Service\RegisterDistro\CreateVm\HCS\HCS_E_SERVICE_NOT_AVAILABLE
 
+## 手動インストール
+
+- [PC TV Plus](https://www.sony.jp/software/store/products/pctv-plus/)
+- [EasyCanvas (EL Display Hub)](https://www.easynlight.com/en/easycanvas)
+
 ## 手動設定
 
 ### システム → ディスプレイ（デスクトップ右クリックから開ける）

@@ -3,8 +3,9 @@
     "Discord.Discord",
     "Valve.Steam",
     "MPC-BE.MPC-BE",
+    "VideoLAN.VLC",
     "neelabo.NeeView",
-    "VideoLAN.VLC"
+    "Philips.HueSync"
 )
 
 foreach ($package in $packages) {

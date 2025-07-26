@@ -1,4 +1,10 @@
-﻿Write-Host "ユーザー環境変数PATHを追加します" -ForegroundColor Green
+﻿Write-Host "ユーザー環境変数を設定します" -ForegroundColor Green
+
+# HOME環境変数を設定
+[Environment]::SetEnvironmentVariable("HOME", $env:USERPROFILE, "User")
+Write-Host "HOME環境変数を設定しました: $env:USERPROFILE" -ForegroundColor Cyan
+
+Write-Host "ユーザー環境変数PATHを追加します" -ForegroundColor Green
 
 function Add-ToUserPath {
     param(

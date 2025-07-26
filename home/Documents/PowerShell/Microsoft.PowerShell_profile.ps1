@@ -32,7 +32,7 @@ ForEach-Object {
     Invoke-Expression "function global:$cmd { $fn }"
 }
 
-Set-Alias open Invoke-Item
+# Set-Alias open Invoke-Item
 
 . "$PSScriptRoot\functions.ps1"
 . "$PSScriptRoot\abbreviations.ps1"

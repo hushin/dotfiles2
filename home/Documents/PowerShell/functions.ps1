@@ -61,3 +61,21 @@ function crrepo {
 function which($cmdname) {
     Get-Command $cmdname | Select-Object -ExpandProperty Definition
 }
+
+function open {
+    param([string]$path)
+
+    if ($path -match '^https?://|^ftp://|^mailto:') {
+        Start-Process $path
+    }
+    elseif (Test-Path $path) {
+        if ((Get-Item $path).PSIsContainer) {
+            explorer.exe $path
+        } else {
+            Invoke-Item $path
+        }
+    }
+    else {
+        Write-Error "パスが見つかりません: $path"
+    }
+}

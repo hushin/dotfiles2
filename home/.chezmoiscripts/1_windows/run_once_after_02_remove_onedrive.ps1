@@ -133,15 +133,15 @@ foreach ($folder in $folders) {
 }
 
 # 2. OneDriveプロセスの終了
-Write-Status "OneDriveプロセスの終了中..."
-try {
-    Get-Process -Name "OneDrive" -ErrorAction SilentlyContinue | Stop-Process -Force
-    Get-Process -Name "OneDriveSetup" -ErrorAction SilentlyContinue | Stop-Process -Force
-    Write-Status "OneDriveプロセスを終了しました" "SUCCESS"
-}
-catch {
-    Write-Status "OneDriveプロセスの終了中にエラーが発生しました: $($_.Exception.Message)" "WARNING"
-}
+# Write-Status "OneDriveプロセスの終了中..."
+# try {
+#     Get-Process -Name "OneDrive" -ErrorAction SilentlyContinue | Stop-Process -Force
+#     Get-Process -Name "OneDriveSetup" -ErrorAction SilentlyContinue | Stop-Process -Force
+#     Write-Status "OneDriveプロセスを終了しました" "SUCCESS"
+# }
+# catch {
+#     Write-Status "OneDriveプロセスの終了中にエラーが発生しました: $($_.Exception.Message)" "WARNING"
+# }
 
 # 3. 現在のユーザーのOneDriveをアンインストール
 Write-Status "現在のユーザーのOneDriveをアンインストール中..."
@@ -165,36 +165,36 @@ catch {
 }
 
 # 4. 全ユーザー向けOneDriveのアンインストール
-Write-Status "全ユーザー向けOneDriveのアンインストール中..."
+# Write-Status "全ユーザー向けOneDriveのアンインストール中..."
 
-$systemPaths = @(
-    "C:\Program Files (x86)\Microsoft OneDrive\OneDriveSetup.exe",
-    "C:\Windows\System32\OneDriveSetup.exe"
-)
+# $systemPaths = @(
+#     "C:\Program Files (x86)\Microsoft OneDrive\OneDriveSetup.exe",
+#     "C:\Windows\System32\OneDriveSetup.exe"
+# )
 
-foreach ($path in $systemPaths) {
-    if (Test-Path $path) {
-        try {
-            Start-Process -FilePath $path -ArgumentList "/uninstall", "/allusers" -Wait -NoNewWindow
-            Write-Status "システムワイドOneDriveをアンインストールしました: $path" "SUCCESS"
-        }
-        catch {
-            Write-Status "システムワイドOneDriveのアンインストールに失敗しました: $path" "ERROR"
-        }
-    }
-}
+# foreach ($path in $systemPaths) {
+#     if (Test-Path $path) {
+#         try {
+#             Start-Process -FilePath $path -ArgumentList "/uninstall", "/allusers" -Wait -NoNewWindow
+#             Write-Status "システムワイドOneDriveをアンインストールしました: $path" "SUCCESS"
+#         }
+#         catch {
+#             Write-Status "システムワイドOneDriveのアンインストールに失敗しました: $path" "ERROR"
+#         }
+#     }
+# }
 
 # 5. 新規ユーザーへのOneDrive自動インストールを防止
-Write-Status "新規ユーザーへのOneDrive自動インストールを防止中..."
-try {
-    reg load "hklm\Default_profile" "C:\Users\Default\NTUSER.DAT" 2>$null
-    reg delete "hklm\Default_profile\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f 2>$null
-    reg unload "hklm\Default_profile" 2>$null
-    Write-Status "デフォルトプロファイルからOneDriveSetupを削除しました" "SUCCESS"
-}
-catch {
-    Write-Status "デフォルトプロファイルの編集に失敗しました" "WARNING"
-}
+# Write-Status "新規ユーザーへのOneDrive自動インストールを防止中..."
+# try {
+#     reg load "hklm\Default_profile" "C:\Users\Default\NTUSER.DAT" 2>$null
+#     reg delete "hklm\Default_profile\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f 2>$null
+#     reg unload "hklm\Default_profile" 2>$null
+#     Write-Status "デフォルトプロファイルからOneDriveSetupを削除しました" "SUCCESS"
+# }
+# catch {
+#     Write-Status "デフォルトプロファイルの編集に失敗しました" "WARNING"
+# }
 
 # 6. OneDriveの統合機能を無効化
 Write-Status "OneDriveの統合機能を無効化中..."
@@ -261,8 +261,8 @@ Write-Host ""
 Write-Host "実行された処理:" -ForegroundColor Cyan
 Write-Host "- ユーザーフォルダーの標準場所への復元" -ForegroundColor White
 Write-Host "- OneDriveのアンインストール（現在のユーザー）" -ForegroundColor White
-Write-Host "- OneDriveのアンインストール（全ユーザー）" -ForegroundColor White
-Write-Host "- 新規ユーザーへの自動インストール防止" -ForegroundColor White
+# Write-Host "- OneDriveのアンインストール（全ユーザー）" -ForegroundColor White
+# Write-Host "- 新規ユーザーへの自動インストール防止" -ForegroundColor White
 Write-Host "- OneDrive統合機能の無効化" -ForegroundColor White
 Write-Host "- スタートアップエントリの削除" -ForegroundColor White
 Write-Host "- OneDriveフォルダーのクリーンアップ" -ForegroundColor White

@@ -70,6 +70,16 @@ gh auth login
 ? Generate a new SSH key to add to your GitHub account? No
 ```
 
+### Emacs
+
+Emacs 起動して実行
+
+```
+M-x nerd-icons-install-fonts
+```
+
+[Emacs トラブルシューティング](docs/emacs.md)
+
 ### tmux(Ubuntu)
 
 ビルド

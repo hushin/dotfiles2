@@ -53,7 +53,10 @@ Update-PathVariable
 
 # Install Doom Emacs
 doom install
-doom doctor
+doom upgrade
+# emacs --batch -f doom/upgrade
+# emacs --batch -f package-upgrade-all
+# emacs --batch -f nerd-icons-install-fonts
 
 # org-protocol
 Write-Output "org-protocol: レジストリに登録"

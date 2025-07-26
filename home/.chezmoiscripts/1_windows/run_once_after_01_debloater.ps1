@@ -61,7 +61,7 @@ $AppsToRemove = @(
     # "Microsoft.WindowsSoundRecorder",
     # "Microsoft.ZuneMusic",
     # "Microsoft.ZuneVideo",
-    "MicrosoftTeams"
+    # "MicrosoftTeams"
     # "Clipchamp.Clipchamp"
 )
 

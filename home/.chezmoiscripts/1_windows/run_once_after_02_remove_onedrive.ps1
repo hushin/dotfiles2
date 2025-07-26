@@ -253,22 +253,4 @@ catch {
     Write-Status "OneDriveフォルダーのクリーンアップ中にエラーが発生しました: $($_.Exception.Message)" "WARNING"
 }
 
-
-Write-Host ""
-Write-Host "=======================================================" -ForegroundColor Green
-Write-Host "OneDriveの完全削除とフォルダー復元が完了しました！" -ForegroundColor Green
-Write-Host ""
-Write-Host "実行された処理:" -ForegroundColor Cyan
-Write-Host "- ユーザーフォルダーの標準場所への復元" -ForegroundColor White
-Write-Host "- OneDriveのアンインストール（現在のユーザー）" -ForegroundColor White
-# Write-Host "- OneDriveのアンインストール（全ユーザー）" -ForegroundColor White
-# Write-Host "- 新規ユーザーへの自動インストール防止" -ForegroundColor White
-Write-Host "- OneDrive統合機能の無効化" -ForegroundColor White
-Write-Host "- スタートアップエントリの削除" -ForegroundColor White
-Write-Host "- OneDriveフォルダーのクリーンアップ" -ForegroundColor White
-Write-Host ""
-Write-Host "注意: 変更を完全に反映するには手動で再起動してください。" -ForegroundColor Yellow
-Write-Host "=======================================================" -ForegroundColor Green
-Write-Host ""
-
 Write-Host "スクリプトの実行が完了しました。" -ForegroundColor Green

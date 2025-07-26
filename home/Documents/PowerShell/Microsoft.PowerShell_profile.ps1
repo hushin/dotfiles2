@@ -1,11 +1,5 @@
 # $PROFILE.CurrentUserCurrentHost
 
-# miseのshimパスを追加
-$shimPath = "$env:USERPROFILE\AppData\Local\mise\shims"
-$currentPath = [Environment]::GetEnvironmentVariable('Path', 'User')
-$newPath = $currentPath + ";" + $shimPath
-[Environment]::SetEnvironmentVariable('Path', $newPath, 'User')
-
 $env:FZF_DEFAULT_COMMAND = 'rg -g "" --hidden --ignore ".git"'
 $env:FZF_DEFAULT_OPTS = "--height 70% --layout=reverse --border --ansi --inline-info"
 

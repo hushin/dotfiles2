@@ -1,15 +1,21 @@
-﻿# Self-elevate the script if required
-if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
-    if ([int](Get-CimInstance -Class Win32_OperatingSystem | Select-Object -ExpandProperty BuildNumber) -ge 6000) {
-        $CommandLine = "-NoExit -File `"" + $MyInvocation.MyCommand.Path + "`" " + $MyInvocation.UnboundArguments
-        Start-Process -Wait -FilePath PowerShell.exe -Verb Runas -ArgumentList $CommandLine
-        Exit
+﻿Write-Host "ユーザー環境変数PATHを追加します" -ForegroundColor Green
+
+function Add-ToUserPath {
+    param(
+        [string]$Path
+    )
+    
+    $currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
+    if ($currentPath -notlike "*$Path*") {
+        [Environment]::SetEnvironmentVariable("PATH", "$currentPath;$Path", "User")
+        Write-Host "PATHに追加しました: $Path" -ForegroundColor Cyan
+    } else {
+        Write-Host "PATHに既に存在します: $Path" -ForegroundColor Yellow
     }
 }
 
-Write-Host "ユーザー環境変数PATHを追加します" -ForegroundColor Green
 $binWinPath = "$HOME/bin-win"
-$currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
-if ($currentPath -notlike "*$binWinPath*") {
-    [Environment]::SetEnvironmentVariable("PATH", "$currentPath;$binWinPath", "User")
-}
+Add-ToUserPath -Path $binWinPath
+
+$miseShimPath = "$env:USERPROFILE\AppData\Local\mise\shims"
+Add-ToUserPath -Path $miseShimPath

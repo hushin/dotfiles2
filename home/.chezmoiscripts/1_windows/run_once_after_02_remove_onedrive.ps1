@@ -133,15 +133,15 @@ foreach ($folder in $folders) {
 }
 
 # 2. OneDriveプロセスの終了
-# Write-Status "OneDriveプロセスの終了中..."
-# try {
-#     Get-Process -Name "OneDrive" -ErrorAction SilentlyContinue | Stop-Process -Force
-#     Get-Process -Name "OneDriveSetup" -ErrorAction SilentlyContinue | Stop-Process -Force
-#     Write-Status "OneDriveプロセスを終了しました" "SUCCESS"
-# }
-# catch {
-#     Write-Status "OneDriveプロセスの終了中にエラーが発生しました: $($_.Exception.Message)" "WARNING"
-# }
+Write-Status "OneDriveプロセスの終了中..."
+try {
+    Get-Process -Name "OneDrive" -ErrorAction SilentlyContinue | Stop-Process -Force
+    Get-Process -Name "OneDriveSetup" -ErrorAction SilentlyContinue | Stop-Process -Force
+    Write-Status "OneDriveプロセスを終了しました" "SUCCESS"
+}
+catch {
+    Write-Status "OneDriveプロセスの終了中にエラーが発生しました: $($_.Exception.Message)" "WARNING"
+}
 
 # 3. 現在のユーザーのOneDriveをアンインストール
 Write-Status "現在のユーザーのOneDriveをアンインストール中..."

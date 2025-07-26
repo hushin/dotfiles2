@@ -5,6 +5,10 @@ has() {
     type "$1" > /dev/null 2>&1
 }
 
+{{- if eq (env "REMOTE_CONTAINERS") "true" }}
+exit 0
+{{- end }}
+
 if ! has "docker"; then
     echo "Installing Docker CE..."
     # https://docs.docker.com/engine/install/ubuntu/

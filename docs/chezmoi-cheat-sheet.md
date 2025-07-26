@@ -193,6 +193,12 @@ executable_dot_script.tmpl
 {{- else }}
 # 仕事用設定
 {{- end }}
+
+{{ if eq .chezmoi.os "linux" }}
+{{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+# WSL-specific code
+{{   end }}
+{{ end }}
 ```
 
 ## スクリプト

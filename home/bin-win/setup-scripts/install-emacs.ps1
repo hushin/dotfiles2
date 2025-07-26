@@ -45,8 +45,7 @@ if (Test-Path $emacsDotdBinPath) {
 }
 
 function Update-PathVariable {
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") +
-    ";" +
+    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
     [System.Environment]::GetEnvironmentVariable("Path", "User")
 }
 Update-PathVariable

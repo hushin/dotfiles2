@@ -1,6 +1,7 @@
 ﻿$packages = @(
     "Adobe.Acrobat.Reader.64-bit",
     "Mozilla.Firefox",
+    "OlegDanilov.RapidEnvironmentEditor",
     "Zoom.Zoom",
     "TheDocumentFoundation.LibreOffice",
     "DevToys-app.DevToys",

@@ -2,7 +2,7 @@
 
 ## 日常
 
-[chezmoi コマンド](./docs/chezmoi-commands.md)
+[chezmoi コマンド](./docs/chezmoi-cheat-sheet.md)
 
 ## Setup
 

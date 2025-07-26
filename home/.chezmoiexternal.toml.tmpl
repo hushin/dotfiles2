@@ -10,3 +10,18 @@
   refreshPeriod = "168h"
   [".tmux/plugins/tpm".clone]
     args = ["--depth=1"]
+
+{{- if eq .chezmoi.os "windows" }}
+["AppData/Local/Microsoft/PowerToys/PowerToys Run/Plugins/GEmojiSharp"]
+  type = "archive"
+  url = "{{ gitHubLatestReleaseAssetURL "hlaueriksson/GEmojiSharp" "GEmojiSharp.PowerToysRun-*-x64.zip" }}"
+  refreshPeriod = "744h"
+  stripComponents = 1
+  exact = true
+["AppData/Local/Microsoft/PowerToys/PowerToys Run/Plugins/ClipboardManager"]
+  type = "archive"
+  url = "{{ gitHubLatestReleaseAssetURL "CoreyHayward/PowerToys-Run-ClipboardManager" "ClipboardManager-*-x64.zip" }}"
+  refreshPeriod = "744h"
+  stripComponents = 1
+  exact = true
+{{- end }}

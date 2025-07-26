@@ -34,6 +34,13 @@ if ! has "fish"; then
     sudo add-apt-repository -y ppa:fish-shell/release-4
     sudo apt update
     sudo apt install -y fish
+fi
+
+if [ "$SHELL" != "$(which fish)" ]; then
     echo "set fish as default shell"
+{{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
     chsh -s $(which fish)
+{{   else }}
+    sudo chsh -s $(which fish)
+{{   end }}
 fi

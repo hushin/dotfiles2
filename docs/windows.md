@@ -39,7 +39,7 @@ wsl --install
 - [PC TV Plus](https://www.sony.jp/software/store/products/pctv-plus/)
 - [EasyCanvas (EL Display Hub)](https://www.easynlight.com/en/easycanvas)
 
-## 手動設定
+## 手動設定・Windows
 
 ### システム → ディスプレイ（デスクトップ右クリックから開ける）
 
@@ -65,11 +65,23 @@ wsl --install
   - ウィジェットのチェックを外す
 - 不要なピン留めを削除
 
-## NVIDIA
+## 手動設定・アプリ
+
+### PowerToys
+
+- PowerToys Run
+  - Windows System コマンド
+    - 「システム コマンドは英語のものではなくローカライズされたものを使用する」チェックを外す
+  - ClipboardManager
+    - 直接アクティブ化コマンド: `cc`
+  - GEmojiSharp
+    - 直接アクティブ化コマンド: `:`
+
+### NVIDIA
 
 グラフィックスドライバ更新
 
-## Steam
+### Steam
 
 - 設定 > ストレージ > ドライブを追加 で 外付け SSD 指定、デフォルトに設定
 

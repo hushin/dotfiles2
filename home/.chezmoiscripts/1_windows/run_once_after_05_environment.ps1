@@ -4,7 +4,7 @@ function Add-ToUserPath {
     param(
         [string]$Path
     )
-    
+
     $currentPath = [Environment]::GetEnvironmentVariable("PATH", "User")
     if ($currentPath -notlike "*$Path*") {
         [Environment]::SetEnvironmentVariable("PATH", "$currentPath;$Path", "User")
@@ -14,7 +14,7 @@ function Add-ToUserPath {
     }
 }
 
-$binWinPath = "$HOME/bin-win"
+$binWinPath = "$HOME\bin-win"
 Add-ToUserPath -Path $binWinPath
 
 $miseShimPath = "$env:USERPROFILE\AppData\Local\mise\shims"

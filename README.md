@@ -80,6 +80,16 @@ M-x nerd-icons-install-fonts
 
 [Emacs トラブルシューティング](docs/emacs.md)
 
+### Dropbox memo
+
+Dropbox の設定が終わったら設定
+
+Windows
+
+```powershell
+New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\Documents\memo" -Value "$env:USERPROFILE\Dropbox\memo"
+```
+
 ### tmux(Ubuntu)
 
 ビルド

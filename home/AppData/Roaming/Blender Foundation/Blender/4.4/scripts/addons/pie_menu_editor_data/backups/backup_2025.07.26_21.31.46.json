@@ -1,0 +1,1507 @@
+{
+  "version": "1.18.8", 
+  "menus": [
+    [
+      "Pie Menu Mesh", 
+      "Mesh", 
+      "BUTTON4MOUSE, NONE", 
+      [
+        [
+          "Inset Faces", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.mesh.inset()", 
+          0
+        ], 
+        [
+          "Loop Cut and Slide", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.mesh.loopcut_slide(TRANSFORM_OT_edge_slide={'release_confirm': False})", 
+          0
+        ], 
+        [
+          "Merge", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.mesh.merge(type='CENTER')", 
+          0
+        ], 
+        [
+          "Extrude and Move on Normals", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.view3d.edit_mesh_extrude_move_normal()", 
+          0
+        ], 
+        [
+          ""
+        ], 
+        [
+          "Bevel", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.mesh.bevel(affect='EDGES')", 
+          0
+        ], 
+        [
+          ""
+        ], 
+        [
+          "Add Duplicate", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.mesh.duplicate_move()", 
+          0
+        ], 
+        [
+          ""
+        ], 
+        [
+          ""
+        ]
+      ], 
+      "PMENU", 
+      "pm?", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Pie Menu ", 
+      "Armature", 
+      "BUTTON4MOUSE, NONE", 
+      [
+        [
+          ""
+        ], 
+        [
+          ""
+        ], 
+        [
+          ""
+        ], 
+        [
+          "Extrude", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.armature.extrude_move()", 
+          0
+        ], 
+        [
+          ""
+        ], 
+        [
+          ""
+        ], 
+        [
+          ""
+        ], 
+        [
+          ""
+        ], 
+        [
+          ""
+        ], 
+        [
+          ""
+        ]
+      ], 
+      "PMENU", 
+      "pm?", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Pie Menu - Camera / Keyframe", 
+      "Window", 
+      "Q, NONE", 
+      [
+        [
+          "View Camera", 
+          "COMMAND", 
+          "OUTLINER_DATA_CAMERA", 
+          "bpy.ops.view3d.view_camera()", 
+          0
+        ], 
+        [
+          "Rotation Key Insert", 
+          "COMMAND", 
+          "KEYFRAME_HLT", 
+          "bpy.ops.anim.keyframe_insert('EXEC_DEFAULT', True, type='Rotation')", 
+          0
+        ], 
+        [
+          "Scale Key Insert", 
+          "COMMAND", 
+          "KEYFRAME_HLT", 
+          "bpy.ops.anim.keyframe_insert('EXEC_DEFAULT', True, type='Scaling')", 
+          0
+        ], 
+        [
+          "Location Key Insert", 
+          "COMMAND", 
+          "KEYFRAME_HLT", 
+          "bpy.ops.anim.keyframe_insert('EXEC_DEFAULT', True, type='Location')", 
+          0
+        ], 
+        [
+          "Lock Camera to View", 
+          "PROP", 
+          "LOCKED", 
+          "C.space_data.lock_camera", 
+          0
+        ], 
+        [
+          "LocRot Key Insert", 
+          "COMMAND", 
+          "KEYFRAME", 
+          "bpy.ops.anim.keyframe_insert('EXEC_DEFAULT', True, type='BUILTIN_KSI_LocRot')", 
+          0
+        ], 
+        [
+          "Create Camera From View", 
+          "COMMAND", 
+          "FULLSCREEN_EXIT", 
+          "open_menu(\"Macro Operator - Create Camera From View\")", 
+          0
+        ], 
+        [
+          "Available", 
+          "COMMAND", 
+          "KEYFRAME", 
+          "bpy.ops.anim.keyframe_insert_by_name(type='Available')", 
+          0
+        ], 
+        [
+          ""
+        ], 
+        [
+          ""
+        ]
+      ], 
+      "PMENU", 
+      "pm?", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Pie Menu - MISC", 
+      "Window", 
+      "alt+Q, NONE", 
+      [
+        [
+          "Transform Pivot Point", 
+          "CUSTOM", 
+          "NONE", 
+          "L.column(align=True).prop(C.scene.tool_settings, 'transform_pivot_point', expand=True)", 
+          0
+        ], 
+        [
+          "Open Preferences...", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.screen.userpref_show()", 
+          0
+        ], 
+        [
+          "Snap", 
+          "PROP", 
+          "SNAP_OFF", 
+          "C.scene.tool_settings.use_snap", 
+          0
+        ], 
+        [
+          "Proportional Editing", 
+          "PROP", 
+          "PROP_ON", 
+          "C.scene.tool_settings.use_proportional_edit", 
+          0
+        ], 
+        [
+          "Redo Last", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.screen.redo_last()", 
+          0
+        ], 
+        [
+          "Color", 
+          "CUSTOM", 
+          "NONE", 
+          "L.row(align=True).prop(C.space_data.shading, 'color_type', expand=True)", 
+          0
+        ], 
+        [
+          "Search Menu", 
+          "COMMAND", 
+          "VIEWZOOM", 
+          "bpy.ops.wm.search_menu()", 
+          0
+        ], 
+        [
+          "Toggle Maximize Area", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.screen.screen_full_area(use_hide_panels=True)", 
+          0
+        ], 
+        [
+          "Snap Element", 
+          "CUSTOM", 
+          "NONE", 
+          "L.column(align=True).prop(C.scene.tool_settings, 'snap_elements', expand=True)", 
+          0
+        ], 
+        [
+          "Proportional Editing Falloff", 
+          "CUSTOM", 
+          "NONE", 
+          "L.column(align=True).prop(C.scene.tool_settings, 'proportional_edit_falloff', expand=True)", 
+          0
+        ]
+      ], 
+      "PMENU", 
+      "pm?", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Pie Menu - Modifier", 
+      "Object Mode", 
+      "BUTTON4MOUSE, NONE", 
+      [
+        [
+          "Mirror", 
+          "COMMAND", 
+          "MOD_MIRROR", 
+          "bpy.ops.object.modifier_add(type='MIRROR')", 
+          0
+        ], 
+        [
+          "Mask", 
+          "COMMAND", 
+          "MOD_MASK", 
+          "bpy.ops.object.modifier_add(type='MASK')", 
+          0
+        ], 
+        [
+          "Displace", 
+          "COMMAND", 
+          "MOD_DISPLACE", 
+          "bpy.ops.object.modifier_add(type='DISPLACE')", 
+          0
+        ], 
+        [
+          "Array", 
+          "COMMAND", 
+          "MOD_ARRAY", 
+          "bpy.ops.object.modifier_add(type='ARRAY')", 
+          0
+        ], 
+        [
+          "Smooth", 
+          "COMMAND", 
+          "MOD_SMOOTH", 
+          "bpy.ops.object.modifier_add(type='SMOOTH')", 
+          0
+        ], 
+        [
+          "Solidify", 
+          "COMMAND", 
+          "MOD_SOLIDIFY", 
+          "bpy.ops.object.modifier_add(type='SOLIDIFY')", 
+          0
+        ], 
+        [
+          "Decimate", 
+          "COMMAND", 
+          "MOD_DECIM", 
+          "bpy.ops.object.modifier_add(type='DECIMATE')", 
+          0
+        ], 
+        [
+          "Bevel", 
+          "COMMAND", 
+          "MOD_BEVEL", 
+          "bpy.ops.object.modifier_add(type='BEVEL')", 
+          0
+        ], 
+        [
+          "Edge Split", 
+          "COMMAND", 
+          "MOD_EDGESPLIT", 
+          "bpy.ops.object.modifier_add(type='EDGE_SPLIT')", 
+          0
+        ], 
+        [
+          "Curve", 
+          "COMMAND", 
+          "MOD_CURVE", 
+          "bpy.ops.object.modifier_add(type='CURVE')", 
+          0
+        ]
+      ], 
+      "PMENU", 
+      "pm?", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Pie Menu - Workspace", 
+      "Window", 
+      "shift+alt+Q, NONE", 
+      [
+        [
+          "Basic", 
+          "COMMAND", 
+          "IMAGE_ZDEPTH", 
+          "bpy.ops.pme.screen_set(name=\"Basic\")", 
+          0
+        ], 
+        [
+          "Layout", 
+          "COMMAND", 
+          "VIEW3D", 
+          "bpy.ops.pme.screen_set(name=\"Layout\")", 
+          0
+        ], 
+        [
+          "UV Editing", 
+          "COMMAND", 
+          "UV", 
+          "bpy.ops.pme.screen_set(name=\"UV Editing\")", 
+          0
+        ], 
+        [
+          "Compositing", 
+          "COMMAND", 
+          "NODE_COMPOSITING", 
+          "bpy.ops.pme.screen_set(name=\"Compositing\")", 
+          0
+        ], 
+        [
+          ""
+        ], 
+        [
+          "Motion Tracking", 
+          "COMMAND", 
+          "RENDER_ANIMATION", 
+          "bpy.ops.pme.screen_set(name='Motion Tracking')", 
+          0
+        ], 
+        [
+          "Scripting", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.ops.pme.screen_set(name='Scripting')", 
+          0
+        ], 
+        [
+          ""
+        ], 
+        [
+          ""
+        ], 
+        [
+          ""
+        ]
+      ], 
+      "PMENU", 
+      "pm?", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Pie Menu - Macro", 
+      "Window", 
+      "ctrl+shift+alt+Q, NONE", 
+      [
+        [
+          "Proximity Effect", 
+          "COMMAND", 
+          "", 
+          "open_menu(\"Macro Operator - Proximity Effect\")", 
+          0
+        ], 
+        [
+          "Camera Constraint Rig", 
+          "COMMAND", 
+          "CON_CAMERASOLVER", 
+          "open_menu(\"Macro Operator - Camera Constraint Rig\")", 
+          0
+        ], 
+        [
+          "Pivot To Bottom", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.object.pivotobottom()", 
+          0
+        ], 
+        [
+          "Bottom to Ground", 
+          "COMMAND", 
+          "ANCHOR_BOTTOM", 
+          "open_menu(\"Macro Operator - Bottom to Ground\")", 
+          0
+        ], 
+        [
+          ""
+        ], 
+        [
+          "Object Follow Path", 
+          "COMMAND", 
+          "CON_FOLLOWPATH", 
+          "open_menu(\"Macro Operator - Object Follow Path\")", 
+          0
+        ], 
+        [
+          "Track to Constraint", 
+          "COMMAND", 
+          "CON_TRACKTO", 
+          "bpy.ops.object.track_set(type='TRACKTO')", 
+          0
+        ], 
+        [
+          "Camera Follow Path", 
+          "COMMAND", 
+          "CON_FOLLOWPATH", 
+          "open_menu(\"Macro Operator - Camera Follow Path\")", 
+          0
+        ], 
+        [
+          ""
+        ], 
+        [
+          ""
+        ]
+      ], 
+      "PMENU", 
+      "pm?", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Regular Menu", 
+      "Window", 
+      "shift+Q, NONE", 
+      [
+        [
+          "File", 
+          "", 
+          "label"
+        ], 
+        [
+          ""
+        ], 
+        [
+          "Append", 
+          "COMMAND", 
+          "APPEND_BLEND", 
+          "bpy.ops.wm.append()", 
+          0
+        ], 
+        [
+          "Link", 
+          "COMMAND", 
+          "LIBRARY_DATA_DIRECT", 
+          "bpy.ops.wm.link()", 
+          0
+        ], 
+        [
+          "Better Import FBX", 
+          "COMMAND", 
+          "IMPORT", 
+          "bpy.ops.better_import.fbx()", 
+          0
+        ], 
+        [
+          "Import FBX", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.import_scene.fbx()", 
+          0
+        ], 
+        [
+          "Import OBJ", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.import_scene.obj()", 
+          0
+        ], 
+        [
+          "Import Images as Planes", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.import_image.to_plane()", 
+          0
+        ], 
+        [
+          "Import SVG", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.import_curve.svg()", 
+          0
+        ], 
+        [
+          "Find Missing Files", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.file.find_missing_files()", 
+          0
+        ], 
+        [
+          "column"
+        ], 
+        [
+          "Render", 
+          "", 
+          "label"
+        ], 
+        [
+          ""
+        ], 
+        [
+          "Transparent", 
+          "PROP", 
+          "NONE", 
+          "C.scene.render.film_transparent", 
+          0
+        ], 
+        [
+          "Motion Blur", 
+          "PROP", 
+          "NONE", 
+          "C.scene.render.use_motion_blur", 
+          0
+        ], 
+        [
+          "Render Region", 
+          "PROP", 
+          "NONE", 
+          "C.scene.render.use_border", 
+          0
+        ], 
+        [
+          "Crop to Render Region", 
+          "PROP", 
+          "NONE", 
+          "C.scene.render.use_crop_to_border", 
+          0
+        ], 
+        [
+          ""
+        ], 
+        [
+          "Shadow Catcher", 
+          "PROP", 
+          "NONE", 
+          "C.object.is_shadow_catcher", 
+          0
+        ], 
+        [
+          "Holdout", 
+          "PROP", 
+          "NONE", 
+          "C.object.is_holdout", 
+          0
+        ], 
+        [
+          "Ray Visibility", 
+          "CUSTOM", 
+          "", 
+          "L.popover(panel='CYCLES_OBJECT_PT_visibility_ray_visibility', text=slot, icon=icon, icon_value=icon_value)", 
+          0
+        ], 
+        [
+          "column"
+        ], 
+        [
+          "Object", 
+          "", 
+          "label"
+        ], 
+        [
+          ""
+        ], 
+        [
+          "Affect Only Origins", 
+          "PROP", 
+          "NONE", 
+          "C.scene.tool_settings.use_transform_data_origin", 
+          0
+        ], 
+        [
+          "Affect Only Parents", 
+          "PROP", 
+          "NONE", 
+          "C.scene.tool_settings.use_transform_skip_children", 
+          0
+        ], 
+        [
+          ""
+        ], 
+        [
+          "Make Single User", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.object.make_single_user(object=False, obdata=False, material=False, animation=False, obdata_animation=False)", 
+          0
+        ], 
+        [
+          "Make Local", 
+          "CUSTOM", 
+          "", 
+          "L.operator_menu_enum(\"object.make_local\", \"type\", text=text, icon=icon)", 
+          0
+        ], 
+        [
+          "Link/Transfer Data", 
+          "CUSTOM", 
+          "", 
+          "L.operator_menu_enum(\"object.make_links_data\", \"type\", text=text, icon=icon)", 
+          0
+        ]
+      ], 
+      "RMENU", 
+      "rm?", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Popup Dialog - Display", 
+      "Window", 
+      "ctrl+alt+Q, NONE", 
+      [
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "Engine", 
+          "CUSTOM", 
+          "SCENE", 
+          "L.row(align=True).prop(C.scene.render, 'engine', expand=True)", 
+          0
+        ], 
+        [
+          "row?"
+        ], 
+        [
+          "spacer?hsep=COLUMN"
+        ], 
+        [
+          "Display As", 
+          "CUSTOM", 
+          "NONE", 
+          "L.row(align=True).prop(C.object, 'display_type', expand=True)", 
+          0
+        ], 
+        [
+          "Wireframe", 
+          "PROP", 
+          "NONE", 
+          "C.space_data.overlay.show_wireframes", 
+          0
+        ], 
+        [
+          "row?"
+        ], 
+        [
+          "spacer?hsep=COLUMN"
+        ], 
+        [
+          "View Focal Length", 
+          "PROP", 
+          "NONE", 
+          "C.space_data.lens", 
+          0
+        ], 
+        [
+          "Clip Start", 
+          "PROP", 
+          "NONE", 
+          "C.space_data.clip_start", 
+          0
+        ], 
+        [
+          "Clip End", 
+          "PROP", 
+          "NONE", 
+          "C.space_data.clip_end", 
+          0
+        ], 
+        [
+          "row?"
+        ], 
+        [
+          "Face Orientation", 
+          "PROP", 
+          "NONE", 
+          "C.space_data.overlay.show_face_orientation", 
+          0
+        ], 
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "Vertex", 
+          "PROP", 
+          "NORMALS_VERTEX", 
+          "C.space_data.overlay.show_vertex_normals", 
+          0
+        ], 
+        [
+          "Split", 
+          "PROP", 
+          "NORMALS_VERTEX_FACE", 
+          "C.space_data.overlay.show_split_normals", 
+          0
+        ], 
+        [
+          "Face", 
+          "PROP", 
+          "NORMALS_FACE", 
+          "C.space_data.overlay.show_face_normals", 
+          0
+        ], 
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "Normal Size", 
+          "PROP", 
+          "NONE", 
+          "C.space_data.overlay.normals_length", 
+          0
+        ], 
+        [
+          "row?"
+        ], 
+        [
+          "spacer?"
+        ], 
+        [
+          "Camera", 
+          "COMMAND", 
+          "OUTLINER_DATA_CAMERA", 
+          "", 
+          0
+        ], 
+        [
+          "spacer?hsep=ALIGNER"
+        ], 
+        [
+          "Show Limits", 
+          "PROP", 
+          "CHECKBOX_HLT", 
+          "C.object.data.show_limits", 
+          0
+        ], 
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "Focal Length", 
+          "PROP", 
+          "", 
+          "C.object.data.lens", 
+          0
+        ], 
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "Clip Start", 
+          "PROP", 
+          "", 
+          "C.object.data.clip_start", 
+          0
+        ], 
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "Clip End", 
+          "PROP", 
+          "NONE", 
+          "C.object.data.clip_end", 
+          0
+        ], 
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "Passepartout", 
+          "PROP", 
+          "NONE", 
+          "C.object.data.passepartout_alpha", 
+          0
+        ], 
+        [
+          "row?"
+        ], 
+        [
+          "DOF", 
+          "PROP", 
+          "CHECKBOX_HLT", 
+          "C.object.data.dof.use_dof", 
+          0
+        ], 
+        [
+          "spacer?hsep=ALIGNER"
+        ], 
+        [
+          "Distance", 
+          "PROP", 
+          "NONE", 
+          "C.object.data.dof.focus_distance", 
+          0
+        ], 
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "Focus Object", 
+          "PROP", 
+          "NONE", 
+          "C.object.data.dof.focus_object", 
+          0
+        ], 
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "F-Stop", 
+          "PROP", 
+          "NONE", 
+          "C.object.data.dof.aperture_fstop", 
+          0
+        ], 
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "Ratio", 
+          "PROP", 
+          "NONE", 
+          "C.object.data.dof.aperture_ratio", 
+          0
+        ], 
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "Blades", 
+          "PROP", 
+          "NONE", 
+          "C.object.data.dof.aperture_blades", 
+          0
+        ], 
+        [
+          "Rotation", 
+          "PROP", 
+          "NONE", 
+          "C.object.data.dof.aperture_rotation", 
+          0
+        ], 
+        [
+          "row?"
+        ], 
+        [
+          "Show Mist", 
+          "PROP", 
+          "CHECKBOX_HLT", 
+          "C.object.data.show_mist", 
+          0
+        ], 
+        [
+          "spacer?hsep=ALIGNER"
+        ], 
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "Start", 
+          "PROP", 
+          "", 
+          "C.scene.world.mist_settings.start", 
+          0
+        ], 
+        [
+          "Depth", 
+          "PROP", 
+          "NONE", 
+          "C.scene.world.mist_settings.depth", 
+          0
+        ], 
+        [
+          "row?vspacer=NONE"
+        ], 
+        [
+          "Falloff", 
+          "PROP", 
+          "NONE", 
+          "C.scene.world.mist_settings.falloff", 
+          0
+        ]
+      ], 
+      "DIALOG", 
+      "pd?pd_panel=2&pd_width=200", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Popup Dialog - Shade / Subdiv", 
+      "Window", 
+      "ctrl+shift+Q, NONE", 
+      [
+        [
+          "row?"
+        ], 
+        [
+          "spacer?hsep=COLUMN"
+        ], 
+        [
+          "Shade Smooth", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.object.shade_smooth()", 
+          0
+        ], 
+        [
+          "Shade Auto Smooth", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.object.shade_smooth(use_auto_smooth=True)", 
+          0
+        ], 
+        [
+          "Shade Flat", 
+          "COMMAND", 
+          "", 
+          "bpy.ops.object.shade_flat()", 
+          0
+        ], 
+        [
+          "row?"
+        ], 
+        [
+          "Auto Smooth", 
+          "PROP", 
+          "NONE", 
+          "C.object.data.use_auto_smooth", 
+          0
+        ], 
+        [
+          "", 
+          "PROP", 
+          "NONE", 
+          "C.object.data.auto_smooth_angle", 
+          0
+        ], 
+        [
+          "row?"
+        ], 
+        [
+          "spacer?hsep=COLUMN"
+        ], 
+        [
+          "Subdivision Surface", 
+          "COMMAND", 
+          "MOD_SUBSURF", 
+          "bpy.ops.object.modifier_add(type='SUBSURF')", 
+          0
+        ], 
+        [
+          "row?"
+        ], 
+        [
+          "", 
+          "PROP", 
+          "MESH_DATA", 
+          "C.object.modifiers[\"Subdivision\"].show_on_cage", 
+          0
+        ], 
+        [
+          "", 
+          "PROP", 
+          "EDITMODE_HLT", 
+          "C.object.modifiers[\"Subdivision\"].show_in_editmode", 
+          0
+        ], 
+        [
+          "", 
+          "PROP", 
+          "RESTRICT_VIEW_ON", 
+          "C.object.modifiers[\"Subdivision\"].show_viewport", 
+          0
+        ], 
+        [
+          "", 
+          "PROP", 
+          "RESTRICT_RENDER_ON", 
+          "C.object.modifiers[\"Subdivision\"].show_render", 
+          0
+        ], 
+        [
+          "row?"
+        ], 
+        [
+          "Viewport", 
+          "PROP", 
+          "NONE", 
+          "C.object.modifiers[\"Subdivision\"].levels", 
+          0
+        ], 
+        [
+          "Render", 
+          "PROP", 
+          "NONE", 
+          "C.object.modifiers[\"Subdivision\"].render_levels", 
+          0
+        ], 
+        [
+          "row?"
+        ], 
+        [
+          "Optimal Display", 
+          "PROP", 
+          "CHECKBOX_HLT", 
+          "C.object.modifiers[\"Subdivision\"].show_only_control_edges", 
+          0
+        ], 
+        [
+          "row?"
+        ], 
+        [
+          "Boundary Smooth", 
+          "PROP", 
+          "NONE", 
+          "C.object.modifiers[\"Subdivision\"].boundary_smooth", 
+          0
+        ]
+      ], 
+      "DIALOG", 
+      "pd?pd_panel=2&pd_width=200", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Macro Operator - Camera Constraint Rig", 
+      "Window", 
+      "", 
+      [
+        [
+          "Add Empty", 
+          "COMMAND", 
+          "BLENDER", 
+          "bpy.ops.object.empty_add(type='PLAIN_AXES')", 
+          0
+        ], 
+        [
+          "name = \"CamTarget\"", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.name = \"CamTarget\"", 
+          0
+        ], 
+        [
+          "Add Bezier", 
+          "COMMAND", 
+          "BLENDER", 
+          "bpy.ops.curve.primitive_bezier_curve_add(radius=5.0, rotation=(0.0, 0.0, 1.5707963705062866))", 
+          0
+        ], 
+        [
+          "name = \"CamPath\"", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.name = \"CamPath\"", 
+          0
+        ], 
+        [
+          "resolution_u = 64", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.data.resolution_u = 64", 
+          0
+        ], 
+        [
+          "Add Camera", 
+          "COMMAND", 
+          "BLENDER", 
+          "bpy.ops.object.camera_add()", 
+          0
+        ], 
+        [
+          "Clear Rotation", 
+          "COMMAND", 
+          "BLENDER", 
+          "bpy.ops.object.rotation_clear(clear_delta=False)", 
+          0
+        ], 
+        [
+          "Add Follow Path", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.ops.object.constraint_add('EXEC_DEFAULT', True, type='FOLLOW_PATH')", 
+          0
+        ], 
+        [
+          "target = bpy.data.objects[\"CamPath\"]", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Follow Path\"].target = bpy.data.objects[\"CamPath\"]", 
+          0
+        ], 
+        [
+          "forward_axis = 'TRACK_NEGATIVE_Z'", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Follow Path\"].forward_axis = 'TRACK_NEGATIVE_Z'", 
+          0
+        ], 
+        [
+          "up_axis = 'UP_Y'", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Follow Path\"].up_axis = 'UP_Y'", 
+          0
+        ], 
+        [
+          "use_fixed_location = True", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Follow Path\"].use_fixed_location = True", 
+          0
+        ], 
+        [
+          "use_curve_follow = True", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Follow Path\"].use_curve_follow = True", 
+          0
+        ], 
+        [
+          "Add Track to", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.ops.object.constraint_add('EXEC_DEFAULT', True, type='TRACK_TO')", 
+          0
+        ], 
+        [
+          "target = bpy.data.objects[\"CamTarget\"]", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Track To\"].target = bpy.data.objects[\"CamTarget\"]", 
+          0
+        ]
+      ], 
+      "MACRO", 
+      "m?", 
+      "PRESS", 
+      "", 
+      "Tag"
+    ], 
+    [
+      "Macro Operator - Object Follow Path", 
+      "Window", 
+      "", 
+      [
+        [
+          "Add Follow Path", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.ops.object.constraint_add('EXEC_DEFAULT', True, type='FOLLOW_PATH')", 
+          0
+        ], 
+        [
+          "forward_axis = 'TRACK_NEGATIVE_Y'", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Follow Path\"].forward_axis = 'TRACK_NEGATIVE_Y'", 
+          0
+        ], 
+        [
+          "use_fixed_location = True", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Follow Path\"].use_fixed_location = True", 
+          0
+        ], 
+        [
+          "use_curve_follow = True", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Follow Path\"].use_curve_follow = True", 
+          0
+        ]
+      ], 
+      "MACRO", 
+      "m?", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Macro Operator - Proximity Effect", 
+      "Window", 
+      "", 
+      [
+        [
+          "Add Vertex Group", 
+          "COMMAND", 
+          "BLENDER", 
+          "bpy.ops.object.vertex_group_add()", 
+          0
+        ], 
+        [
+          "editmode_toggle()", 
+          "COMMAND", 
+          "BLENDER", 
+          "bpy.ops.object.editmode_toggle()", 
+          0
+        ], 
+        [
+          "Command 1", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.ops.object.vertex_group_assign('EXEC_DEFAULT', True)", 
+          0
+        ], 
+        [
+          "editmode_toggle()", 
+          "COMMAND", 
+          "BLENDER", 
+          "bpy.ops.object.editmode_toggle()", 
+          0
+        ], 
+        [
+          "Add VertexWeightProximity", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.ops.object.modifier_add('EXEC_DEFAULT', True, type='VERTEX_WEIGHT_PROXIMITY')", 
+          0
+        ], 
+        [
+          "vertex_group = \"Group\"", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.modifiers[\"VertexWeightProximity\"].vertex_group = \"Group\"", 
+          0
+        ], 
+        [
+          "proximity_mode = 'GEOMETRY'", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.modifiers[\"VertexWeightProximity\"].proximity_mode = 'GEOMETRY'", 
+          0
+        ], 
+        [
+          "min_dist = 1.1", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.modifiers[\"VertexWeightProximity\"].min_dist = 1.1", 
+          0
+        ], 
+        [
+          "Add Edge Split", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.ops.object.modifier_add('EXEC_DEFAULT', True, type='EDGE_SPLIT')", 
+          0
+        ], 
+        [
+          "split_angle = 0", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.modifiers[\"EdgeSplit\"].split_angle = 0", 
+          0
+        ], 
+        [
+          "Add Displace", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.ops.object.modifier_add('EXEC_DEFAULT', True, type='DISPLACE')", 
+          0
+        ], 
+        [
+          "vertex_group = \"Group\"", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.modifiers[\"Displace\"].vertex_group = \"Group\"", 
+          0
+        ], 
+        [
+          "Add Smooth", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.ops.object.modifier_add('EXEC_DEFAULT', True, type='SMOOTH')", 
+          0
+        ], 
+        [
+          "factor = 2", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.modifiers[\"Smooth\"].factor = 2", 
+          0
+        ], 
+        [
+          "vertex_group = \"Group\"", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.modifiers[\"Smooth\"].vertex_group = \"Group\"", 
+          0
+        ], 
+        [
+          "Add New Texture", 
+          "COMMAND", 
+          "BLENDER", 
+          "bpy.ops.texture.new()", 
+          0
+        ], 
+        [
+          "name = \"PE_Target\"", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.data.textures[\"Texture\"].name = \"PE_Target\"", 
+          0
+        ], 
+        [
+          "type = 'STUCCI'", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.data.textures[\"PE_Target\"].type = 'STUCCI'", 
+          0
+        ], 
+        [
+          "Add Sphere Empty", 
+          "COMMAND", 
+          "BLENDER", 
+          "bpy.ops.object.empty_add(type='SPHERE', align='WORLD', scale=(1.0, 1.0, 1.0))", 
+          0
+        ], 
+        [
+          "name = \"PE_Target\"", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.name = \"PE_Target\"", 
+          0
+        ]
+      ], 
+      "MACRO", 
+      "m?", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Macro Operator - Create Camera From View", 
+      "Window", 
+      "", 
+      [
+        [
+          "Add Camera", 
+          "COMMAND", 
+          "BLENDER", 
+          "bpy.ops.object.camera_add()", 
+          0
+        ], 
+        [
+          "Align Camera to View", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.ops.view3d.camera_to_view('EXEC_DEFAULT', True)", 
+          0
+        ]
+      ], 
+      "MACRO", 
+      "m?", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Macro Operator - Camera Follow Path", 
+      "Window", 
+      "", 
+      [
+        [
+          "Add Follow Path", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.ops.object.constraint_add('EXEC_DEFAULT', True, type='FOLLOW_PATH')", 
+          0
+        ], 
+        [
+          "forward_axis = 'TRACK_NEGATIVE_Z'", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Follow Path\"].forward_axis = 'TRACK_NEGATIVE_Z'", 
+          0
+        ], 
+        [
+          "up_axis = 'UP_Y'", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Follow Path\"].up_axis = 'UP_Y'", 
+          0
+        ], 
+        [
+          "use_fixed_location = True", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Follow Path\"].use_fixed_location = True", 
+          0
+        ], 
+        [
+          "use_curve_follow = True", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.constraints[\"Follow Path\"].use_curve_follow = True", 
+          0
+        ]
+      ], 
+      "MACRO", 
+      "m?", 
+      "PRESS", 
+      "", 
+      ""
+    ], 
+    [
+      "Macro Operator - Bottom to Ground", 
+      "Window", 
+      "", 
+      [
+        [
+          "origin to bottom", 
+          "COMMAND", 
+          "BLENDER", 
+          "bpy.ops.object.pivotobottom()", 
+          0
+        ], 
+        [
+          "location Z to world origin", 
+          "COMMAND", 
+          "TEXT", 
+          "bpy.context.object.location[2] = 0", 
+          0
+        ]
+      ], 
+      "MACRO", 
+      "m?", 
+      "PRESS", 
+      "", 
+      ""
+    ]
+  ]
+}

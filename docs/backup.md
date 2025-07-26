@@ -60,3 +60,18 @@ check-ghq.ps1
 ```powershell
 dump-installed-apps.ps1
 ```
+
+## Blender
+
+```powershell
+cd "$env:APPDATA\Blender Foundation\Blender\"
+start .
+# ディレクトリをコピー
+```
+
+使っているバージョンに cd して chezmoi add
+
+```powershell
+chezmoi add .\scripts\addons\pie_menu_editor_data\backups
+chezmoi add .\scripts\presets\keyconfig\hushin_keymap.py
+```

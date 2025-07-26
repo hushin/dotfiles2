@@ -10,7 +10,8 @@ my-setup.ps1
 
 ### キーボード レジストリのキーリマップ
 
-- `change-jis-key`: JIS キーボードを個人用に設定
+- `change-hhk-key`: HHK US キーボードを変更
+- `change-jis-key`: JIS キーボードを変更
 
 実行後再起動して反映
 

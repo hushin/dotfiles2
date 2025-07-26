@@ -78,6 +78,8 @@ Emacs 起動して実行
 M-x nerd-icons-install-fonts
 ```
 
+Windows は適当なフォルダを指定、 NFM.ttf を開いて手動でインストールする。
+
 [Emacs トラブルシューティング](docs/emacs.md)
 
 ### Dropbox memo

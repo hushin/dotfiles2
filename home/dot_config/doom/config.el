@@ -48,7 +48,7 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(setq org-directory "~/Dropbox/memo/org/")
+(setq org-directory "~/Documents/memo/org/")
 (setq org-roam-directory org-directory)
 (setq org-roam-file-exclude-regexp "/archives/")
 

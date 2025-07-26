@@ -61,6 +61,17 @@ chezmoi init --apply hushin/dotfiles2
 
 - Setting Sync
 
+### Google 日本語入力
+
+Windows はこのコマンドでプロパティを開く
+
+```powershell
+& "C:\Program Files (x86)\Google\Google Japanese Input\GoogleIMEJaTool.exe" --mode=config_dialog
+```
+
+- 入力補助
+  - 変換前のアルファベット、数字を半角に設定
+
 ### gh CLI
 
 ```sh

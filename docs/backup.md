@@ -19,6 +19,7 @@
   - [ ] ダウンロード
   - [ ] その他作業フォルダ
   - [ ] home 以下 その他
+- [ ] Google 日本語入力 辞書
 - [ ] Chrome
   - [ ] ブラウザタブ
   - [ ] OneTab URL
@@ -51,6 +52,14 @@ find . -maxdepth 3 -mindepth 3 -type d | xargs -I@ bash -c '[ -e @/.git ] || ech
 check-ghq.sh
 # Windows
 check-ghq.ps1
+```
+
+## Google 日本語入力
+
+このコマンドでプロパティを開いて辞書を確認
+
+```powershell
+& "C:\Program Files (x86)\Google\Google Japanese Input\GoogleIMEJaTool.exe" --mode=config_dialog
 ```
 
 ## インストール済みアプリの確認

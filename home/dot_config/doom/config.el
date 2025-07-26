@@ -29,8 +29,8 @@
 ;; accept. For example:
 ;;
 
-(setq doom-font (font-spec :family "Cica" :size (if (winp) 30 18))
-  doom-variable-pitch-font (font-spec :family "Cica"))
+(setq doom-font (font-spec :family "UDEV Gothic NF" :size (if (winp) 24 18))
+  doom-variable-pitch-font (font-spec :family "UDEV Gothic NF"))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to

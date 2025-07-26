@@ -199,6 +199,10 @@ executable_dot_script.tmpl
 # WSL-specific code
 {{   end }}
 {{ end }}
+
+{{- if eq (env "REMOTE_CONTAINERS") "true" }}
+# devcontainer 用設定
+{{- end }}
 ```
 
 ## スクリプト

@@ -201,11 +201,11 @@ executable_dot_script.tmpl
 
 https://www.chezmoi.io/user-guide/use-scripts-to-perform-actions/
 
-## 高度な機能
-
-https://www.chezmoi.io/user-guide/encryption/
+## その他機能
 
 ### 暗号化
+
+https://www.chezmoi.io/user-guide/encryption/
 
 ```bash
 # 暗号化ファイルを追加

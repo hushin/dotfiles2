@@ -70,6 +70,15 @@ gh auth login
 ? Generate a new SSH key to add to your GitHub account? No
 ```
 
+### Emacs
+
+表示が崩れている場合、Emacs 起動後以下のコマンドを実行する
+
+```
+M-x doom/upgrade
+M-x package-upgrade-all
+```
+
 ### tmux(Ubuntu)
 
 ビルド

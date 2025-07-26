@@ -1,12 +1,5 @@
 # $PROFILE.CurrentUserCurrentHost
 
-# 現在のセッションの PATH 情報を更新するための関数
-function Update-PathVariable {
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") +
-    ";" +
-    [System.Environment]::GetEnvironmentVariable("Path", "User")
-}
-
 # miseのshimパスを追加
 $shimPath = "$env:USERPROFILE\AppData\Local\mise\shims"
 $currentPath = [Environment]::GetEnvironmentVariable('Path', 'User')
@@ -25,7 +18,6 @@ Set-PSReadLineKeyHandler -Chord 'Ctrl+d' -Function DeleteChar
 Set-PSReadLineKeyHandler -Key Tab -Function Complete
 # メニュー補完に変更
 Set-PSReadLineKeyHandler -Key Tab -Function MenuComplete
-
 
 # uutils-coreutils プロファイルに追加
 @"
@@ -48,63 +40,7 @@ ForEach-Object {
 
 Set-Alias open Invoke-Item
 
-function gf {
-    $path = ghq list | fzf
-    if ($LastExitCode -eq 0) {
-        Set-Location "$(ghq root)\$path"
-    }
-}
-function ghg {
-    ghq get --shallow $args
-}
-
-function mkdev {
-    if ($args.Length -ne 1) {
-        Write-Output "Usage: mkdev dir-name"
-        return
-    }
-    $dirName = $args[0]
-    $devPath = "$(ghq root)\github.com\$(git config user.name)\$dirName"
-    mkdir -p $devPath
-    Set-Location $devPath
-    git init
-}
-
-function mksandbox {
-    if ($args.Length -ne 1) {
-        Write-Output "Usage: mksandbox dir-name"
-        return
-    }
-    $dirName = $args[0]
-    $devPath = "$(ghq root)\github.com\$(git config user.name)-sandbox\$dirName"
-    mkdir -p $devPath
-    Set-Location $devPath
-    git init
-}
-
-function crrepo {
-    # Gitリポジトリのルートに移動
-    $gitRoot = git rev-parse --show-toplevel 2>$null
-    if ($gitRoot) {
-        Set-Location $gitRoot
-    }
-
-    # リポジトリ名を取得（owner/repo形式）
-    $currentPath = (Get-Location).Path -replace '\\', '/'
-    if ($currentPath -match '[^/]*/[^/]*$') {
-        $repoName = $Matches[0]
-        gh repo create $repoName --source=. $args
-    }
-    else {
-        Write-Error "Could not determine repository name from current directory"
-    }
-}
-
-function which($cmdname) {
-    Get-Command $cmdname | Select-Object -ExpandProperty Definition
-}
-
-# Load abbreviations
+. "$PSScriptRoot\functions.ps1"
 . "$PSScriptRoot\abbreviations.ps1"
 
 # key binding

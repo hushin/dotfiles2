@@ -37,9 +37,7 @@ function Expand-Abbreviation {
     $cursor = $null
     [Microsoft.PowerShell.PSConsoleReadLine]::GetBufferState([ref]$line, [ref]$cursor)
 
-    # Get the word before cursor
-    $words = $line.Substring(0, $cursor) -split '\s+'
-    $lastWord = $words[-1]
+    $lastWord = $line
 
     if ($global:Abbreviations.ContainsKey($lastWord)) {
         # Replace the abbreviation

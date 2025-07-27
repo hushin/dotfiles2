@@ -84,10 +84,8 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-
-
 ;; Ctrl-h
-                                        ;(map! "C-h" 'delete-backward-char)
+;(map! "C-h" 'delete-backward-char)
 
 ;; delete character without yanking
 (map! :n "x" 'delete-char)
@@ -116,11 +114,10 @@
 (set-default-coding-systems 'utf-8)
 (set-terminal-coding-system 'utf-8)
 (set-keyboard-coding-system 'utf-8)
-;; Windows 用のクリップボード設定
 (when (winp)
-  (set-selection-coding-system 'utf-16le-dos))
-;; Windows search-project で 日本語で検索できるようにする
-(when (winp)
+  ;; Windows 用のクリップボード設定
+  (set-selection-coding-system 'utf-16le-dos)
+  ;; Windows search-project で 日本語で検索できるようにする
   (defun advice:with-japanese-coding-system (orig-fun &rest args)
     (let ((coding-system-for-write 'cp932))
       (apply orig-fun args)))

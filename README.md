@@ -105,13 +105,13 @@ New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\Documents\memo" -Value "
 
 ### tmux(Ubuntu)
 
-ビルド
+tmux を起動し、`Ctrl-t I` で プラグインインストール
+
+その後 tmux-mem-cpu-load をビルド
 
 ```sh
 cd ~/.config/tmux/plugins/tmux-mem-cpu-load && cmake . && make
 ```
-
-tmux を起動し、`Ctrl-t I` で プラグインインストール
 
 ### このリポジトリ
 

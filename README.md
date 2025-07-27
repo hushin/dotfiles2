@@ -73,6 +73,8 @@ chezmoi init --apply hushin/dotfiles2
 
 - 入力補助
   - 変換前のアルファベット、数字を半角に設定
+- その他
+  - ホットキー(Ctrl+Shift)による IME の切り替えを無効化する
 
 ### gh CLI
 

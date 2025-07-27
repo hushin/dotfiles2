@@ -1,4 +1,4 @@
-# 現在のセッションの PATH 情報を更新するための関数
+﻿# 現在のセッションの PATH 情報を更新するための関数
 function Update-PathVariable {
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
     [System.Environment]::GetEnvironmentVariable("Path", "User")
@@ -70,7 +70,8 @@ function open {
     elseif (Test-Path $path) {
         if ((Get-Item $path).PSIsContainer) {
             explorer.exe $path
-        } else {
+        }
+        else {
             Invoke-Item $path
         }
     }

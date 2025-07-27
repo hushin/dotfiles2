@@ -1,4 +1,4 @@
-# $PROFILE.CurrentUserCurrentHost
+﻿# $PROFILE.CurrentUserCurrentHost
 
 $env:FZF_DEFAULT_COMMAND = 'rg -g "" --hidden --ignore ".git"'
 $env:FZF_DEFAULT_OPTS = "--height 70% --layout=reverse --border --ansi --inline-info"

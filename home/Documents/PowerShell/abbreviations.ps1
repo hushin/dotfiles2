@@ -1,4 +1,4 @@
-# Abbreviation system (fish-like abbr)
+﻿# Abbreviation system (fish-like abbr)
 $global:Abbreviations = @{}
 
 function abbr {

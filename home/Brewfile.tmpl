@@ -1,8 +1,8 @@
+{{- if ne (env "REMOTE_CONTAINERS") "true" }}
 brew "curl"
 brew "emojify"
-brew "gibo"
-brew "git-secrets"
 brew "git"
-{{- if ne (env "REMOTE_CONTAINERS") "true" }}
 brew "emacs"
 {{- end }}
+brew "gibo"
+brew "git-secrets"

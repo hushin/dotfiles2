@@ -15,11 +15,6 @@ if ! has "nkf"; then
     sudo apt install -y nkf
 fi
 
-if ! has "source-highlight"; then
-    echo "install source-highlight"
-    sudo apt install -y source-highlight
-fi
-
 if ! has "tldr"; then
     echo "install tldr"
     sudo apt install -y tldr

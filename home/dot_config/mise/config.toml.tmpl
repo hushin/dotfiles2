@@ -1,4 +1,5 @@
 [tools]
+{{- if ne (env "REMOTE_CONTAINERS") "true" }}
 # language
 node = "lts"
 deno = "latest"
@@ -7,27 +8,32 @@ go = "latest"
 # ruby = "latest"
 rust = "latest"
 bun = "latest"
+{{- end }}
 
 # cli
 jq = "latest"
-# tmux = "latest"
 ripgrep = "latest"
+fzf = "latest"
+github-cli = "latest"
 bat = "latest"
 coreutils = "latest"
-ctop = "latest"
-fzf = "latest"
-ghq = "latest"
-github-cli = "latest"
-{{- if ne .chezmoi.os "windows" }}
-"cargo:eza" = "latest"
-{{- end }}
-# shellcheck = "latest"
-# terraform = "latest"
-1password = "latest"
 lazygit = "latest"
 starship = "latest"
 delta = "latest"
 fd = "latest"
+{{- if ne (env "REMOTE_CONTAINERS") "true" }}
+ctop = "latest"
+ghq = "latest"
+1password = "latest"
 uv = "latest"
 duckdb = "latest"
 zoxide = "latest"
+{{- end }}
+
+{{- if ne .chezmoi.os "windows" }}
+"cargo:eza" = "latest"
+{{- end }}
+
+# tmux = "latest"
+# shellcheck = "latest"
+# terraform = "latest"

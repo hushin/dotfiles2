@@ -103,6 +103,12 @@ Windows
 New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\Documents\memo" -Value "$env:USERPROFILE\Dropbox\memo"
 ```
 
+WSL
+```sh
+mkdir -p ~/Documents && ln -s /mnt/c/Users/$(whoami)/Documents/memo ~/Documents/memo
+```
+
+
 ### tmux(Ubuntu)
 
 tmux を起動し、`Ctrl-t I` で プラグインインストール

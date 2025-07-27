@@ -5,10 +5,6 @@ has() {
     type "$1" > /dev/null 2>&1
 }
 
-if ! has "ag"; then
-    echo "install ag"
-    sudo apt install -y silversearcher-ag
-fi
 
 if ! has "nkf"; then
     echo "install nkf"

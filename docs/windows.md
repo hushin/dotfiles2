@@ -99,9 +99,26 @@ chezmoi re-add C:\Users\n1\AppData\Local\Packages\Microsoft.WindowsTerminal_8wek
 
 - 設定 > ストレージ > ドライブを追加 で 外付け SSD 指定、デフォルトに設定
 
-## クリーンインストール手順
+## 初期化手順
+
+### 事前準備
 
 - [事前にバックアップする](backup.md)
 - 初期化時、念のため外付け SDD 等は外しておく。
 
+Windows 設定から初期化か、クリーンインストール
+
+### A: Windows 設定から初期化
+
+`Win-I` → システム → 回復 → この PC をリセット → すべて削除する → クラウドからダウンロード
+
+### B: クリーンインストール
+
 [Windows 11 Clean Installation](https://www.microsoft.com/ja-jp/windowsinsider/cleaninstall) にあるように、USB フラッシュ ドライブに Windows インストール メディアを入れて実行する。
+
+> [!WARNING]
+> PC にプリインストールされているソフトはインストールされない
+
+> [!NOTE]
+> Windows セットアップ画面でシステムストレージのドライブが認識されないことがある
+> インテル VMD ドライバー のインストールが必要そう（未確認）

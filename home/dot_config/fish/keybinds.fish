@@ -1,4 +1,4 @@
-bind \cj 'FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --no-sort" fzf_recentd'
+bind \cj 'zoxide query --list | fzf --no-sort | read -l result; and cd $result; commandline -f repaint'
 bind \c] 'FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --preview \'bat --color=always --style=header,grid --line-range :80 (ghq root)/{}/README.*\'" fzf_ghq'
 bind \et 'FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS --preview \'bat --color=always --style=header,grid --line-range :80 {}\'" __fzf_find_file'
 bind \cr '__fzf_reverse_isearch'

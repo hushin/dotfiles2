@@ -12,3 +12,5 @@ starship init fish | source
 . ~/.config/fish/aliases.fish
 . ~/.config/fish/funcs.fish
 . ~/.config/fish/keybinds.fish
+
+zoxide init fish | source

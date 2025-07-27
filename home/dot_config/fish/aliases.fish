@@ -40,8 +40,8 @@ if command -q eza
     abbr -a lt eza --icons --tree
 end
 
-if command -q z
-    abbr -a cd 'z' # zoxide
+if command -q zoxide
+    abbr -a cd 'z'
 end
 
 abbr -a --position anywhere --set-cursor F '| fzf'

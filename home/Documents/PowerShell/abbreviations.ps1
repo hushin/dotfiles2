@@ -82,19 +82,18 @@ abbr 'chm' 'chezmoi merge'
 abbr 'chd' 'chezmoi diff'
 abbr 'chp' 'chezmoi apply'
 abbr 'chu' 'chezmoi update'
+abbr 'chs' 'chezmoi status'
 
 # Utility abbreviations
 abbr 'reload' '. $PROFILE'
 abbr 'diff' 'delta'
 abbr 'find' 'fd'
 abbr 'cdu' 'cd (git rev-parse --show-toplevel)'
-abbr 'tree' 'tree -N'
 abbr 'notes' 'rg "TODO|HACK|FIXME|OPTIMIZE"'
 abbr 'cd' 'z'
 
-# Editor abbreviations (Windows adapted)
-abbr 'e' 'code'
-abbr 'o' 'Invoke-Item'
+# Editor abbreviations
+abbr 'e' 'emacsclient -t -a ""'
 
 # eza abbreviations (if available)
 if (Get-Command eza -ErrorAction SilentlyContinue) {

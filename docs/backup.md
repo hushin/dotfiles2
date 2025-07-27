@@ -56,7 +56,9 @@ check-ghq.ps1
 
 ## Google 日本語入力
 
-このコマンドでプロパティを開いて辞書を確認
+辞書を確認・バックアップする
+
+Windows でプロパティが見つからないときはこのコマンドでプロパティを開く
 
 ```powershell
 & "C:\Program Files (x86)\Google\Google Japanese Input\GoogleIMEJaTool.exe" --mode=config_dialog

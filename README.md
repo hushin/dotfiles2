@@ -19,7 +19,13 @@ winget install -e --id twpayne.chezmoi --source winget
 chezmoi のパス解決のため新しいタブを開いて実行
 
 ```powershell
+git config --global core.autocrlf false
 chezmoi init --apply hushin/dotfiles2
+```
+
+```powershell
+# PSFzf のエラーが出ているときは手動で実行する
+Install-Module PSFzf -Scope CurrentUser
 ```
 
 [以降の Windows 設定](./docs/windows.md)
@@ -63,12 +69,6 @@ chezmoi init --apply hushin/dotfiles2
 
 ### Google 日本語入力
 
-Windows はこのコマンドでプロパティを開く
-
-```powershell
-& "C:\Program Files (x86)\Google\Google Japanese Input\GoogleIMEJaTool.exe" --mode=config_dialog
-```
-
 - 入力補助
   - 変換前のアルファベット、数字を半角に設定
 
@@ -86,6 +86,7 @@ gh auth login
 Emacs 起動して実行
 
 ```
+M-x doom/upgrade
 M-x nerd-icons-install-fonts
 ```
 

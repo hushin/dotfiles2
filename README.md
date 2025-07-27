@@ -57,6 +57,8 @@ chezmoi init --apply hushin/dotfiles2
     - https://raw.githubusercontent.com/hushin/dotfiles2/refs/heads/main/etc/SurfingkeysSetting.js
     - [src](./etc/SurfingkeysSetting.js)
 - Tampermonkey
+  - chrome://extensions/
+    - ユーザースクリプトを許可する
   - ダッシュボード → ユーティリティ → クラウド → Google Drive からインポート
 - Stylebot
   - Google ドライブを介した手動同期
@@ -104,10 +106,10 @@ New-Item -ItemType SymbolicLink -Path "$env:USERPROFILE\Documents\memo" -Value "
 ```
 
 WSL
+
 ```sh
 mkdir -p ~/Documents && ln -s /mnt/c/Users/$(whoami)/Documents/memo ~/Documents/memo
 ```
-
 
 ### tmux(Ubuntu)
 

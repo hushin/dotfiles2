@@ -29,7 +29,7 @@
 ;; accept. For example:
 ;;
 
-(setq doom-font (font-spec :family "UDEV Gothic NF" :size (if (winp) 24 18))
+(setq doom-font (font-spec :family "UDEV Gothic NF" :size (if (winp) 26 18))
   doom-variable-pitch-font (font-spec :family "UDEV Gothic NF"))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them

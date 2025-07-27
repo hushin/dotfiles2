@@ -44,6 +44,13 @@ if command -q zoxide
     abbr -a cd 'z'
 end
 
+{{ if eq .chezmoi.os "linux" }}
+{{   if (.chezmoi.kernel.osrelease | lower | contains "microsoft") }}
+alias pbcopy 'xsel --clipboard --input'
+alias pbpaste 'xsel --clipboard --output'
+{{   end }}
+{{ end }}
+
 abbr -a --position anywhere --set-cursor F '| fzf'
 abbr -a --position anywhere --set-cursor G '| rg'
 abbr -a --position anywhere --set-cursor H '| head'

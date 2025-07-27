@@ -18,7 +18,8 @@ function Add-ToUserPath {
     if ($currentPath -notlike "*$Path*") {
         [Environment]::SetEnvironmentVariable("PATH", "$currentPath;$Path", "User")
         Write-Output "PATHに追加しました: $Path"
-    } else {
+    }
+    else {
         Write-Output "PATHに既に存在します: $Path"
     }
 }
@@ -29,9 +30,9 @@ Write-Output "Emacs binディレクトリをPATHに追加"
 $emacsBasePath = "C:\Program Files\Emacs"
 if (Test-Path $emacsBasePath) {
     $emacsBinPath = Get-ChildItem -Path $emacsBasePath -Directory |
-        Sort-Object Name -Descending |
-        Select-Object -First 1 |
-        ForEach-Object { Join-Path $_.FullName "bin" }
+    Sort-Object Name -Descending |
+    Select-Object -First 1 |
+    ForEach-Object { Join-Path $_.FullName "bin" }
 
     if ($emacsBinPath -and (Test-Path $emacsBinPath)) {
         Add-ToUserPath -Path $emacsBinPath
@@ -59,4 +60,4 @@ New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
 New-Item 'HKCR:\org-protocol\shell\open\command' -Force
 Set-ItemProperty -Path 'HKCR:\org-protocol' -name '(default)' -Value 'URL:Org Protocol'
 Set-ItemProperty -Path 'HKCR:\org-protocol' -name 'URL Protocol' -Value ''
-Set-ItemProperty -Path 'HKCR:\org-protocol\shell\open\command' -name '(default)' -Value "`"$env:USERPROFILE\scoop\apps\emacs\current\bin\emacsclientw.exe`" `"%1`""
+Set-ItemProperty -Path 'HKCR:\org-protocol\shell\open\command' -name '(default)' -Value "`"$env:ProgramFiles\Emacs\emacs-30.1\bin\emacsclientw.exe`" `"%1`""

@@ -68,16 +68,16 @@ chezmoi re-add C:\Users\n1\AppData\Local\Packages\Microsoft.WindowsTerminal_8wek
     - 規定の入力方式: Google 日本語入力
   - (US キーボード配列になっていないとき) 言語と地域 → 日本語 → 言語のオプション → キーボードレイアウト: 101/102 キー
 
-### アプリ
-
-- 規定のアプリ
-  - PDF を Acrobat に変更
-
 ### タスクバー
 
 - 設定
   - ウィジェットのチェックを外す
 - 不要なピン留めを削除
+
+### アプリ
+
+- 規定のアプリ
+  - PDF を Acrobat に変更
 
 ## 手動設定・アプリ
 

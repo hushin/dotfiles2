@@ -34,7 +34,7 @@ Install-Module PSFzf -Scope CurrentUser
 
 ```sh
 sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin
-# chezmoi パス解決に source ~/.profile 必要かも。もしくはshellを新しく開く
+# WSL は chezmoi パス解決のためshellを新しく開く
 chezmoi init --apply hushin/dotfiles2
 ```
 

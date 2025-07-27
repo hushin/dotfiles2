@@ -6,6 +6,8 @@
     "copyFormatting": "none",
     "copyOnSelect": false,
     "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+    "initialCols": 180,
+    "initialRows": 45,
     "keybindings":
     [
         {
@@ -21,10 +23,6 @@
             "keys": "ctrl+shift+f"
         },
         {
-            "id": "Terminal.SwitchToTab1",
-            "keys": "ctrl+2"
-        },
-        {
             "id": "Terminal.DuplicatePaneAuto",
             "keys": "alt+shift+d"
         },
@@ -33,12 +31,16 @@
             "keys": "ctrl+pgup"
         },
         {
+            "id": "Terminal.NextTab",
+            "keys": "ctrl+pgdn"
+        },
+        {
             "id": "Terminal.SwitchToTab0",
             "keys": "ctrl+1"
         },
         {
-            "id": "Terminal.NextTab",
-            "keys": "ctrl+pgdn"
+            "id": "Terminal.SwitchToTab1",
+            "keys": "ctrl+2"
         },
         {
             "id": "Terminal.SwitchToTab2",
@@ -79,23 +81,17 @@
             "font":
             {
                 "face": "UDEV Gothic NF"
-            }
+            },
+            "opacity": 90,
+            "useAcrylic": true
         },
         "list":
         [
             {
-                "commandline": "C:\\WINDOWS\\system32\\wsl.exe --distribution-id {0c9e06da-e2cb-4603-abcc-9d86a933def7} --cd ~",
-                "cursorShape": "filledBox",
-                "font":
-                {
-                    "size": 13
-                },
-                "guid": "{0c3a042c-88cb-438d-9bf7-60e5b99a3779}",
+                "guid": "{4c7a72fe-17f2-545c-bf7d-e2b498fa2203}",
                 "hidden": false,
-                "icon": "none",
                 "name": "Ubuntu",
-                "pathTranslationStyle": "wsl",
-                "suppressApplicationTitle": true
+                "source": "Microsoft.WSL"
             },
             {
                 "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",

@@ -119,7 +119,7 @@ chezmoi デフォルトだと https なので init 時に `--ssh` をつけた�
 push する前に remote を ssh のものに変更する。
 
 ```sh
-chezmoi cd
+# chezmoi cd してから
 git remote set-url origin git@github.com:hushin/dotfiles2.git
 ```
 

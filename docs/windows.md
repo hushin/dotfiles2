@@ -34,6 +34,12 @@ wsl --install
 > 必要な機能がインストールされていないため、操作を開始できませんでした。
 > エラー コード: Wsl\InstallDistro\Service\RegisterDistro\CreateVm\HCS\HCS_E_SERVICE_NOT_AVAILABLE
 
+Ubuntu のインストールが完了したら、WindowsTerminal の設定が変わっているので取り込む
+
+```powershell
+chezmoi re-add C:\Users\n1\AppData\Local\Packages\Microsoft.WindowsTerminal_8wekyb3d8bbwe\
+```
+
 ## 手動インストール
 
 - [PC TV Plus](https://www.sony.jp/software/store/products/pctv-plus/)
@@ -41,12 +47,14 @@ wsl --install
 
 ## 手動設定・Windows
 
-### システム → ディスプレイ（デスクトップ右クリックから開ける）
+`Win + I` で設定を開く
+
+### システム → ディスプレイ（デスクトップ右クリックからも開ける）
 
 - 夜間モード
   - スケジュール設定
 
-### 個人用設定
+### 個人用設定（デスクトップ右クリックからも開ける）
 
 - ロック画面
   - ロック画面を個人用に設定: 画像
@@ -58,6 +66,7 @@ wsl --install
 - 入力
   - キーボードの詳細設定
     - 規定の入力方式: Google 日本語入力
+  - (US キーボード配列になっていないとき) 言語と地域 → 日本語 → 言語のオプション → キーボードレイアウト: 101/102 キー
 
 ### アプリ
 

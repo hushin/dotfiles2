@@ -1,3 +1,4 @@
+# Git abbreviations
 abbr -a ta 'tig --all'
 abbr -a ts 'tig status'
 abbr -a g 'git'
@@ -5,8 +6,11 @@ abbr -a gsh 'git show'
 abbr -a gdc 'git diff --cached'
 abbr -a gs 'git switch'
 abbr -a gsc 'git switch -c'
+
+# Search abbreviations
 abbr -a rgh 'rg --hidden'
 
+# Chezmoi abbreviations
 abbr -a ch 'chezmoi'
 abbr -a cha 'chezmoi add'
 abbr -a che 'chezmoi edit'
@@ -15,25 +19,29 @@ abbr -a chd 'chezmoi diff'
 abbr -a chp 'chezmoi apply'
 abbr -a chu 'chezmoi update'
 
-type -qa tac || abbr -a tac 'tail -r'
+# Emacs abbreviations
+abbr -a e 'emacsclient -t -a ""'
+abbr -a ekill 'emacsclient -e "(kill-emacs)"'
 
+# Utility abbreviations
+type -qa tac || abbr -a tac 'tail -r'
 abbr -a reload 'source ~/.config/fish/config.fish'
 abbr -a diff 'delta'
 abbr -a find 'fd'
 abbr -a cdu 'cd-gitroot'
 abbr -a tree "tree -NC" # N: 文字化け対策, C:色をつける
 abbr -a notes 'rg "TODO|HACK|FIXME|OPTIMIZE"'
-
-abbr -a e 'emacsclient -t -a ""'
-abbr -a ekill 'emacsclient -e "(kill-emacs)"'
-
-type -qa open && abbr -a o 'open'
+abbr -a o 'open'
 
 if command -q eza
     abbr -a ls eza --icons
     abbr -a ll eza --icons -lhg --time-style long-iso
     abbr -a la eza --icons -lhag --time-style long-iso
     abbr -a lt eza --icons --tree
+end
+
+if command -q z
+    abbr -a cd 'z' # zoxide
 end
 
 abbr -a --position anywhere --set-cursor F '| fzf'

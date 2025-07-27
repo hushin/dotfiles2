@@ -140,10 +140,10 @@
      'font-lock-face 'calendar-iso-week-face))
 
 ;; ファイル操作関数
-(load! "file-operations")
+(load! "lib/file-operations")
 
 ;; org-agenda 設定
-(load! "org-agenda-config")
+(load! "lib/org-agenda-config")
 
 (after! org
   (map!
@@ -233,8 +233,8 @@
   (setq org-use-sub-superscripts nil)
   (setq org-export-with-sub-superscripts nil)
 
-  (load! "task-collection")
-  (load! "org-bullet-functions")
+  (load! "lib/task-collection")
+  (load! "lib/org-bullet-functions")
   )
 
 (map! :after evil-org
@@ -349,7 +349,7 @@ Inboxに収集する
           :immediate-finish t
           :unnarrowed t))))
 
-  (load! "org-roam-templates")
+  (load! "lib/org-roam-templates")
 
   (defun my/org-get-title-from-file (file)
     "Extracts the #+TITLE from the org FILE, or uses the filename if none found."

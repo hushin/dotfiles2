@@ -99,7 +99,7 @@ abbr 'o' 'Invoke-Item'
 # eza abbreviations (if available)
 if (Get-Command eza -ErrorAction SilentlyContinue) {
     abbr 'ls' 'eza --icons'
-    abbr 'll' 'eza --icons -lhag --time-style long-iso'
+    abbr 'll' 'eza --icons -lhg --time-style long-iso'
     abbr 'la' 'eza --icons -lhag --time-style long-iso'
     abbr 'lt' 'eza --icons --tree'
 }

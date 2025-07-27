@@ -31,7 +31,8 @@ type -qa open && abbr -a o 'open'
 
 if command -q eza
     abbr -a ls eza --icons
-    abbr -a ll eza --icons -lhag --time-style long-iso
+    abbr -a ll eza --icons -lhg --time-style long-iso
+    abbr -a la eza --icons -lhag --time-style long-iso
     abbr -a lt eza --icons --tree
 end
 

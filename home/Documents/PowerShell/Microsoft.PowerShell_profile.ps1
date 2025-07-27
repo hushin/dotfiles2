@@ -1,5 +1,7 @@
 ﻿# $PROFILE.CurrentUserCurrentHost
 
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
 $env:FZF_DEFAULT_COMMAND = 'rg -g "" --hidden --ignore ".git"'
 $env:FZF_DEFAULT_OPTS = "--height 70% --layout=reverse --border --ansi --inline-info"
 
@@ -32,10 +34,11 @@ ForEach-Object {
     Invoke-Expression "function global:$cmd { $fn }"
 }
 
-# Set-Alias open Invoke-Item
-
 . "$PSScriptRoot\functions.ps1"
 . "$PSScriptRoot\abbreviations.ps1"
+
+New-Alias -Name pbcopy -Value Set-Clipboard
+New-Alias -Name pbpaste -Value Get-Clipboard
 
 # key binding
 # 実行後入力待ちになるため、AcceptLine を実行する

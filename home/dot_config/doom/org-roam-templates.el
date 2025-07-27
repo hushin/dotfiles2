@@ -1,0 +1,170 @@
+;;; org-roam-templates.el --- Org-roam capture templates configuration
+
+;; org-roam-dailies-capture-templates
+(setq org-roam-dailies-capture-templates
+  '(("d" "default" entry "* %<%H:%M> %?"
+      :target (file+head "%<%Y-%m-%d>.org"
+                "#+title: %<%Y-%m-%d>
+
+* 今日の目標
+
+* 思い+タスク
+# - 理想の制御：理想の今日のイメージをクリアにする
+#   - 1. フリーライティングする
+#     - 理想の一日のイメージを作る
+#     - カレンダーをチェックして外せない用事をチェック
+#     - 思いついたことを文章として書く
+#   - 2. 仮アウトラインを作る
+#   - 3. 仮サマリーを作る
+
+
+** TODO 日記を書く
+** TODO エントリー消化
+
+* できれば
+"))
+     )
+  )
+
+;; org-roam-capture-templates
+(setq org-roam-capture-templates
+  '(
+     ("d" "default (Zettelkasten Permanent)" plain
+       "%?"
+       :target (file+head "zk/%<%Y%m%d%H%M%S>-${slug}.org"
+                 "#+title: ${title}
+#+filetags: :draft:")
+       :unnarrowed t)
+     ("p" "project" plain
+       "* 目的・目標
+- %?
+
+* Tasks
+** TODO Add initial tasks
+
+* Notes
+"
+       :target (file+head "projects/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}")
+       :unnarrowed t)
+     ("a" "area" plain
+       "* 目標
+# このエリアで達成したい長期的な目標や維持すべき基準
+%?
+
+* Projects
+
+* Someday Projects
+:PROPERTIES:
+:CATEGORY: Someday PJ
+:END:
+
+* 定期タスク
+
+* Resource
+
+"
+       :target (file+head "areas/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}")
+       :unnarrowed t)
+     ("r" "rez (Resonance Calendar)" plain "* ${title}
+:PROPERTIES:
+:Type: %?
+:Start: <%<%Y-%m-%d %a>>
+:Fin:
+:Canceled:
+:Rating:
+:Creator:
+:URL:
+:ReleaseDate:
+:END:
+
+** Why
+# なぜ読もう・見ようと思ったのか
+
+** Tasks
+*** TODO 読む・見る
+
+** Key Ideas
+
+** Review
+
+** Quotes
+
+** Notes
+
+"
+       :target (file+head "resources/rez/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}")
+       :unnarrowed t)
+     ("e" "exp (Experiments)" plain "* ${title}
+:PROPERTIES:
+:Type: Exp
+:Start:
+:Fin:
+:Assess: <yyyy-mm-dd aaa>
+:Qs:
+:Status:
+:Outcome:
+:END:
+
+** Tasks
+
+** 仮説
+
+** 実験手順
+
+** 観察とメモ
+
+** 結果と考察
+
+** 注意点
+
+** 次の実験アイデア
+
+"
+       :target (file+head "resources/rez/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}")
+       :unnarrowed t)
+     )
+  )
+
+;; org-roam-capture-ref-templates
+(setq org-roam-capture-ref-templates
+  '(
+     ("r" "ref" plain
+       "%?"
+       :target (file+head "resources/ref/%<%Y%m%d%H%M%S>-${slug}.org"
+                 "#+title: ${title}\n${ref}\n${body}")
+       :unnarrowed t)
+     ("z" "rez (Resonance Calendar) from protocol" plain "%?"
+       :target (file+head "resources/rez/%<%Y%m%d%H%M%S>-${slug}.org"
+                 "#+title: ${title}
+* ${title}
+:PROPERTIES:
+:Type: ${type}
+:Start: <%<%Y-%m-%d %a>>
+:Fin:
+:Canceled:
+:Rating:
+:Creator: ${creator}
+:URL: ${ref}
+:ReleaseDate: ${releaseDate}
+:END:
+
+** Why
+# なぜ読もう・見ようと思ったのか
+
+** Tasks
+*** TODO 読む・見る
+
+** Key Ideas
+
+** Review
+
+** Quotes
+
+** Notes
+
+")
+       :unnarrowed t)
+     ))
+
+(provide 'org-roam-templates)
+;;; org-roam-templates.el ends here

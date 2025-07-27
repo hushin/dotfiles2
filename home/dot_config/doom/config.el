@@ -123,10 +123,12 @@
       (apply orig-fun args)))
   (advice-add '+default/search-project :around 'advice:with-japanese-coding-system))
 
+(setq calendar-week-start-day 1)
 ;; Displaying week numbers in calendar
 (copy-face font-lock-constant-face 'calendar-iso-week-face)
 (set-face-attribute 'calendar-iso-week-face nil
-  :height 0.8)
+                    :height 1.0
+                    :foreground "gray50")
 (setq calendar-intermonth-text
   '(propertize
      (format "w%2d"

@@ -5,7 +5,7 @@ has() {
     type "$1" > /dev/null 2>&1
 }
 # wslu
-if ! has "wslu"; then
+if ! has "wslview"; then
     echo "install wslu"
     sudo apt install -y wslu
 fi

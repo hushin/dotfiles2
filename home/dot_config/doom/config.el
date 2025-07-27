@@ -191,7 +191,7 @@
   (add-hook 'org-journal-after-entry-create-hook 'evil-insert-state)
   (setq org-startup-with-inline-images t)
 
-  (setq org-M-RET-may-split-line t)
+  (setq org-M-RET-may-split-line '((item . t)))
   ;; export周りの設定
   (setq org-export-with-toc nil)
   (setq org-export-with-section-numbers nil)

@@ -85,8 +85,7 @@ gh auth login
 
 Emacs 起動して実行
 
-```
-M-x doom/upgrade
+```sh
 M-x nerd-icons-install-fonts
 ```
 

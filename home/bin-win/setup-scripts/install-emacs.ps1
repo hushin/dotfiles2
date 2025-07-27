@@ -24,19 +24,35 @@ function Add-ToUserPath {
     }
 }
 
+function Get-LatestEmacsPath {
+    param(
+        [string]$SubPath = ""
+    )
+
+    $emacsBasePath = "$env:ProgramFiles\Emacs"
+    if (Test-Path $emacsBasePath) {
+        $latestEmacsDir = Get-ChildItem -Path $emacsBasePath -Directory |
+        Sort-Object Name -Descending |
+        Select-Object -First 1
+
+        if ($latestEmacsDir) {
+            if ($SubPath) {
+                return Join-Path $latestEmacsDir.FullName $SubPath
+            }
+            else {
+                return $latestEmacsDir.FullName
+            }
+        }
+    }
+    return $null
+}
+
 
 # Add Emacs bin to PATH
 Write-Output "Emacs binディレクトリをPATHに追加"
-$emacsBasePath = "C:\Program Files\Emacs"
-if (Test-Path $emacsBasePath) {
-    $emacsBinPath = Get-ChildItem -Path $emacsBasePath -Directory |
-    Sort-Object Name -Descending |
-    Select-Object -First 1 |
-    ForEach-Object { Join-Path $_.FullName "bin" }
-
-    if ($emacsBinPath -and (Test-Path $emacsBinPath)) {
-        Add-ToUserPath -Path $emacsBinPath
-    }
+$emacsBinPath = Get-LatestEmacsPath -SubPath "bin"
+if ($emacsBinPath -and (Test-Path $emacsBinPath)) {
+    Add-ToUserPath -Path $emacsBinPath
 }
 
 # Add .config/emacs/bin to PATH
@@ -52,12 +68,22 @@ function Update-PathVariable {
 Update-PathVariable
 
 # Install Doom Emacs
+Write-Output "Doom Emacsのインストール"
 doom install
+Write-Output "Doom Emacsのsync"
+doom sync
 
 # org-protocol
 Write-Output "org-protocol: レジストリに登録"
-New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
-New-Item 'HKCR:\org-protocol\shell\open\command' -Force
-Set-ItemProperty -Path 'HKCR:\org-protocol' -name '(default)' -Value 'URL:Org Protocol'
-Set-ItemProperty -Path 'HKCR:\org-protocol' -name 'URL Protocol' -Value ''
-Set-ItemProperty -Path 'HKCR:\org-protocol\shell\open\command' -name '(default)' -Value "`"$env:ProgramFiles\Emacs\emacs-30.1\bin\emacsclientw.exe`" `"%1`""
+$emacsClientPath = Get-LatestEmacsPath -SubPath "bin\emacsclientw.exe"
+if ($emacsClientPath -and (Test-Path $emacsClientPath)) {
+    New-PSDrive -Name HKCR -PSProvider Registry -Root HKEY_CLASSES_ROOT
+    New-Item 'HKCR:\org-protocol\shell\open\command' -Force
+    Set-ItemProperty -Path 'HKCR:\org-protocol' -name '(default)' -Value 'URL:Org Protocol'
+    Set-ItemProperty -Path 'HKCR:\org-protocol' -name 'URL Protocol' -Value ''
+    Set-ItemProperty -Path 'HKCR:\org-protocol\shell\open\command' -name '(default)' -Value "`"$emacsClientPath`" `"%1`""
+    Write-Output "org-protocolを登録しました: $emacsClientPath"
+}
+else {
+    Write-Warning "emacsclientw.exeが見つかりません"
+}

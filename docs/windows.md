@@ -54,6 +54,10 @@ chezmoi re-add C:\Users\n1\AppData\Local\Packages\Microsoft.WindowsTerminal_8wek
 - 夜間モード
   - スケジュール設定
 
+### システム → サウンド（右下のサウンド右クリックからも開ける）
+
+- スピーカー、マイクを設定
+
 ### 個人用設定（デスクトップ右クリックからも開ける）
 
 - ロック画面

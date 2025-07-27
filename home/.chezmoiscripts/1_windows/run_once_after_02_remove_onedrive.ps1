@@ -1,5 +1,5 @@
-﻿# OneDrive完全アンインストール・無効化スクリプト + フォルダー復元
-# Windows 11 対応 (PowerShell版)
+﻿# OneDriveアンインストール・無効化スクリプト + フォルダー復元
+# Windows 11 対応
 
 # Self-elevate the script if required
 if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] 'Administrator')) {
@@ -11,8 +11,7 @@ if (-Not ([Security.Principal.WindowsPrincipal] [Security.Principal.WindowsIdent
 }
 
 Write-Host "=======================================================" -ForegroundColor Green
-Write-Host "OneDrive 完全アンインストール・無効化 + フォルダー復元スクリプト" -ForegroundColor Green
-Write-Host "Windows 11 対応 (PowerShell版)" -ForegroundColor Green
+Write-Host "OneDrive アンインストール・無効化 + フォルダー復元スクリプト" -ForegroundColor Green
 Write-Host "=======================================================" -ForegroundColor Green
 Write-Host ""
 
@@ -31,6 +30,103 @@ function Write-Status {
     }
 }
 
+# OneDriveプロセスの終了
+Write-Status "OneDriveプロセスの終了中..."
+try {
+    Get-Process -Name "OneDrive" -ErrorAction SilentlyContinue | Stop-Process -Force
+    Get-Process -Name "OneDriveSetup" -ErrorAction SilentlyContinue | Stop-Process -Force
+    Write-Status "OneDriveプロセスを終了しました" "SUCCESS"
+}
+catch {
+    Write-Status "OneDriveプロセスの終了中にエラーが発生しました: $($_.Exception.Message)" "WARNING"
+}
+
+# 現在のユーザーのOneDriveをアンインストール
+Write-Status "現在のユーザーのOneDriveをアンインストール中..."
+
+# Wingetを使用してアンインストール（Microsoft.OneDrive）
+try {
+    Write-Status "Microsoft.OneDriveをアンインストール中..."
+    winget uninstall Microsoft.OneDrive --silent
+}
+catch {
+    Write-Status "Microsoft.OneDriveのアンインストール中にエラーが発生しました" "WARNING"
+}
+
+# Wingetを使用してアンインストール（onedrive）
+try {
+    Write-Status "onedriveをアンインストール中..."
+    winget uninstall onedrive --silent
+}
+catch {
+    Write-Status "onedriveのアンインストール中にエラーが発生しました" "WARNING"
+}
+
+# 全ユーザー向けOneDriveのアンインストール
+# Write-Status "全ユーザー向けOneDriveのアンインストール中..."
+
+# $systemPaths = @(
+#     "C:\Program Files (x86)\Microsoft OneDrive\OneDriveSetup.exe",
+#     "C:\Windows\System32\OneDriveSetup.exe"
+# )
+
+# foreach ($path in $systemPaths) {
+#     if (Test-Path $path) {
+#         try {
+#             Start-Process -FilePath $path -ArgumentList "/uninstall", "/allusers" -Wait -NoNewWindow
+#             Write-Status "システムワイドOneDriveをアンインストールしました: $path" "SUCCESS"
+#         }
+#         catch {
+#             Write-Status "システムワイドOneDriveのアンインストールに失敗しました: $path" "ERROR"
+#         }
+#     }
+# }
+
+# 新規ユーザーへのOneDrive自動インストールを防止
+# Write-Status "新規ユーザーへのOneDrive自動インストールを防止中..."
+# try {
+#     reg load "hklm\Default_profile" "C:\Users\Default\NTUSER.DAT" 2>$null
+#     reg delete "hklm\Default_profile\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f 2>$null
+#     reg unload "hklm\Default_profile" 2>$null
+#     Write-Status "デフォルトプロファイルからOneDriveSetupを削除しました" "SUCCESS"
+# }
+# catch {
+#     Write-Status "デフォルトプロファイルの編集に失敗しました" "WARNING"
+# }
+
+# OneDriveの統合機能を無効化
+Write-Status "OneDriveの統合機能を無効化中..."
+try {
+    $policyPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive"
+    if (-not (Test-Path $policyPath)) {
+        New-Item -Path $policyPath -Force | Out-Null
+    }
+    Set-ItemProperty -Path $policyPath -Name "DisableFileSyncNGSC" -Value 1 -Type DWord
+    Write-Status "OneDrive統合機能を無効化しました" "SUCCESS"
+}
+catch {
+    Write-Status "OneDrive統合機能の無効化に失敗しました: $($_.Exception.Message)" "ERROR"
+}
+
+# OneDriveのスタートアップエントリを削除
+Write-Status "OneDriveのスタートアップエントリを削除中..."
+try {
+    $runPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
+
+    $startupEntries = @("OneDriveSetup", "OneDrive")
+    foreach ($entry in $startupEntries) {
+        if (Get-ItemProperty -Path $runPath -Name $entry -ErrorAction SilentlyContinue) {
+            Remove-ItemProperty -Path $runPath -Name $entry -ErrorAction SilentlyContinue
+        }
+    }
+    Write-Status "スタートアップエントリを削除しました" "SUCCESS"
+}
+catch {
+    Write-Status "スタートアップエントリの削除に失敗しました: $($_.Exception.Message)" "WARNING"
+}
+
+
+# ユーザーフォルダーの復元
 # フォルダー復元用関数
 function Restore-UserFolder {
     param(
@@ -106,7 +202,6 @@ function Restore-UserFolder {
     }
 }
 
-# 1. ユーザーフォルダーの復元（OneDriveアンインストール前に実行）
 Write-Status "ユーザーフォルダーをOneDriveから標準の場所に復元中..."
 
 $userProfile = [Environment]::GetFolderPath('UserProfile')
@@ -132,102 +227,7 @@ foreach ($folder in $folders) {
     Restore-UserFolder -FolderName $folder.Name -RegistryValue $folder.RegistryValue -DefaultPath $folder.DefaultPath
 }
 
-# 2. OneDriveプロセスの終了
-Write-Status "OneDriveプロセスの終了中..."
-try {
-    Get-Process -Name "OneDrive" -ErrorAction SilentlyContinue | Stop-Process -Force
-    Get-Process -Name "OneDriveSetup" -ErrorAction SilentlyContinue | Stop-Process -Force
-    Write-Status "OneDriveプロセスを終了しました" "SUCCESS"
-}
-catch {
-    Write-Status "OneDriveプロセスの終了中にエラーが発生しました: $($_.Exception.Message)" "WARNING"
-}
-
-# 3. 現在のユーザーのOneDriveをアンインストール
-Write-Status "現在のユーザーのOneDriveをアンインストール中..."
-
-# Wingetを使用してアンインストール（Microsoft.OneDrive）
-try {
-    Write-Status "Microsoft.OneDriveをアンインストール中..."
-    winget uninstall Microsoft.OneDrive --silent
-}
-catch {
-    Write-Status "Microsoft.OneDriveのアンインストール中にエラーが発生しました" "WARNING"
-}
-
-# Wingetを使用してアンインストール（onedrive）
-try {
-    Write-Status "onedriveをアンインストール中..."
-    winget uninstall onedrive --silent
-}
-catch {
-    Write-Status "onedriveのアンインストール中にエラーが発生しました" "WARNING"
-}
-
-# 4. 全ユーザー向けOneDriveのアンインストール
-# Write-Status "全ユーザー向けOneDriveのアンインストール中..."
-
-# $systemPaths = @(
-#     "C:\Program Files (x86)\Microsoft OneDrive\OneDriveSetup.exe",
-#     "C:\Windows\System32\OneDriveSetup.exe"
-# )
-
-# foreach ($path in $systemPaths) {
-#     if (Test-Path $path) {
-#         try {
-#             Start-Process -FilePath $path -ArgumentList "/uninstall", "/allusers" -Wait -NoNewWindow
-#             Write-Status "システムワイドOneDriveをアンインストールしました: $path" "SUCCESS"
-#         }
-#         catch {
-#             Write-Status "システムワイドOneDriveのアンインストールに失敗しました: $path" "ERROR"
-#         }
-#     }
-# }
-
-# 5. 新規ユーザーへのOneDrive自動インストールを防止
-# Write-Status "新規ユーザーへのOneDrive自動インストールを防止中..."
-# try {
-#     reg load "hklm\Default_profile" "C:\Users\Default\NTUSER.DAT" 2>$null
-#     reg delete "hklm\Default_profile\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" /v "OneDriveSetup" /f 2>$null
-#     reg unload "hklm\Default_profile" 2>$null
-#     Write-Status "デフォルトプロファイルからOneDriveSetupを削除しました" "SUCCESS"
-# }
-# catch {
-#     Write-Status "デフォルトプロファイルの編集に失敗しました" "WARNING"
-# }
-
-# 6. OneDriveの統合機能を無効化
-Write-Status "OneDriveの統合機能を無効化中..."
-try {
-    $policyPath = "HKLM:\SOFTWARE\Policies\Microsoft\Windows\OneDrive"
-    if (-not (Test-Path $policyPath)) {
-        New-Item -Path $policyPath -Force | Out-Null
-    }
-    Set-ItemProperty -Path $policyPath -Name "DisableFileSyncNGSC" -Value 1 -Type DWord
-    Write-Status "OneDrive統合機能を無効化しました" "SUCCESS"
-}
-catch {
-    Write-Status "OneDrive統合機能の無効化に失敗しました: $($_.Exception.Message)" "ERROR"
-}
-
-# 7. OneDriveのスタートアップエントリを削除
-Write-Status "OneDriveのスタートアップエントリを削除中..."
-try {
-    $runPath = "HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run"
-
-    $startupEntries = @("OneDriveSetup", "OneDrive")
-    foreach ($entry in $startupEntries) {
-        if (Get-ItemProperty -Path $runPath -Name $entry -ErrorAction SilentlyContinue) {
-            Remove-ItemProperty -Path $runPath -Name $entry -ErrorAction SilentlyContinue
-        }
-    }
-    Write-Status "スタートアップエントリを削除しました" "SUCCESS"
-}
-catch {
-    Write-Status "スタートアップエントリの削除に失敗しました: $($_.Exception.Message)" "WARNING"
-}
-
-# 8. OneDriveフォルダーのクリーンアップ
+# OneDriveフォルダーのクリーンアップ
 Write-Status "OneDriveフォルダーのクリーンアップ中..."
 try {
     $oneDrivePaths = @(

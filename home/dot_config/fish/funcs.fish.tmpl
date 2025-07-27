@@ -97,49 +97,6 @@ function gwt -d "git work tree" -a branch
     git worktree add {$gitCdupDir}git-worktrees/$branch -b $branch
 end
 
-function my-ghq-get
-    set -l git_user (git config user.name)
-    if test -z "$git_user"
-        echo "Error: git user.name not configured"
-        return 1
-    end
-
-    set -l sandbox_suffix "-sandbox"
-
-    set -l repos_info (begin
-        gh repo list $git_user --json nameWithOwner,description,updatedAt --jq '.[] | "\(.updatedAt)\t\(.nameWithOwner)\t\(.description // "No description")"' 2>/dev/null
-        gh repo list "$git_user$sandbox_suffix" --json nameWithOwner,description,updatedAt --jq '.[] | "\(.updatedAt)\t\(.nameWithOwner)\t\(.description // "No description")"' 2>/dev/null
-    end | sort -r | uniq -f1)
-
-    if test -z "$repos_info"
-        echo "Error: No repositories found or failed to fetch from GitHub"
-        return 1
-    end
-
-    set -l formatted_repos (printf '%s\n' $repos_info | awk -F'\t' '{
-        split($1, date_parts, "T")
-        split(date_parts[1], ymd, "-")
-        short_date = ymd[1] "-" ymd[2] "-" ymd[3]
-        printf "%-12s %-35s %s\n", short_date, $2, $3
-    }')
-
-    set -l selected_line (printf '%s\n' $formatted_repos | fzf --prompt="Select repository (date repo desc): " --height=40% --reverse)
-
-    if test -n "$selected_line"
-        set -l selected_repo (echo "$selected_line" | awk '{print $2}')
-        echo "Getting repository: $selected_repo"
-        if ghq get -p $selected_repo
-            echo "Successfully cloned: $selected_repo"
-        else
-            echo "Error: Failed to clone repository: $selected_repo"
-            return 1
-        end
-    else
-        echo "No repository selected."
-        return 0
-    end
-end
-
 {{- if (eq .chezmoi.os "darwin") }}
 function joinpdf
     mkdir -p formatted

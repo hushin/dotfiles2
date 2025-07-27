@@ -15,12 +15,16 @@
             "keys": "ctrl+c"
         },
         {
+            "id": "Terminal.FindText",
+            "keys": "ctrl+shift+f"
+        },
+        {
             "id": "Terminal.PasteFromClipboard",
             "keys": "ctrl+v"
         },
         {
-            "id": "Terminal.FindText",
-            "keys": "ctrl+shift+f"
+            "id": "Terminal.SwitchToTab1",
+            "keys": "ctrl+2"
         },
         {
             "id": "Terminal.DuplicatePaneAuto",
@@ -31,16 +35,12 @@
             "keys": "ctrl+pgup"
         },
         {
-            "id": "Terminal.NextTab",
-            "keys": "ctrl+pgdn"
-        },
-        {
             "id": "Terminal.SwitchToTab0",
             "keys": "ctrl+1"
         },
         {
-            "id": "Terminal.SwitchToTab1",
-            "keys": "ctrl+2"
+            "id": "Terminal.NextTab",
+            "keys": "ctrl+pgdn"
         },
         {
             "id": "Terminal.SwitchToTab2",
@@ -126,5 +126,6 @@
         ]
     },
     "schemes": [],
+    "theme": "light",
     "themes": []
 }

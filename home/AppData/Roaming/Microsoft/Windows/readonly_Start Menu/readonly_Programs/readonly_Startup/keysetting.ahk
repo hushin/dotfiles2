@@ -235,23 +235,26 @@ F14 up:: IME_SET(1)
 F13 & Tab::AltTab
 !Tab:: Send("#{Tab}")
 
+; NOTE: SendEvent で 押しっぱなし対策
+; ref. https://did2memo.net/2024/06/11/autohotkey-ctrl-key-is-stuck-sendevent/
+
 ; LWin+Click -> Ctrl+Click
 F13 & LButton::
 {
     MouseGetPos(&x, &y)
-    Send("{Ctrl down}{Click %x% %y%}{Ctrl up}")
+    SendEvent("{Ctrl down}{Click %x% %y%}{Ctrl up}")
 }
 
 ; RWin+Click -> Win+Click
 F14 & LButton::
 {
     MouseGetPos(&x, &y)
-    Send("{LWin Down}{Click %x% %y%}{LWin Up}")
+    SendEvent("{LWin Down}{Click %x% %y%}{LWin Up}")
 }
 
 ; LWin+スクロール -> Ctrl+スクロール
-F13 & WheelUp:: Send("{Ctrl down}{WheelUp}{Ctrl up}")
-F13 & WheelDown:: Send("{Ctrl down}{WheelDown}{Ctrl up}")
+F13 & WheelUp:: SendEvent("{Ctrl down}{WheelUp}{Ctrl up}")
+F13 & WheelDown:: SendEvent("{Ctrl down}{WheelDown}{Ctrl up}")
 
 ; sound volume
 RShift & F12::

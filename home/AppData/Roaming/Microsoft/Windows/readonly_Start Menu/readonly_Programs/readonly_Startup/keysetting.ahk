@@ -239,19 +239,19 @@ F13 & Tab::AltTab
 F13 & LButton::
 {
     MouseGetPos(&x, &y)
-    Send "{Ctrl down}{Click %x% %y%}{Ctrl up}"
+    Send("{Ctrl down}{Click %x% %y%}{Ctrl up}")
 }
 
 ; RWin+Click -> Win+Click
 F14 & LButton::
 {
     MouseGetPos(&x, &y)
-    Send "{LWin Down}{Click %x% %y%}{LWin Up}"
+    Send("{LWin Down}{Click %x% %y%}{LWin Up}")
 }
 
 ; LWin+スクロール -> Ctrl+スクロール
-F13 & WheelUp:: Send "{Ctrl down}{WheelUp}{Ctrl up}"
-F13 & WheelDown:: Send "{Ctrl down}{WheelDown}{Ctrl up}"
+F13 & WheelUp:: Send("{Ctrl down}{WheelUp}{Ctrl up}")
+F13 & WheelDown:: Send("{Ctrl down}{WheelDown}{Ctrl up}")
 
 ; sound volume
 RShift & F12::
@@ -297,8 +297,8 @@ F13 & `;::
 ; AHK で ctrl + ` を ctrl + F22 に変換
 ; 変換 = vkF3、無変換 = vkF4 に該当
 ; ref https://ahkwiki.net/KeyList
-^vkF3:: Send "^{F22}"
-^vkF4:: Send "^{F22}"
+^vkF3:: Send("^{F22}")
+^vkF4:: Send("^{F22}")
 #HotIf
 
 #HotIf WinActive("ahk_exe WindowsTerminal.exe")

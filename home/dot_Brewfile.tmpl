@@ -1,0 +1,80 @@
+{{- if ne (env "REMOTE_CONTAINERS") "true" }}
+brew "curl"
+brew "emojify"
+brew "git"
+{{- end }}
+brew "gibo"
+brew "git-secrets"
+brew "tig"
+
+{{- if eq .chezmoi.os "linux" }}
+brew "emacs"
+{{- end }}
+
+{{- if eq .chezmoi.os "darwin" }}
+cask_args appdir: "/Applications"
+tap "d12frosted/emacs-plus"
+brew "mise"
+brew "mas"
+
+cask "google-chrome"
+cask "karabiner-elements"
+cask "1password"
+cask "1password-cli"
+cask "visual-studio-code"
+brew "emacs-plus@30"
+
+brew "fish"
+brew "gibo"
+brew "git-secrets"
+brew "git"
+brew "gnu-sed"
+brew "graphviz"
+brew "highlight"
+brew "nkf"
+brew "openssl"
+brew "shellcheck"
+# brew "source-highlight"
+brew "tmux"
+brew "trash"
+brew "tealdeer"
+brew "tree"
+brew "watch"
+brew "wget"
+
+cask "adobe-acrobat-reader"
+cask "cyberduck"
+cask "firefox"
+# cask "font-cica"
+# cask "font-hackgen-nerd"
+# cask "font-hackgen"
+# cask "font-noto-serif"
+# cask "font-roboto"
+# cask "iandol/adobe-fonts/font-source-code-pro"
+cask "docker-desktop"
+cask "google-japanese-ime"
+cask "iterm2"
+cask "keycastr"
+cask "raycast"
+cask "rectangle"
+cask "vlc"
+# cask "xmind"
+
+mas "CotEditor", id: 1024640650
+# mas "The Unarchiver", id: 425424353
+# mas "Numbers", id: 409203825
+# mas "Keynote", id: 409183694
+# mas "Pages", id: 409201541
+# mas "Xcode", id: 497799835
+{{-   if eq .profile "personal" }}
+# 個人用設定
+cask "discord"
+cask "dropbox"
+mas "LINE", id: 539883307
+mas "Kindle", id: 302584613
+mas "Noizio", id: 928871589
+{{-   else }}
+# 仕事用設定
+mas "Slack", id: 803453959
+{{-   end }}
+{{- end }}

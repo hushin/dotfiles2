@@ -1,3 +1,4 @@
 #!/bin/bash
 set -euo pipefail
-echo "darwin"
+
+mise install

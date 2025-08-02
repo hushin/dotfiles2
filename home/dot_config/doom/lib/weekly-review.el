@@ -77,6 +77,7 @@ Inboxに収集する
   - [ ] =C-c n f= cancel で 中断中のプロジェクトを見返す
 ** 閉じる
 - [ ] org-agenda タスクをアーカイブする
+  - =C-c a t 3 r * x A=
 "
         :if-new (file+head ,file-path ,(format "#+title: %s\n" title))
         :immediate-finish t

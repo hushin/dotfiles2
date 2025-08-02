@@ -30,13 +30,15 @@ Install-Module PSFzf -Scope CurrentUser
 
 [以降の Windows 設定](./docs/windows.md)
 
-### Ubuntu
+### macOS, Ubuntu
 
 ```sh
 sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin
 # WSL は chezmoi パス解決のためshellを新しく開く
 chezmoi init --apply hushin/dotfiles2
 ```
+
+- [macOS 設定](./docs/macos.md)
 
 ## 手動設定
 

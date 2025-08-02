@@ -27,10 +27,10 @@ F13 & f::^f
 F13 & g::^g
 F13 & h:: {
     if GetKeyState("Alt") {
-        Send("#{Home}")
+        SendEvent("#{Home}")
         return
     }
-    Send("#{Down}")
+    SendEvent("#{Down}")
     return
 }
 F13 & i::^i
@@ -57,19 +57,19 @@ F13 & 2::^2
 F13 & 3::
 {
     if GetKeyState("Shift") {
-        Send("#{PrintScreen}")
+        SendEvent("#{PrintScreen}")
         return
     }
-    Send("^3")
+    SendEvent("^3")
     return
 }
 F13 & 4::
 {
     if GetKeyState("Shift") {
-        Send("#+s") ;切り取り＆スケッチ
+        SendEvent("#+s") ;切り取り＆スケッチ
         return
     }
-    Send("^4")
+    SendEvent("^4")
     return
 }
 F13 & 5::^5
@@ -84,19 +84,19 @@ F13 & /::^/
 F13 & [::
 {
     if GetKeyState("Shift") {
-        Send("^{PgUp}")
+        SendEvent("^{PgUp}")
         return
     }
-    Send("^[")
+    SendEvent("^[")
     return
 }
 F13 & ]::
 {
     if GetKeyState("Shift") {
-        Send("^{PgDn}")
+        SendEvent("^{PgDn}")
         return
     }
-    Send("^]")
+    SendEvent("^]")
     return
 }
 F13 & +::^= ; 若干自信ない
@@ -108,7 +108,7 @@ F13 & Right::^Right
 F13 & Left::^Left
 
 ; 特殊系
-F13 & BackSpace:: Send("+{Home}{BackSpace}")
+F13 & BackSpace:: SendEvent("+{Home}{BackSpace}")
 
 ; 仮想デスクトップの移動
 ^Right::^#Right
@@ -161,42 +161,42 @@ F14 & .::#.
 
 ;; Emacs like
 #HotIf !WinActive("ahk_exe (ubuntu2204|bash|emacs|WindowsTerminal).exe")
-^p:: Send("{Up}")
-^n:: Send("{Down}")
-^f:: Send("{Right}")
-^b:: Send("{left}")
-^a:: Send("{Home}")
-^e:: Send("{End}")
-^v:: Send("{PgDn}")
-!v:: Send("{PgUp}")
-!,:: Send("^{Home}")
-!.:: Send("^{End}")
+^p:: SendEvent("{Up}")
+^n:: SendEvent("{Down}")
+^f:: SendEvent("{Right}")
+^b:: SendEvent("{left}")
+^a:: SendEvent("{Home}")
+^e:: SendEvent("{End}")
+^v:: SendEvent("{PgDn}")
+!v:: SendEvent("{PgUp}")
+!,:: SendEvent("^{Home}")
+!.:: SendEvent("^{End}")
 
-+^p:: Send("+{Up}")
-+^n:: Send("+{Down}")
-+^f:: Send("+{Right}")
-+^b:: Send("+{left}")
-+^a:: Send("+{Home}")
-+^e:: Send("+{End}")
-+^v:: Send("+{PgDn}")
-+!v:: Send("+{PgUp}")
-+!,:: Send("+^{Home}")
-+!.:: Send("+^{End}")
++^p:: SendEvent("+{Up}")
++^n:: SendEvent("+{Down}")
++^f:: SendEvent("+{Right}")
++^b:: SendEvent("+{left}")
++^a:: SendEvent("+{Home}")
++^e:: SendEvent("+{End}")
++^v:: SendEvent("+{PgDn}")
++!v:: SendEvent("+{PgUp}")
++!,:: SendEvent("+^{Home}")
++!.:: SendEvent("+^{End}")
 
-+BackSpace:: Send("{Delete}")
++BackSpace:: SendEvent("{Delete}")
 
-^d:: Send("{Delete}")
-^h:: Send("{BackSpace}")
+^d:: SendEvent("{Delete}")
+^h:: SendEvent("{BackSpace}")
 ^w::^x
 ^y::^v
 ^s::^f
 ^/::^z
-^k:: Send("+{End}^x")
-^m:: Send("{Enter}")
-^j:: Send("{Enter}")
+^k:: SendEvent("+{End}^x")
+^m:: SendEvent("{Enter}")
+^j:: SendEvent("{Enter}")
 #HotIf
 
-!BackSpace:: Send("^{BackSpace}")
+!BackSpace:: SendEvent("^{BackSpace}")
 
 ;-----------------------------------------------------------
 ; IMEの状態をセット
@@ -227,13 +227,13 @@ F13:: IME_SET(0)
 F14 up:: IME_SET(1)
 ^[::
 {
-    Send("{Escape}")
+    SendEvent("{Escape}")
     IME_SET(0)
     return
 }
 
 F13 & Tab::AltTab
-!Tab:: Send("#{Tab}")
+!Tab:: SendEvent("#{Tab}")
 
 ; NOTE: SendEvent で 押しっぱなし対策
 ; ref. https://did2memo.net/2024/06/11/autohotkey-ctrl-key-is-stuck-sendevent/
@@ -273,7 +273,7 @@ RShift & F11::
 
 RShift & F10::
 {
-    Send("{Volume_Mute}")
+    SendEvent("{Volume_Mute}")
     SoundPlay("*64")
     return
 }
@@ -300,27 +300,27 @@ F13 & `;::
 ; AHK で ctrl + ` を ctrl + F22 に変換
 ; 変換 = vkF3、無変換 = vkF4 に該当
 ; ref https://ahkwiki.net/KeyList
-^vkF3:: Send("^{F22}")
-^vkF4:: Send("^{F22}")
+^vkF3:: SendEvent("^{F22}")
+^vkF4:: SendEvent("^{F22}")
 #HotIf
 
 #HotIf WinActive("ahk_exe WindowsTerminal.exe")
-F13 & n:: Send("^+n")
-F13 & t:: Send("^+t")
-F13 & w:: Send("^+w")
-F13 & f:: Send("^+f")
-F13 & d:: Send("!+d")
+F13 & n:: SendEvent("^+n")
+F13 & t:: SendEvent("^+t")
+F13 & w:: SendEvent("^+w")
+F13 & f:: SendEvent("^+f")
+F13 & d:: SendEvent("!+d")
 #HotIf
 
 #HotIf WinActive("ahk_exe chrome.exe")
-F13 & y:: Send("^h") ; 履歴
+F13 & y:: SendEvent("^h") ; 履歴
 F13 & i:: {
     if GetKeyState("Alt") {
         ; DevTools を開く
-        Send("^+i")
+        SendEvent("^+i")
         return
     }
-    Send("^i")
+    SendEvent("^i")
     return
 }
 #HotIf
@@ -342,8 +342,8 @@ F13 & i:: {
 }
 
 #HotIf WinActive("ahk_exe Kindle.exe")
-[:: Send("{Left}")
-]:: Send("{Right}")
+[:: SendEvent("{Left}")
+]:: SendEvent("{Right}")
 #HotIf
 
 ;; 定型文
@@ -353,7 +353,7 @@ F13 & i:: {
 InsertText(Content) {
     cb_bk := ClipboardAll()
     A_Clipboard := Content
-    Send("^v")
+    SendEvent("^v")
     Sleep(100)
     A_Clipboard := cb_bk
 }

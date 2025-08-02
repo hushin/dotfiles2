@@ -188,7 +188,7 @@ executable_dot_script.tmpl
 # Windows固有の設定
 {{- end }}
 
-{{- if .personal }}
+{{- if eq .profile "personal" }}
 # 個人用設定
 {{- else }}
 # 仕事用設定

@@ -5,7 +5,14 @@ Host *
 
 # ref https://www.clear-code.com/blog/2023/4/3/recommended-ssh-config.html
 HashKnownHosts yes
+{{- if eq .profile "personal" }}
+# 個人用設定
+PasswordAuthentication yes
+StrictHostKeyChecking ask
+{{- else }}
+# 仕事用設定
 PasswordAuthentication no
 StrictHostKeyChecking yes
+{{- end }}
 CheckHostIP yes
 Compression yes

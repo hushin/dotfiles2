@@ -27,9 +27,12 @@
   - [ ] Stylebot
 - [ ] インストール済みのアプリをメモ
   - [ ] 必要に応じて dotfiles 更新
-- [ ] アプリの設定
+- [ ] アプリの設定(Windows)
   - [ ] Blender
   - Steam … 基本的に別ディスクに退避させているので不要
+- [ ] アプリの設定(macOS)
+  - [ ] iTerm2: Save Profile as JSON
+  - [ ] Raycast: Advanced > Export
 
 ## ghq フォルダ
 

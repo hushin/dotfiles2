@@ -35,3 +35,9 @@ softwareupdate -ia
 - Google 日本語入力
   - ¥ キーで バックスラッシュを入力
   - キー設定: ATOK から Ctrl-k で全角カタカナに変換
+- Raycast
+  - すべて復元: Dropbox に保存している設定を Import する
+  - ゼロから手動設定メモ
+    - `Alt + Space`
+    - Extensions
+      - Define Word: `d`

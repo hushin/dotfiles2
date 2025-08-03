@@ -1,76 +1,73 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
+;; ここに個人設定を記述してください！このファイルを変更した後に 'doom
+;; sync' を実行する必要はありません！
 
 
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets. It is optional.
+;; 一部の機能では、GPG設定、メールクライアント、ファイルテンプレート、
+;; スニペットなどで、ユーザーを識別するためにこれを使用します。オプションです。
 ;; (setq user-full-name "John Doe"
 ;;       user-mail-address "john@doe.com")
 
-;; Doom exposes five (optional) variables for controlling fonts in Doom:
+;; Doomでフォントを制御するための5つの（オプション）変数が用意されています：
 ;;
-;; - `doom-font' -- the primary font to use
-;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
-;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;; - `doom-symbol-font' -- for symbols
-;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
+;; - `doom-font' -- 使用するメインフォント
+;; - `doom-variable-pitch-font' -- 非等幅フォント（該当する場合）
+;; - `doom-big-font' -- `doom-big-font-mode' で使用；プレゼンテーションや
+;;   ストリーミングに使用
+;; - `doom-symbol-font' -- シンボル用
+;; - `doom-serif-font' -- `fixed-pitch-serif' フェイス用
 ;;
-;; See 'C-h v doom-font' for documentation and more examples of what they
-;; accept. For example:
+;; これらが受け入れる値のドキュメントと例については、'C-h v doom-font' を参照してください。
+;; 例：
 ;;
 ;;(setq doom-font (font-spec :family "Fira Code" :size 12 :weight 'semi-light)
 ;;      doom-variable-pitch-font (font-spec :family "Fira Sans" :size 13))
 ;;
-;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
-;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
-;; refresh your font settings. If Emacs still can't find your font, it likely
-;; wasn't installed correctly. Font issues are rarely Doom issues!
+;; フォントが見つからない場合は、'M-x describe-font' で検索し、
+;; `M-x eval-region' でelispコードを実行し、'M-x doom/reload-font' で
+;; フォント設定を更新してください。それでもEmacsがフォントを見つけられない場合は、
+;; 正しくインストールされていない可能性があります。フォントの問題はDoomの問題ではありません！
 
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
+;; テーマを読み込む方法は2つあります。どちらもテーマがインストールされて
+;; 利用可能であることを前提としています。`doom-theme' を設定するか、
+;; `load-theme' 関数で手動でテーマを読み込むことができます。これがデフォルトです：
 (setq doom-theme 'doom-one)
 
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
+;; これは行番号のスタイルを決定します。`nil' に設定すると、行番号は
+;; 無効になります。相対行番号の場合は、これを `relative' に設定してください。
 (setq display-line-numbers-type t)
 
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
+;; `org' を使用していて、orgファイルを以下のデフォルトの場所に置きたくない場合は、
+;; `org-directory' を変更してください。orgが読み込まれる前に設定する必要があります！
 (setq org-directory "~/org/")
 
 
-;; Whenever you reconfigure a package, make sure to wrap your config in an
-;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
+;; パッケージを再設定する際は、設定を `after!' ブロックで囲むようにしてください。
+;; そうしないと、Doomのデフォルト設定が上書きされる可能性があります。例：
 ;;
 ;;   (after! PACKAGE
 ;;     (setq x y))
 ;;
-;; The exceptions to this rule:
+;; このルールの例外：
 ;;
-;;   - Setting file/directory variables (like `org-directory')
-;;   - Setting variables which explicitly tell you to set them before their
-;;     package is loaded (see 'C-h v VARIABLE' to look up their documentation).
-;;   - Setting doom variables (which start with 'doom-' or '+').
+;;   - ファイル/ディレクトリ変数の設定（`org-directory' など）
+;;   - パッケージが読み込まれる前に設定することが明示的に指示されている変数の設定
+;;     （ドキュメントを参照するには 'C-h v VARIABLE' を使用）
+;;   - doom変数の設定（'doom-' または '+' で始まる変数）
 ;;
-;; Here are some additional functions/macros that will help you configure Doom.
+;; Doomの設定に役立つ追加の関数/マクロをご紹介します。
 ;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package!' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', relative to
-;;   this file. Emacs searches the `load-path' when you load packages with
-;;   `require' or `use-package'.
-;; - `map!' for binding new keys
+;; - `load!' このファイルに相対的な外部の*.elファイルを読み込む
+;; - `use-package!' パッケージを設定する
+;; - `after!' パッケージが読み込まれた後にコードを実行する
+;; - `add-load-path!' このファイルに相対的なディレクトリを `load-path' に追加する
+;;   Emacsは `require' や `use-package' でパッケージを読み込む際に `load-path' を検索します
+;; - `map!' 新しいキーをバインドする
 ;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
-;; This will open documentation for it, including demos of how they are used.
-;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
-;; etc).
+;; これらの関数/マクロの情報を取得するには、ハイライトされたシンボルにカーソルを
+;; 移動して 'K' を押してください（non-evilユーザーは 'C-c c k' を押す）。
+;; 使用方法のデモを含むドキュメントが開きます。
+;; または、`C-h o' を使用してシンボル（関数、変数、フェイスなど）を検索することもできます。
 ;;
-;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-;; they are implemented.
+;; 'gd'（または 'C-c c d'）を試して定義にジャンプし、実装方法を確認することもできます。

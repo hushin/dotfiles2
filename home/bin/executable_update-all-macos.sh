@@ -17,15 +17,6 @@ command_exists() {
     command -v "$1" >/dev/null 2>&1
 }
 
-# Update macOS system
-print_section "Updating macOS system"
-if command_exists softwareupdate; then
-    echo "Checking for macOS updates..."
-    softwareupdate -ia
-else
-    echo "⚠️  softwareupdate command not found"
-fi
-
 # Update Homebrew
 print_section "Updating Homebrew"
 if command_exists brew; then

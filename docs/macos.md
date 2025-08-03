@@ -12,5 +12,26 @@ softwareupdate -ia
 ## システム設定
 
 - Touch ID
+- キーボード > キーボードショートカット
+  - 入力ソース: ^スペース 外す
+  - Spotlight 検索: オフ
+  - キーボード: 次のウインドウを操作対象にする Cmd-Shift-2
 - ディスプレイ
   - Night Shift を日の入りから日の出まで
+
+## アプリ起動
+
+- Karabiner-elements
+- 1Password
+- Rectangle
+- RayCast
+- Dropbox
+
+## 各アプリ
+
+- iTerm2
+  - Profiles -> etc/config/iTerm2Profile.json を インポート
+  - Keys -> Hotkey `Cmd+Shift+;`
+- Google 日本語入力
+  - ¥ キーで バックスラッシュを入力
+  - キー設定: ATOK から Ctrl-k で全角カタカナに変換

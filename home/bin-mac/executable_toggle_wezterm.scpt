@@ -2,8 +2,8 @@
 
 tell application "System Events"
     set appList to name of application processes
-    if appList contains "WezTerm" then
-        tell application process "WezTerm"
+    if appList contains "wezterm-gui" then
+        tell application process "wezterm-gui"
             if visible then
                 set visible to false
             else

@@ -1,6 +1,6 @@
 {{ if ne .chezmoi.os "darwin" }}
 .chezmoiscripts/1_darwin/**
-.config/karabiner
+Library/
 {{ end }}
 
 {{ if ne .chezmoi.os "linux" }}
@@ -21,3 +21,5 @@ Documents/
 {{ if not (or (eq .chezmoi.os "linux") (and (hasKey .chezmoi.kernel "osrelease") (.chezmoi.kernel.osrelease | lower | contains "microsoft"))) }}
 .chezmoiscripts/2_wsl/**
 {{ end }}
+
+symlink-src/

@@ -203,5 +203,13 @@
   {
     "key": "ctrl+g ctrl+g",
     "command": "git.checkout"
-  }
+},
+{
+    "key": "shift+enter",
+    "command": "workbench.action.terminal.sendSequence",
+    "args": {
+        "text": "\\\r\n"
+    },
+    "when": "terminalFocus"
+}
 ]

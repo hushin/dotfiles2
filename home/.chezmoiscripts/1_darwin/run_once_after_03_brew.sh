@@ -10,8 +10,3 @@ brew doctor
 
 echo "Install homebrew apps"
 brew bundle --global
-
-if [ "$SHELL" != "$(which fish)" ]; then
-    echo "set fish as default shell"
-    sudo chsh -s $(which fish)
-fi

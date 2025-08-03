@@ -29,9 +29,6 @@ softwareupdate -ia
 
 ## 各アプリ
 
-- iTerm2
-  - Profiles -> etc/config/iTerm2Profile.json を インポート
-  - Keys -> Hotkey `Cmd+Shift+;`
 - Google 日本語入力
   - ¥ キーで バックスラッシュを入力
   - キー設定: ATOK から Ctrl-k で全角カタカナに変換

@@ -38,3 +38,9 @@ softwareupdate -ia
     - `Alt + Space`
     - Extensions
       - Define Word: `d`
+
+## アプリ更新
+
+```
+update-all-macos.sh
+```

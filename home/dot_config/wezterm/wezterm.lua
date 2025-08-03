@@ -18,7 +18,9 @@ config.initial_rows = 40
 config.window_background_opacity = 0.95
 config.macos_window_background_blur = 20
 
--- タブバー
+-- タイトルバーを非表示
+config.window_decorations = "RESIZE"
+-- タブが一つの時は非表示
 config.hide_tab_bar_if_only_one_tab = true
 
 config.keys = {

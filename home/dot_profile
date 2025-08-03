@@ -29,5 +29,10 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
+# set PATH so it includes emacs bin if it exists
+if [ -d "$HOME/.config/emacs/bin" ] ; then
+    PATH="$HOME/.config/emacs/bin:$PATH"
+fi
+
 # editor
 export EDITOR='emacsclient -t -a ""'

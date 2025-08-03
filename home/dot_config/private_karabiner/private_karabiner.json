@@ -101,6 +101,25 @@
             ]
           },
           {
+            "description": "Toggle WezTerm with Cmd+Shift+; using external script",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "semicolon",
+                  "modifiers": {
+                    "mandatory": ["command", "shift"]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "osascript ~/bin-mac/toggle_wezterm.scpt"
+                  }
+                ]
+              }
+            ]
+          },
+          {
             "description": "コマンドキーを単体で押したときに、英数・かなキーを送信する。（左コマンドキーは英数、右コマンドキーはかな） (rev 3)",
             "manipulators": [
               {
@@ -189,6 +208,25 @@
     {
       "complex_modifications": {
         "rules": [
+          {
+            "description": "Toggle WezTerm with Cmd+Shift+; using external script",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "semicolon",
+                  "modifiers": {
+                    "mandatory": ["command", "shift"]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "osascript ~/bin-mac/toggle_wezterm.scpt"
+                  }
+                ]
+              }
+            ]
+          },
           {
             "description": "コマンドキーを単体で押したときに、英数・かなキーを送信する。（左コマンドキーは英数、右コマンドキーはかな） (rev 3)",
             "manipulators": [
@@ -330,6 +368,25 @@
     {
       "complex_modifications": {
         "rules": [
+          {
+            "description": "Toggle WezTerm with Cmd+Shift+; using external script",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "semicolon",
+                  "modifiers": {
+                    "mandatory": ["command", "shift"]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "osascript ~/bin-mac/toggle_wezterm.scpt"
+                  }
+                ]
+              }
+            ]
+          },
           {
             "description": "コマンドキーを単体で押したときに、英数・かなキーを送信する。（左コマンドキーは英数、右コマンドキーはかな） (rev 3)",
             "manipulators": [
@@ -520,6 +577,25 @@
     {
       "complex_modifications": {
         "rules": [
+          {
+            "description": "Toggle WezTerm with Cmd+Shift+; using external script",
+            "manipulators": [
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "semicolon",
+                  "modifiers": {
+                    "mandatory": ["command", "shift"]
+                  }
+                },
+                "to": [
+                  {
+                    "shell_command": "osascript ~/bin-mac/toggle_wezterm.scpt"
+                  }
+                ]
+              }
+            ]
+          },
           {
             "description": "コマンドキーを単体で押したときに、英数・かなキーを送信する。（左コマンドキーは英数、右コマンドキーはかな） (rev 3)",
             "manipulators": [

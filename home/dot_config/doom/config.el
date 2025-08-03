@@ -29,19 +29,22 @@
 ;; フォント設定を更新してください。それでもEmacsがフォントを見つけられない場合は、
 ;; 正しくインストールされていない可能性があります。フォントの問題はDoomの問題ではありません！
 
+(setq doom-font (font-spec :family "UDEV Gothic NF" :size (if (featurep :system 'windows) 26 16)))
+
 ;; テーマを読み込む方法は2つあります。どちらもテーマがインストールされて
 ;; 利用可能であることを前提としています。`doom-theme' を設定するか、
 ;; `load-theme' 関数で手動でテーマを読み込むことができます。これがデフォルトです：
-(setq doom-theme 'doom-one)
+(setq doom-theme 'doom-nord)
 
 ;; これは行番号のスタイルを決定します。`nil' に設定すると、行番号は
 ;; 無効になります。相対行番号の場合は、これを `relative' に設定してください。
-(setq display-line-numbers-type t)
+(setq display-line-numbers-type nil)
 
 ;; `org' を使用していて、orgファイルを以下のデフォルトの場所に置きたくない場合は、
 ;; `org-directory' を変更してください。orgが読み込まれる前に設定する必要があります！
-(setq org-directory "~/org/")
-
+(setq org-directory "~/Documents/memo/org/")
+(setq org-roam-directory org-directory)
+(setq org-roam-file-exclude-regexp "/archives/")
 
 ;; パッケージを再設定する際は、設定を `after!' ブロックで囲むようにしてください。
 ;; そうしないと、Doomのデフォルト設定が上書きされる可能性があります。例：
@@ -71,3 +74,4 @@
 ;; または、`C-h o' を使用してシンボル（関数、変数、フェイスなど）を検索することもできます。
 ;;
 ;; 'gd'（または 'C-c c d'）を試して定義にジャンプし、実装方法を確認することもできます。
+

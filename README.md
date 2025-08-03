@@ -66,6 +66,17 @@ chezmoi init --apply hushin/dotfiles2
   - Google ドライブを介した手動同期
 - [Mouse Dictionary](https://qiita.com/wtetsu/items/c43232c6c44918e977c9)
   - 英辞郎 の 辞書データをインポート
+- uBlock Origin Lite
+  - 開発者モード をオン
+  - 開発で以下を設定（デフォルトはフィルタリングなし）
+
+```
+フィルタリングなし:
+  - all-urls
+基本:
+最適:
+完全:
+```
 
 ### VSCode
 

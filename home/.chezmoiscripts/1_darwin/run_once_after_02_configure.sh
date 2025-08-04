@@ -28,6 +28,9 @@ defaults write NSGlobalDomain KeyRepeat -int 3
 # リピート入力認識までの時間
 defaults write NSGlobalDomain InitialKeyRepeat -int 15
 
+# 言語切替時のインジケータ（"A","あ"）の表示を無効化
+defaults write kCFPreferencesAnyApplication TSMLanguageIndicatorEnabled 0
+
 # サイドバーのアイコンサイズを大きく
 # defaults write NSGlobalDomain NSTableViewDefaultSizeMode -int 3
 

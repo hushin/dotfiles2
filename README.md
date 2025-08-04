@@ -67,6 +67,7 @@ chezmoi init --apply hushin/dotfiles2
   - Advanced mode:
     - https://raw.githubusercontent.com/hushin/dotfiles2/refs/heads/main/etc/SurfingkeysSetting.js
     - [src](./etc/SurfingkeysSetting.js)
+    - Save しただけでは反映されない？何回か Advanced mode をオン・オフしているとちゃんと反映されそう
 - Tampermonkey
   - chrome://extensions/
     - ユーザースクリプトを許可する

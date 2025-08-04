@@ -116,6 +116,13 @@ Windows は適当なフォルダを指定、 NFM.ttf を開いて手動でイン
 
 Dropbox の設定が終わったら設定
 
+macOS
+
+```sh
+ln -s "/Users/$(whoami)/Library/CloudStorage/Dropbox" ~/Dropbox
+ln -s ~/Dropbox/memo ~/Documents/memo
+```
+
 Windows
 
 ```powershell

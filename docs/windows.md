@@ -85,6 +85,14 @@ chezmoi re-add C:\Users\n1\AppData\Local\Packages\Microsoft.WindowsTerminal_8wek
 
 ## 手動設定・アプリ
 
+### Google 日本語入力
+
+- キー設定: ATOK
+- 入力補助
+  - 変換前のアルファベット、数字を半角に設定
+- その他
+  - ホットキー(Ctrl+Shift)による IME の切り替えを無効化する
+
 ### PowerToys
 
 - PowerToys Run

@@ -18,5 +18,6 @@
 )
 
 foreach ($package in $packages) {
+    Write-Host "Installing $package..." -ForegroundColor Green
     winget install -e --id $package --source winget
 }

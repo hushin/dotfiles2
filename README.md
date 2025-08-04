@@ -6,6 +6,17 @@
 
 ## Setup
 
+### macOS
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+eval "$(/opt/homebrew/bin/brew shellenv)"
+brew install chezmoi
+chezmoi init --apply hushin/dotfiles2
+```
+
+- [macOS 設定](./docs/macos.md)
+
 ### Windows
 
 `Win-X Alt-A` ターミナル（管理者）を立ち上げて実行
@@ -30,15 +41,13 @@ Install-Module PSFzf -Scope CurrentUser
 
 [以降の Windows 設定](./docs/windows.md)
 
-### macOS, Ubuntu
+### Ubuntu
 
 ```sh
 sh -c "$(curl -fsLS get.chezmoi.io)" -- -b $HOME/.local/bin
 # WSL は chezmoi パス解決のためshellを新しく開く
 chezmoi init --apply hushin/dotfiles2
 ```
-
-- [macOS 設定](./docs/macos.md)
 
 ## 手動設定
 

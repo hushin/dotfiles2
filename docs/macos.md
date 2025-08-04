@@ -23,21 +23,28 @@ softwareupdate -ia
 
 - Karabiner-elements
 - 1Password
-- Rectangle
-- RayCast
 - Dropbox
+- RayCast
+- Rectangle
 
-## 各アプリ
+## 各アプリ設定
 
-- Google 日本語入力
-  - ¥ キーで バックスラッシュを入力
-  - キー設定: ATOK から Ctrl-k で全角カタカナに変換
-- Raycast
-  - すべて復元: Dropbox に保存している設定を Import する
-  - ゼロから手動設定メモ
-    - `Alt + Space`
-    - Extensions
-      - Define Word: `d`
+### Google 日本語入力
+
+- ¥ キーで バックスラッシュを入力
+- キー設定: ATOK から Ctrl-k で全角カタカナに変換
+
+### Raycast
+
+- すべて復元: Dropbox に保存している設定を Import する
+- ゼロから手動設定メモ
+  - `Alt + Space`
+  - Extensions
+    - Define Word: `d`
+
+### Rectangle
+
+[RectangleConfig.json](../etc/config/RectangleConfig.json) をインポート
 
 ## アプリ更新
 

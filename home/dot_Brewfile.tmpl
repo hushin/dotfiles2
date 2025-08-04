@@ -13,7 +13,6 @@ brew "emacs"
 
 {{- if eq .chezmoi.os "darwin" }}
 cask_args appdir: "/Applications"
-tap "d12frosted/emacs-plus"
 brew "mise"
 brew "mas"
 
@@ -22,7 +21,6 @@ cask "karabiner-elements"
 cask "1password"
 cask "1password-cli"
 cask "visual-studio-code"
-brew "emacs-plus@30"
 
 brew "fish"
 brew "gibo"

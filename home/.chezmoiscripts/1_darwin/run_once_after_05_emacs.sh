@@ -1,11 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
+brew tap d12frosted/emacs-plus
+brew install emacs-plus@30
+
 source ~/.profile
 
 echo "install doom emacs"
-~/.config/emacs/bin/doom install
-~/.config/emacs/bin/doom sync
+doom install
+doom sync
 
 if [ ! -e "/Applications/Emacs.app" ]; then
     echo "Creating Emacs.app alias in /Applications"
@@ -41,22 +44,22 @@ EOF
 
     # Compile AppleScript to app
     osacompile -o "$EMACSCLIENT_APP" /tmp/emacsclient.applescript
-    
+
     # Edit Info.plist to add org-protocol URL scheme support
     /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes array" "$EMACSCLIENT_APP/Contents/Info.plist" 2>/dev/null || true
     /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0 dict" "$EMACSCLIENT_APP/Contents/Info.plist" 2>/dev/null || true
     /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLName string 'org-protocol handler'" "$EMACSCLIENT_APP/Contents/Info.plist"
     /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes array" "$EMACSCLIENT_APP/Contents/Info.plist"
     /usr/libexec/PlistBuddy -c "Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string 'org-protocol'" "$EMACSCLIENT_APP/Contents/Info.plist"
-    
+
     # Launch EmacsClient.app once to register URL scheme
     echo "Launching EmacsClient.app to register org-protocol URL scheme"
     open "$EMACSCLIENT_APP"
     sleep 2
-    
+
     # Clean up temporary file
     rm -f /tmp/emacsclient.applescript
-    
+
     echo "EmacsClient.app created successfully with org-protocol support"
 else
     echo "EmacsClient.app already exists, skipping creation"

@@ -7,6 +7,7 @@ cd $HOME\.config\emacs
 git pull
 del -Force .local
 doom install
+doom sync
 ```
 
 Emacs 起動して

@@ -37,6 +37,8 @@ print_section "Updating mise"
 if command_exists mise; then
     echo "Upgrading mise tools..."
     mise upgrade
+    echo "Cleaning up mise..."
+    mise prune
 else
     echo "⚠️  mise not installed"
 fi

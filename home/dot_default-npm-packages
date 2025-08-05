@@ -1,4 +1,5 @@
 corepack
+pnpm
 
 # AI
 @anthropic-ai/claude-code

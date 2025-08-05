@@ -27,6 +27,7 @@
   - [ ] Stylebot
 - [ ] インストール済みのアプリをメモ
   - [ ] 必要に応じて dotfiles 更新
+  - `brew bundle cleanup --global` で 管理していないものを確認
 - [ ] アプリの設定(Windows)
   - [ ] Blender
   - Steam … 基本的に別ディスクに退避させているので不要

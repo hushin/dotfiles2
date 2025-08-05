@@ -11,7 +11,7 @@
     "Dropbox.Dropbox",
     "MartiCliment.UniGetUI",
     "jdx.mise",
-    "BurntSushi.ripgrep.MSVC",
+    "BurntSushi.ripgrep.GNU",
     "sharkdp.fd",
     "Starship.Starship",
     "rsteube.Carapace",

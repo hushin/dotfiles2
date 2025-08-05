@@ -1,6 +1,18 @@
-# Emacs トラブルシューティング
+# Doom Emacs トラブルシューティング
 
-Windows で Doom Emacs が 壊れたとき
+## Couldn’t find ripgrep in your PATH
+
+```sh
+doom env
+```
+
+で環境変数を作り直す
+
+## Windows で Doom Emacs が 壊れたとき
+
+`doom build` する
+
+それでもだめなら
 
 ```powershell
 cd $HOME\.config\emacs

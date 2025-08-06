@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-brew tap d12frosted/emacs-plus
-brew install emacs-plus@30
+# brew tap d12frosted/emacs-plus
+# brew install emacs-plus@30
 
 source ~/.profile
 

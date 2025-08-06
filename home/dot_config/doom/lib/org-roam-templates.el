@@ -1,10 +1,10 @@
 ;;; org-roam-templates.el --- Org-roam capture templates configuration
 
-;; org-roam-dailies-capture-templates
-(setq org-roam-dailies-capture-templates
+;; Personal environment dailies templates
+(defvar my/org-roam-dailies-personal-templates
   '(("d" "default" entry "* %<%H:%M> %?"
-      :target (file+head "%<%Y-%m-%d>.org"
-                "#+title: %<%Y-%m-%d>
+     :target (file+head "%<%Y-%m-%d>.org"
+               "#+title: %<%Y-%m-%d>
 
 * 今日の目標
 
@@ -22,9 +22,34 @@
 ** TODO エントリー消化
 
 * できれば
-"))
-     )
-  )
+")))
+  "Org-roam dailies capture templates for personal environment.")
+
+;; Work environment dailies templates
+(defvar my/org-roam-dailies-work-templates
+  '(("d" "default" entry "* %<%H:%M> %?"
+     :target (file+head "%<%Y-%m-%d>.org"
+               "#+title: %<%Y-%m-%d>
+
+* 今日の目標
+
+* 思い+タスク
+# 確認リスト
+# - 前日のタスクで残っているもの
+# - カレンダーで今日の予定
+# - スプリントゴール タスク
+# - org-agenda
+# - Slack Later
+
+* できれば
+")))
+  "Org-roam dailies capture templates for work environment.")
+
+;; Set org-roam-dailies-capture-templates based on environment
+(setq org-roam-dailies-capture-templates
+      (if my/personal-environment
+          my/org-roam-dailies-personal-templates
+        my/org-roam-dailies-work-templates))
 
 ;; org-roam-capture-templates
 (setq org-roam-capture-templates

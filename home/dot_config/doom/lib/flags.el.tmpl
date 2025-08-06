@@ -1,0 +1,20 @@
+;;; flags.el --- Environment-specific flag definitions
+
+;;; Commentary:
+;; This file contains flag definitions that differ between personal and work environments.
+;; Generated from template using chezmoi.
+
+;;; Code:
+
+{{- if .personal }}
+;; Personal environment flags
+(defvar my/personal-environment t
+  "Flag indicating this is a personal environment.")
+{{- else }}
+;; Work environment flags
+(defvar my/personal-environment nil
+  "Flag indicating this is a personal environment.")
+{{- end }}
+
+(provide 'flags)
+;;; flags.el ends here

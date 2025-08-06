@@ -75,6 +75,8 @@
 ;;
 ;; 'gd'（または 'C-c c d'）を試して定義にジャンプし、実装方法を確認することもできます。
 
+;; Load environment-specific flags
+(load! "lib/flags")
 
 ;; Ctrl-h
 ;(map! "C-h" 'delete-backward-char)

@@ -58,6 +58,12 @@ config.keys = {
     mods = "CMD",
     action = wezterm.action.ActivatePaneDirection 'Next',
   },
+  -- ⌘ k でターミナルをクリア
+  {
+    key = "k",
+    mods = "CMD",
+    action = wezterm.action.ClearScrollback 'ScrollbackAndViewport',
+  },
 }
 
 -- マウス操作の挙動設定

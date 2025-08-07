@@ -4,6 +4,10 @@
 Library/
 {{ end }}
 
+{{- if .personal }}
+Library/Application Support/xbar/plugins/backup-memo.1h.sh
+{{- end }}
+
 {{ if ne .chezmoi.os "linux" }}
 .chezmoiscripts/1_linux/**
 {{ end }}

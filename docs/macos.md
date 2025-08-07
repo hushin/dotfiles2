@@ -51,6 +51,10 @@ softwareupdate -ia
   - Extensions
     - Define Word: `d`
     - Clipboard History: `Cmd+shift+v`
+    - Script Commands
+      - https://github.com/raycast/script-commands
+    - Pomodoro
+    - Visual Studio Code
 
 ### Rectangle
 

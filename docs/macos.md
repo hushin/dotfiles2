@@ -50,6 +50,7 @@ softwareupdate -ia
   - `Alt + Space`
   - Extensions
     - Define Word: `d`
+    - Clipboard History: `Cmd+shift+v`
 
 ### Rectangle
 

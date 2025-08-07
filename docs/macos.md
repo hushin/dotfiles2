@@ -49,10 +49,11 @@ softwareupdate -ia
 - ゼロから手動設定メモ
   - `Alt + Space`
   - Extensions
-    - Define Word: `d`
+    - Define Word: alias `d`
     - Clipboard History: `Cmd+shift+v`
     - Script Commands
       - https://github.com/raycast/script-commands
+      - `~/raycast-commands`
     - Pomodoro
     - Visual Studio Code
 

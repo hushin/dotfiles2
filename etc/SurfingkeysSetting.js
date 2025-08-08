@@ -67,6 +67,25 @@ const formatDate = (date, format = 'YYYY/MM/DD hh:mm:ss') =>
     .replace('mm', padZero(date.getMinutes()))
     .replace('ss', padZero(date.getSeconds()));
 
+const sendArrowKey = (direction) => {
+  const keyCodes = {
+    ArrowUp: 38,
+    ArrowDown: 40,
+    ArrowLeft: 37,
+    ArrowRight: 39,
+  };
+
+  const target = document.activeElement || document.body;
+  target.dispatchEvent(
+    new KeyboardEvent('keydown', {
+      key: direction,
+      code: direction,
+      keyCode: keyCodes[direction],
+      bubbles: true,
+    }),
+  );
+};
+
 const tabOpenBackground = (url) =>
   RUNTIME('openLink', {
     tab: {
@@ -89,6 +108,11 @@ map('h', 'E'); // previousTab
 map('l', '>_R'); // nextTab
 map('R', '>_r'); // reload
 
+map('{', '[[');
+map('}', ']]');
+mapkey('[', '#1Send ArrowLeft', () => sendArrowKey('ArrowLeft'));
+mapkey(']', '#1Send ArrowRight', () => sendArrowKey('ArrowRight'));
+
 map('<Ctrl-[>', '<Esc>');
 
 iunmap(':'); // disable emoji
@@ -102,7 +126,7 @@ iunmapKeys([
   '<Ctrl-y>',
 ]);
 // disable proxy
-unmapKeys(['cp', ';pa', ';pb', ';pc', ';pd', ';ps', ';ap']);
+unmapKeys([';cp', ';pa', ';pb', ';pc', ';pd', ';ps', ';ap']);
 
 // ---- Search ----
 removeSearchAlias('b');
@@ -133,7 +157,7 @@ mapkey('otw', '#8Open Search with alias tw', function () {
   Front.openOmnibar({ type: 'SearchEngine', extra: 'tw' });
 });
 
-addSearchAlias('tf', 'Twitter フォロワーのみ', 'https://x.com/search?pf=on&q=');
+addSearchAlias('xf', 'Twitter フォロワーのみ', 'https://x.com/search?pf=on&q=');
 
 // Google jp 3ヶ月以内
 addSearchAlias(
@@ -148,9 +172,6 @@ addSearchAlias(
   'Yahoo!リアルタイム検索',
   'https://search.yahoo.co.jp/realtime/search?p=',
 );
-mapkey('or', '#8Open Search with alias r', function () {
-  Front.openOmnibar({ type: 'SearchEngine', extra: 'r' });
-});
 
 // Wikipedia jp
 addSearchAlias(
@@ -513,6 +534,8 @@ const qmarksUrls = {
   h: 'http://b.hatena.ne.jp/hush_in/hotentry',
   i: 'https://www.instapaper.com/u',
   x: 'https://x.com/',
+  b: 'https://bsky.app/',
+  y: 'https://www.youtube.com/',
 };
 unmap('gn');
 qmarksMapKey('gn', qmarksUrls, true);
@@ -520,34 +543,6 @@ qmarksMapKey('gO', qmarksUrls, false);
 
 // --- Site-specific mappings ---
 const clickElm = (selector) => () => document.querySelector(selector).click();
-if (window.location.hostname === 'speakerdeck.com') {
-  const clickElmFr = (selector) => () =>
-    document
-      .querySelector('.speakerdeck-iframe')
-      .contentWindow.document.querySelector(selector)
-      .click();
-  mapkey(']', 'next page', clickElmFr('.sd-player-next'));
-  mapkey('[', 'prev page', clickElmFr('.sd-player-previous'));
-}
-
-const sendArrowKey = (direction) => {
-  const keyCodes = {
-    ArrowUp: 38,
-    ArrowDown: 40,
-    ArrowLeft: 37,
-    ArrowRight: 39,
-  };
-
-  const target = document.activeElement || document.body;
-  target.dispatchEvent(
-    new KeyboardEvent('keydown', {
-      key: direction,
-      code: direction,
-      keyCode: keyCodes[direction],
-      bubbles: true,
-    }),
-  );
-};
 
 if (window.location.href.startsWith('https://docs.google.com/presentation/')) {
   const target = document.getElementById('docs-chrome');
@@ -640,23 +635,6 @@ if (window.location.href.startsWith('https://drive.google.com/file/d/')) {
   mapkey('[', 'prev page', prevPage);
 }
 
-if (window.location.hostname === 'www.slideshare.net') {
-  mapkey(']', 'next page', clickElm('#btnNext'));
-  mapkey('[', 'prev page', clickElm('#btnPrevious'));
-}
-
-if (window.location.hostname === 'shonenjumpplus.com') {
-  mapkey(']', 'backward page', clickElm('.page-navigation-backward'));
-  mapkey('[', 'forward page', clickElm('.page-navigation-forward'));
-}
-
-if (
-  ['championcross.jp', 'younganimal.com'].includes(window.location.hostname)
-) {
-  mapkey(']', 'right page', clickElm('#xCVRightNav'));
-  mapkey('[', 'left page', clickElm('#xCVLeftNav'));
-}
-
 if (window.location.hostname === 'booklog.jp') {
   mapkey(']', 'next page', clickElm('#modal-review-next'));
   mapkey('[', 'prev page', clickElm('#modal-review-prev'));
@@ -695,29 +673,22 @@ if (
     url.searchParams.set('date', formatDate(date, 'YYYYMMDD'));
     location.href = url.href;
   };
-  mapkey(']]', 'next date', moveDate(1));
-  mapkey('[[', 'prev date', moveDate(-1));
+  mapkey(']', 'next date', moveDate(1));
+  mapkey('[', 'prev date', moveDate(-1));
 }
 
-if (/youtube.com/.test(window.location.hostname)) {
-  mapkey(
-    'F',
-    'Toggle fullscreen',
-    clickElm('.ytp-fullscreen-button.ytp-button'),
-  );
-  mapkey(
-    'gH',
-    'GoTo Home',
-    () => (location.href = 'https://www.youtube.com/feed/subscriptions?flow=2'),
-  );
-}
+// Video Speed Controller keys
+const videoSpeedKeys = ['d', 's', 'z', 'x', 'r', 'g', 'v'];
 
 if (
-  /^https?:\/\/(mail.google.com|x.com|feedly.com|www.figma.com\/file)/.test(
-    window.location.href,
+  ['mail.google.com', 'x.com', 'feedly.com', 'www.figma.com/file'].some(
+    (domain) => window.location.href.startsWith(`https://${domain}`),
   )
 ) {
   unmapKeys([
+    'j',
+    'k',
+    'o',
     'E',
     'R',
     'd',
@@ -730,20 +701,31 @@ if (
     'S',
     'H',
     'L',
-    'cm',
-    'co',
-    'ch',
-    ',t',
-    ',m',
+    // 'cm',
+    // 'co',
+    // 'ch',
+    // ',t',
+    // ',m',
   ]);
 }
+
 if (
-  /^https:\/\/(www.amazon.co.jp\/gp\/video|www.netflix.com\/watch)\//.test(
-    window.location.href,
+  ['www.amazon.co.jp/gp/video', 'www.netflix.com/watch'].some((domain) =>
+    window.location.href.startsWith(`https://${domain}`),
   )
 ) {
-  // for Video Speed Controller
-  unmapKeys(['d', 's', 'z', 'x', 'r', 'g']);
+  // Video Speed Controller
+  unmapKeys(videoSpeedKeys);
+}
+
+if (
+  ['www.youtube.com/watch'].some((domain) =>
+    window.location.href.startsWith(`https://${domain}`),
+  )
+) {
+  map('C', 'c');
+  // Video Control, Video Speed Controller
+  unmapKeys([...videoSpeedKeys, 'h', 'j', 'k', 'l', 'f', 't']);
 }
 
 // click `Save` button to make above settings to take effect.

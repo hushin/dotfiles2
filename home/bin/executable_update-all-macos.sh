@@ -26,6 +26,8 @@ if command_exists brew; then
     brew upgrade
     echo "Cleaning up Homebrew..."
     brew cleanup
+    echo "Installing missing Homebrew packages..."
+    brew bundle --global
     echo "Running Homebrew doctor..."
     brew doctor || true
 else

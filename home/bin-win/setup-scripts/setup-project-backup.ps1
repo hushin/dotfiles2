@@ -43,7 +43,7 @@ if ($ExistingTask) {
 
 # Create new task
 $Action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-File `"$BackupScriptPath`""
-$Trigger = New-ScheduledTaskTrigger -Daily -At "21:00"
+$Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Hours 1)
 $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 $Principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive
 
@@ -71,7 +71,7 @@ Write-Host "- Backup script: $BackupScriptPath"
 Write-Host "- Password file: $PasswordFile"
 Write-Host "- Log directory: $LogPath"
 Write-Host "- Backup location: $BackupPath"
-Write-Host "- Scheduled task: $TaskName (runs daily at 21:00)"
+Write-Host "- Scheduled task: $TaskName (runs every hour)"
 Write-Host ""
 Write-Host "Next steps:"
 Write-Host "1. Install restic if not already installed"

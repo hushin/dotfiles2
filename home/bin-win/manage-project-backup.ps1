@@ -195,7 +195,7 @@ function Invoke-Restore {
     }
 
     # Get restore destination path with default
-    $defaultRestorePath = "$env:TEMP\restic-restore-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+    $defaultRestorePath = "$env:TEMP\restic-restore-$project-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
     $restorePathInput = Read-Host "Enter restore destination path (default: $defaultRestorePath)"
     $restorePath = if ($restorePathInput) { $restorePathInput } else { $defaultRestorePath }
 

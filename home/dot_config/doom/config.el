@@ -90,14 +90,6 @@
 (setq doom-localleader-key ",")
 (setq doom-localleader-alt-key "M-,")
 
-;; auto save
-(use-package! super-save
-  :config
-  (setq super-save-auto-save-when-idle t
-    super-save-idle-duration 1)
-  (super-save-mode +1)
-  )
-
 ;; Disable exit confirmation.
 (setq confirm-kill-emacs nil)
 
@@ -150,6 +142,9 @@
     (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
              (sequence "WAITING(w/!)" "|" "CANCELED(c/!)"))))
   (setq org-log-done 'time)
+
+  ; auto save
+  (add-hook 'auto-save-hook 'org-save-all-org-buffers)
   ; 見出し入れるときは空行を入れない
   (setq org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
   (defun my/property-values-function (property)

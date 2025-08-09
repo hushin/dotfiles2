@@ -8,6 +8,7 @@ $SourcePath = "$env:USERPROFILE\projects"
 $BackupPath = "$BackupDrive\restic-backup\projects"
 $ConfigPath = "$env:USERPROFILE\.config\restic"
 $LogPath = "$env:USERPROFILE\.logs\restic"
+$BackupScriptPath = "$ConfigPath\quick-project-backup.ps1"
 
 # Check if restic is installed
 if (-not (Get-Command restic -ErrorAction SilentlyContinue)) {

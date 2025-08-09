@@ -18,6 +18,7 @@ SetTitleMatchMode("RegEx")
 ;特殊なキー http://ahkwiki.net/KeyList
 
 ;; LWin を Mac Command キーのように使う
+#HotIf !WinActive("ahk_exe emacs.exe")
 F13 & a::^a
 F13 & b::^b
 F13 & c::^c
@@ -106,6 +107,7 @@ F13 & .::^.
 ; 単語移動
 F13 & Right::^Right
 F13 & Left::^Left
+#HotIf
 
 ; 特殊系
 F13 & BackSpace:: SendEvent("+{Home}{BackSpace}")
@@ -255,6 +257,22 @@ F14 & LButton::
 ; LWin+スクロール -> Ctrl+スクロール
 F13 & WheelUp:: SendEvent("{Ctrl down}{WheelUp}{Ctrl up}")
 F13 & WheelDown:: SendEvent("{Ctrl down}{WheelDown}{Ctrl up}")
+
+;; Emacs 用の F13 キー設定（Application keyとして送信）
+#HotIf WinActive("ahk_exe emacs.exe")
+; F13 を AppsKey として送信する
+F13 & a:: SendEvent("{AppsKey down}a{AppsKey up}")
+F13 & c:: SendEvent("{AppsKey down}c{AppsKey up}")
+F13 & v:: SendEvent("{AppsKey down}v{AppsKey up}")
+F13 & x:: SendEvent("{AppsKey down}x{AppsKey up}")
+F13 & z:: SendEvent("{AppsKey down}z{AppsKey up}")
+F13 & s:: SendEvent("{AppsKey down}s{AppsKey up}")
+F13 & o:: SendEvent("{AppsKey down}o{AppsKey up}")
+F13 & n:: SendEvent("{AppsKey down}n{AppsKey up}")
+F13 & w:: SendEvent("{AppsKey down}w{AppsKey up}")
+F13 & f:: SendEvent("{AppsKey down}f{AppsKey up}")
+F13 & q:: SendEvent("{AppsKey down}q{AppsKey up}")
+#HotIf
 
 ; sound volume
 RShift & F12::

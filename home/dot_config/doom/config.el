@@ -78,6 +78,27 @@
 ;; Load environment-specific flags
 (load! "lib/flags")
 
+;; Application key を Super キーとして認識させる（Windows用）
+(when (featurep :system 'windows)
+  ;; Application key（メニューキー）をSuperキーとしてマッピング
+  (setq w32-apps-modifier 'super)
+
+  ;; MacライクなSuper（Cmd）キーバインド
+  (map!
+   :g "s-c" #'kill-ring-save      ; Cmd-C (copy)
+   :g "s-v" #'yank                ; Cmd-V (paste)
+   :g "s-x" #'kill-region         ; Cmd-X (cut)
+   :g "s-z" #'undo                ; Cmd-Z (undo)
+   :g "s-Z" #'redo                ; Cmd-Shift-Z (redo)
+   :g "s-s" #'save-buffer         ; Cmd-S (save)
+   :g "s-a" #'mark-whole-buffer   ; Cmd-A (select all)
+   :g "s-f" #'isearch-forward     ; Cmd-F (find)
+   :g "s-n" #'+default/new-buffer ; Cmd-N (new)
+   :g "s-o" #'find-file           ; Cmd-O (open)
+   :g "s-w" #'kill-current-buffer ; Cmd-W (close)
+   :g "s-q" #'save-buffers-kill-emacs ; Cmd-Q (quit)
+   ))
+
 ;; Ctrl-h
 ;(map! "C-h" 'delete-backward-char)
 

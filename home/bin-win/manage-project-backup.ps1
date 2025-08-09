@@ -145,7 +145,7 @@ function Invoke-Restore {
             return
         }
 
-        $snapshots = $snapshotsJson | ConvertFrom-Json
+        $snapshots = @($snapshotsJson | ConvertFrom-Json | Sort-Object time -Descending)
         if (-not $snapshots -or $snapshots.Count -eq 0) {
             Write-Host "No snapshots found"
             return
@@ -162,13 +162,28 @@ function Invoke-Restore {
     # Prepare snapshot options for fzf
     $snapshotOptions = @()
     foreach ($snapshot in $snapshots) {
-        $time = $snapshot.time
+        $timeFormatted = ([DateTime]::Parse($snapshot.time)).ToString("yyyy/MM/dd HH:mm:ss")
         $shortId = $snapshot.short_id
         $tags = if ($snapshot.tags) { $snapshot.tags -join "," } else { "" }
         $hostname = $snapshot.hostname
         $tagsDisplay = if ($tags) { " [$tags]" } else { "" }
+        
+        # Format size from total_bytes_processed
+        $sizeDisplay = ""
+        if ($snapshot.summary -and $snapshot.summary.total_bytes_processed) {
+            $bytes = $snapshot.summary.total_bytes_processed
+            if ($bytes -ge 1GB) {
+                $sizeDisplay = " ({0:N2} GB)" -f ($bytes / 1GB)
+            } elseif ($bytes -ge 1MB) {
+                $sizeDisplay = " ({0:N2} MB)" -f ($bytes / 1MB)
+            } elseif ($bytes -ge 1KB) {
+                $sizeDisplay = " ({0:N2} KB)" -f ($bytes / 1KB)
+            } else {
+                $sizeDisplay = " ($bytes B)"
+            }
+        }
 
-        $snapshotOptions += "$shortId - $time $hostname$tagsDisplay"
+        $snapshotOptions += "$shortId - $timeFormatted $hostname$tagsDisplay$sizeDisplay"
     }
 
     # Select snapshot

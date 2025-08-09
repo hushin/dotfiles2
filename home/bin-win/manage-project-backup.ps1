@@ -3,6 +3,7 @@
 
 # Configuration
 $BackupDrive = "E:"
+$SourcePath = "$env:USERPROFILE\projects"
 $BackupPath = "$BackupDrive\restic-backup\projects"
 $ConfigPath = "$env:USERPROFILE\.config\restic"
 
@@ -135,23 +136,89 @@ function Invoke-Restore {
 
     Set-ResticEnv $project
     Write-Host "Available snapshots for: $project"
+
+    # Get snapshots in JSON format for parsing
+    try {
+        $snapshotsJson = & restic snapshots --json 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "Failed to get snapshots"
+            return
+        }
+
+        $snapshots = $snapshotsJson | ConvertFrom-Json
+        if (-not $snapshots -or $snapshots.Count -eq 0) {
+            Write-Host "No snapshots found"
+            return
+        }
+    } catch {
+        Write-Host "Failed to parse snapshots: $($_.Exception.Message)"
+        return
+    }
+
+    # Display snapshots for reference
     & restic snapshots --compact
     Write-Host ""
 
-    $snapshotId = Read-Host "Enter snapshot ID"
-    if (-not $snapshotId) {
-        Write-Host "No snapshot ID provided"
+    # Prepare snapshot options for fzf
+    $snapshotOptions = @()
+    foreach ($snapshot in $snapshots) {
+        $time = $snapshot.time
+        $shortId = $snapshot.short_id
+        $tags = if ($snapshot.tags) { $snapshot.tags -join "," } else { "" }
+        $hostname = $snapshot.hostname
+        $tagsDisplay = if ($tags) { " [$tags]" } else { "" }
+
+        $snapshotOptions += "$shortId - $time $hostname$tagsDisplay"
+    }
+
+    # Select snapshot
+    $selectedSnapshot = $null
+    if (Test-FzfAvailable) {
+        $selected = $snapshotOptions | fzf --prompt="Select snapshot: " --height=15
+        if ($selected) {
+            $selectedSnapshot = $selected.Split(' - ')[0]
+        }
+    } else {
+        Write-Host "Available snapshots:"
+        for ($i = 0; $i -lt $snapshotOptions.Count; $i++) {
+            Write-Host "$($i + 1). $($snapshotOptions[$i])"
+        }
+        $choice = Read-Host "Select snapshot (1-$($snapshotOptions.Count))"
+        if ($choice -match '^\d+$' -and [int]$choice -ge 1 -and [int]$choice -le $snapshotOptions.Count) {
+            $selectedSnapshot = $snapshotOptions[[int]$choice - 1].Split(' - ')[0]
+        }
+    }
+
+    if (-not $selectedSnapshot) {
+        Write-Host "No snapshot selected"
         return
     }
 
-    $restorePath = Read-Host "Enter restore destination path"
-    if (-not $restorePath) {
-        Write-Host "No restore path provided"
-        return
+    # Get restore destination path with default
+    $defaultRestorePath = "$env:TEMP\restic-restore-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
+    $restorePathInput = Read-Host "Enter restore destination path (default: $defaultRestorePath)"
+    $restorePath = if ($restorePathInput) { $restorePathInput } else { $defaultRestorePath }
+
+    # Create restore directory if it doesn't exist
+    if (-not (Test-Path $restorePath)) {
+        New-Item -ItemType Directory -Path $restorePath -Force | Out-Null
     }
 
-    Write-Host "Restoring snapshot $snapshotId to: $restorePath"
-    & restic restore $snapshotId --target $restorePath
+    # Build snapshot reference with path (snapshot_id:path format)
+    $snapshotRef = "${selectedSnapshot}"
+
+    Write-Host ""
+    Write-Host "Restoring snapshot reference: $snapshotRef"
+    Write-Host "Destination: $restorePath"
+
+    $restoreResult = & restic restore $snapshotRef --target $restorePath 2>&1
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "Restore completed successfully!"
+        Write-Host "Opening restore directory..."
+        Start-Process -FilePath $restorePath
+    } else {
+        Write-Host "Restore failed: $restoreResult"
+    }
 }
 
 function Invoke-Mount {
@@ -289,7 +356,7 @@ while ($true) {
         "prune" { Invoke-Prune }
         "stats" { Show-Stats }
         "unlock" { Invoke-Unlock }
-        "exit" { break }
+        "exit" { exit 0 }
         "invalid" { Write-Host "Invalid selection" }
         default {
             if (-not $action) { break }

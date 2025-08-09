@@ -62,14 +62,20 @@ foreach ($ProjectDir in $ProjectDirs) {
         Write-Log "Repository initialized for $ProjectName"
     }
 
-    # Create backup
-    $BackupArgs = @("backup", $ProjectSourcePath, "--verbose")
+    # Create backup with relative path (change to project directory first)
+    $BackupArgs = @("backup", ".", "--verbose")
     if ($Tag) {
         $BackupArgs += "--tag", $Tag
     }
 
     Write-Log "Creating backup for $ProjectName..."
-    $backupResult = & restic @BackupArgs 2>&1
+    # Change to project directory to create backup with relative paths
+    Push-Location -Path $ProjectSourcePath
+    try {
+        $backupResult = & restic @BackupArgs 2>&1
+    } finally {
+        Pop-Location
+    }
     if ($LASTEXITCODE -eq 0) {
         Write-Log "Backup completed for $ProjectName"
     } else {

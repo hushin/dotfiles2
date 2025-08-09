@@ -8,6 +8,7 @@ const {
   vmapkey,
   map,
   unmap,
+  unmapAllExcept,
   cmap,
   addSearchAlias,
   removeSearchAlias,
@@ -721,13 +722,21 @@ if (
 }
 
 if (
-  ['www.youtube.com/watch'].some((domain) =>
+  ['www.youtube.com'].some((domain) =>
     window.location.href.startsWith(`https://${domain}`),
   )
 ) {
   map('C', 'c');
   // Video Control, Video Speed Controller
   unmapKeys([...videoSpeedKeys, 'h', 'j', 'k', 'l', 'f', 't']);
+}
+
+if (
+  ['docs.google.com/document/'].some((url) =>
+    window.location.href.startsWith(`https://${url}`),
+  )
+) {
+  unmapAllExcept([]);
 }
 
 // click `Save` button to make above settings to take effect.

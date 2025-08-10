@@ -22,6 +22,38 @@ chezmoi init --apply hushin/dotfiles2
 `Win-X Alt-A` ターミナル（管理者）を立ち上げて実行
 
 ```powershell
+# 「シンボリックリンクの作成」権限に「Authenticated Users」を追加する
+$tempCfg = [System.IO.Path]::GetTempFileName()
+secedit /export /cfg $tempCfg | Out-Null
+
+$content = Get-Content $tempCfg
+$newContent = $content | ForEach-Object {
+    if ($_ -like "SeCreateSymbolicLinkPrivilege*") {
+        $current = ($_ -split "=")[1].Trim()
+        if ($current -notlike "*S-1-5-11*") {
+            if ($current) {
+                "SeCreateSymbolicLinkPrivilege = *S-1-5-11,$current"
+            } else {
+                "SeCreateSymbolicLinkPrivilege = *S-1-5-11"
+            }
+        } else {
+            $_
+        }
+    } else {
+        $_
+    }
+}
+
+$newContent | Out-File $tempCfg -Encoding Unicode
+secedit /configure /db secedit.sdb /cfg $tempCfg /areas USER_RIGHTS | Out-Null
+gpupdate /force | Out-Null
+Remove-Item $tempCfg
+
+Write-Host "再起動してください。" -ForegroundColor Green
+# secpol.msc で ローカルポリシー > ユーザー権利の割り当て > シンボリックリンクの作成 で確認できます
+```
+
+```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 winget install -e --id Git.Git --source winget
 winget install -e --id twpayne.chezmoi --source winget

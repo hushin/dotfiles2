@@ -43,8 +43,8 @@ if ($ExistingTask) {
 }
 
 # Create new task
-$Action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-File `"$BackupScriptPath`""
-$Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Hours 1)
+$Action = New-ScheduledTaskAction -Execute "conhost.exe" -Argument "--headless powershell -NoProfile -ExecutionPolicy Bypass -File `"$BackupScriptPath`""
+$Trigger = New-ScheduledTaskTrigger -Once -At (Get-Date) -RepetitionInterval (New-TimeSpan -Minutes 30)
 $Settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable
 $Principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -LogonType Interactive
 
@@ -56,7 +56,7 @@ Write-Host "Testing restic installation..."
 try {
     $resticVersion = & restic version 2>&1
     if ($LASTEXITCODE -eq 0) {
-        Write-Host "Restic is installed: $($resticVersion[0])"
+        Write-Host "Restic is installed: $($resticVersion)"
     } else {
         Write-Host "WARNING: Restic is not installed or not in PATH"
         Write-Host "Please install restic from: https://restic.net/"

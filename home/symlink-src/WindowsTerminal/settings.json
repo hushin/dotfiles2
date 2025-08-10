@@ -16,32 +16,32 @@
             "keys": "ctrl+c"
         },
         {
-            "id": "Terminal.FindText",
-            "keys": "ctrl+shift+f"
-        },
-        {
             "id": "Terminal.PasteFromClipboard",
             "keys": "ctrl+v"
         },
         {
-            "id": "Terminal.SwitchToTab1",
-            "keys": "ctrl+2"
+            "id": "Terminal.FindText",
+            "keys": "ctrl+shift+f"
         },
         {
             "id": "Terminal.DuplicatePaneAuto",
             "keys": "alt+shift+d"
         },
         {
+            "id": "Terminal.SwitchToTab1",
+            "keys": "ctrl+2"
+        },
+        {
             "id": "Terminal.PrevTab",
             "keys": "ctrl+pgup"
         },
         {
-            "id": "Terminal.SwitchToTab0",
-            "keys": "ctrl+1"
-        },
-        {
             "id": "Terminal.NextTab",
             "keys": "ctrl+pgdn"
+        },
+        {
+            "id": "Terminal.SwitchToTab0",
+            "keys": "ctrl+1"
         },
         {
             "id": "Terminal.SwitchToTab2",
@@ -99,7 +99,7 @@
                 "hidden": false,
                 "name": "PowerShell 7",
                 "source": "Windows.Terminal.PowershellCore",
-                "startingDirectory": null
+                "startingDirectory": "%USERPROFILE%"
             },
             {
                 "commandline": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",

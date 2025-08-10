@@ -37,8 +37,8 @@ ForEach-Object {
 . "$PSScriptRoot\functions.ps1"
 . "$PSScriptRoot\abbreviations.ps1"
 
-New-Alias -Name pbcopy -Value Set-Clipboard
-New-Alias -Name pbpaste -Value Get-Clipboard
+Set-Alias -Name pbcopy -Value Set-Clipboard
+Set-Alias -Name pbpaste -Value Get-Clipboard
 
 # Windows Terminal で 現在のディレクトリで新しいタブを開く
 function New-TabHere {

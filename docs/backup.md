@@ -77,10 +77,18 @@ dump-installed-apps.ps1
 
 ## Blender
 
+chezmoi 管理更新
+
+```powershell
+chezmoi-add-symlink.ps1 "$env:APPDATA\Blender Foundation\Blender\4.5\scripts\presets\keyconfig\hushin_keymap.py" Blender
+chezmoi add "$env:APPDATA\Blender Foundation\Blender\4.5\scripts\addons\pie_menu_editor_data\backups"
+```
+
+ディレクトリをまるごとコピー
+
 ```powershell
 cd "$env:APPDATA\Blender Foundation\Blender\"
 start .
-# ディレクトリをコピー
 ```
 
 使っているバージョンに cd して chezmoi add

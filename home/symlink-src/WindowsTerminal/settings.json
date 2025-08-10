@@ -6,9 +6,10 @@
     "copyFormatting": "none",
     "copyOnSelect": false,
     "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+    "firstWindowPreference": "defaultProfile",
     "initialCols": 180,
     "initialRows": 45,
-    "keybindings":
+    "keybindings": 
     [
         {
             "id": "Terminal.CopyToClipboard",
@@ -67,25 +68,25 @@
             "keys": "ctrl+8"
         }
     ],
-    "newTabMenu":
+    "newTabMenu": 
     [
         {
             "type": "remainingProfiles"
         }
     ],
-    "profiles":
+    "profiles": 
     {
-        "defaults":
+        "defaults": 
         {
             "colorScheme": "One Half Dark",
-            "font":
+            "font": 
             {
                 "face": "UDEV Gothic NF"
             },
             "opacity": 90,
             "useAcrylic": true
         },
-        "list":
+        "list": 
         [
             {
                 "guid": "{4c7a72fe-17f2-545c-bf7d-e2b498fa2203}",
@@ -97,7 +98,8 @@
                 "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
                 "hidden": false,
                 "name": "PowerShell 7",
-                "source": "Windows.Terminal.PowershellCore"
+                "source": "Windows.Terminal.PowershellCore",
+                "startingDirectory": null
             },
             {
                 "commandline": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
@@ -127,5 +129,6 @@
     },
     "schemes": [],
     "theme": "light",
-    "themes": []
+    "themes": [],
+    "windowingBehavior": "useAnyExisting"
 }

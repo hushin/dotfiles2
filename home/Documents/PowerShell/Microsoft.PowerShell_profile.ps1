@@ -40,6 +40,13 @@ ForEach-Object {
 New-Alias -Name pbcopy -Value Set-Clipboard
 New-Alias -Name pbpaste -Value Get-Clipboard
 
+# Windows Terminal で 現在のディレクトリで新しいタブを開く
+function New-TabHere {
+    wt -d $PWD
+}
+Set-Alias nth New-TabHere
+
+
 # key binding
 # 実行後入力待ちになるため、AcceptLine を実行する
 Set-PSReadLineKeyHandler -Chord 'Ctrl+]' -ScriptBlock { gf; [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine() }

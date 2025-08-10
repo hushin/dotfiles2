@@ -18,7 +18,6 @@ SetTitleMatchMode("RegEx")
 ;特殊なキー http://ahkwiki.net/KeyList
 
 ;; LWin を Mac Command キーのように使う
-#HotIf !WinActive("ahk_exe emacs.exe")
 F13 & a::^a
 F13 & b::^b
 F13 & c::^c
@@ -107,7 +106,6 @@ F13 & .::^.
 ; 単語移動
 F13 & Right::^Right
 F13 & Left::^Left
-#HotIf
 
 ; 特殊系
 F13 & BackSpace:: SendEvent("+{Home}{BackSpace}")

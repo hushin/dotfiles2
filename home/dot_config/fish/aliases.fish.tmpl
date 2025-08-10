@@ -26,22 +26,15 @@ abbr -a ekill 'emacsclient -e "(kill-emacs)"'
 # Utility abbreviations
 type -qa tac || abbr -a tac 'tail -r'
 abbr -a reload 'source ~/.config/fish/config.fish'
-abbr -a diff 'delta'
-abbr -a find 'fd'
 abbr -a cdu 'cd-gitroot'
 abbr -a tree "tree -NC" # N: 文字化け対策, C:色をつける
 abbr -a notes 'rg "TODO|HACK|FIXME|OPTIMIZE"'
 abbr -a o 'open'
 
 if command -q eza
-    abbr -a ls eza --icons
     abbr -a ll eza --icons -lhg --time-style long-iso
     abbr -a la eza --icons -lhag --time-style long-iso
     abbr -a lt eza --icons --tree
-end
-
-if command -q zoxide
-    abbr -a cd 'z'
 end
 
 {{ if eq .chezmoi.os "linux" }}

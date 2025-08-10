@@ -86,18 +86,14 @@ abbr 'chs' 'chezmoi status'
 
 # Utility abbreviations
 abbr 'reload' '. $PROFILE'
-abbr 'diff' 'delta'
-abbr 'find' 'fd'
 abbr 'cdu' 'cd (git rev-parse --show-toplevel)'
 abbr 'notes' 'rg "TODO|HACK|FIXME|OPTIMIZE"'
-abbr 'cd' 'z'
 
 # Editor abbreviations
 abbr 'e' 'emacsclient -t -a ""'
 
 # eza abbreviations (if available)
 if (Get-Command eza -ErrorAction SilentlyContinue) {
-    abbr 'ls' 'eza --icons'
     abbr 'll' 'eza --icons -lhg --time-style long-iso'
     abbr 'la' 'eza --icons -lhag --time-style long-iso'
     abbr 'lt' 'eza --icons --tree'

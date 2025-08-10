@@ -88,7 +88,7 @@ abbr 'chs' 'chezmoi status'
 abbr 'reload' '. $PROFILE'
 abbr 'cdu' 'cd (git rev-parse --show-toplevel)'
 abbr 'notes' 'rg "TODO|HACK|FIXME|OPTIMIZE"'
-
+abbr 'rm -rf' 'Remove-Item -Recurse -Force'
 # Editor abbreviations
 abbr 'e' 'emacsclient -t -a ""'
 

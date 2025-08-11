@@ -4,14 +4,14 @@
 
 (after! org
   ;; agenda
-  (setq org-agenda-files
+  (setq my-default-org-agenda-files
     (append
       (directory-files org-directory t "\\.org$")
       (directory-files-recursively (concat org-roam-directory "areas") "\\.org$")
       (directory-files-recursively (concat org-roam-directory "projects") "\\.org$")
-      (directory-files-recursively (concat org-roam-directory "resources") "\\.org$")
-      (directory-files-recursively (concat org-roam-directory "zk") "\\.org$")
-    ))
+      (directory-files-recursively (concat org-roam-directory "resources") "\\.org$")))
+
+  (setq org-agenda-files my-default-org-agenda-files)
 
   ;; org-roam で作ったファイルの category 表示をいい感じにする
   ;; refs. https://d12frosted.io/posts/2020-06-24-task-management-with-roam-vol2.html
@@ -205,6 +205,9 @@ are equal return nil."
            (todo "WAITING" ((org-agenda-overriding-header "\nWAITING")))
            (alltodo ""
              (
+               (org-agenda-files
+                 (append my-default-org-agenda-files
+                   (directory-files-recursively (concat org-roam-directory "zk") "\\.org$")))
                (org-agenda-overriding-header "Tasks")
                (org-super-agenda-groups
                  '(
@@ -223,6 +226,8 @@ are equal return nil."
                       :file-path "areas/")
                     (:name "Resources"
                       :file-path "resources/")
+                    (:name "Zettelkasten"
+                      :file-path "zk/")
                     (:name "Inbox"
                       :category "Inbox")
                     ))

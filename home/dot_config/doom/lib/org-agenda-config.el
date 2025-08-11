@@ -9,7 +9,9 @@
       (directory-files org-directory t "\\.org$")
       (directory-files-recursively (concat org-roam-directory "areas") "\\.org$")
       (directory-files-recursively (concat org-roam-directory "projects") "\\.org$")
-      (directory-files-recursively (concat org-roam-directory "resources") "\\.org$")))
+      (directory-files-recursively (concat org-roam-directory "resources") "\\.org$")
+      (directory-files-recursively (concat org-roam-directory "zk") "\\.org$")
+    ))
 
   ;; org-roam で作ったファイルの category 表示をいい感じにする
   ;; refs. https://d12frosted.io/posts/2020-06-24-task-management-with-roam-vol2.html

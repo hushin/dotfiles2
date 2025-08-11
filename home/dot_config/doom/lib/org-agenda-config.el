@@ -106,7 +106,7 @@ are equal return nil."
            (org-agenda-view-columns-initially t)
            )
          )
-       ("d" "Done today"
+       ("dt" "Done today"
          ((agenda ""
             (
               (org-agenda-span 'day)
@@ -116,11 +116,23 @@ are equal return nil."
               (org-agenda-use-time-grid nil)
               (org-super-agenda-groups
                 '(
-                   (:name "Done today"
-                     :and (:regexp "State \"DONE\""
-                            :log t))
-                   (:name "Clocked today"
-                     :log t)
+                   (:name "Clocked today" :log t)
+                   (:discard (:anything t))
+                   ))
+              )))
+         )
+       ("dw" "Done this week"
+         ((agenda ""
+            (
+              (org-agenda-span 7)
+              (org-agenda-start-on-weekday 1) ; 月曜日開始
+              (org-agenda-log-mode-items '(closed clock))
+              (org-agenda-show-log t)
+              ; nil にしないと org-element-at-point の Warning が出る
+              (org-agenda-use-time-grid nil)
+              (org-super-agenda-groups
+                '(
+                   (:name "Clocked today" :log t)
                    (:discard (:anything t))
                    ))
               )))

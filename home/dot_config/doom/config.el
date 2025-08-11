@@ -247,6 +247,10 @@
     (format "%s ${doom-hierarchy:*} %s"
       (propertize "${doom-type:15}" 'face 'font-lock-keyword-face)
       (propertize "${doom-tags:10}" 'face '(:inherit org-tag :box nil))))
+  ; アーカイブされた見出しを除外
+  (setq org-roam-db-node-include-function
+        (lambda ()
+          (not (org-in-archived-heading-p))))
 
   (load! "lib/org-roam-templates")
   (load! "lib/weekly-review")

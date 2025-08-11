@@ -162,17 +162,47 @@ are equal return nil."
            (agenda ""
              (
                (org-agenda-start-day "+1d")
+               (org-agenda-span 7)
+               (org-agenda-show-log nil)
+               (org-agenda-clockreport-mode nil)))
+           (todo "WAITING" ((org-agenda-overriding-header "\nWAITING")))
+           ;; (tags (concat "w" (format-time-string "%V"))
+           ;;   ((org-agenda-overriding-header  (concat "ToDos Week " (format-time-string "%V")))
+           ;;     (org-super-agenda-groups
+           ;;       '((:discard (:deadline t))
+           ;;          (:discard (:scheduled t))
+           ;;          (:discard (:todo ("DONE")))
+           ;;          ))))
+           (alltodo ""
+             (
+               (org-agenda-overriding-header "Tasks")
+               (org-super-agenda-groups
+                 '(
+                    (:name "Important"
+                      :tag "Important"
+                      :priority "A"
+                      )
+                    (:name "Next Action"
+                      :category "Next Action"
+                      :priority "B")
+                    (:name "Shopping"
+                      :category "Shopping")
+                    (:name "Inbox"
+                      :category "Inbox")
+                    (:discard (:anything t))
+                  )
+               ))
+           ))
+       )
+       ("w" "for Weekly review"
+         (
+           (todo "NEXT" ((org-agenda-overriding-header "\nNEXT")))
+           (agenda ""
+             (
                (org-agenda-span 12)
                (org-agenda-show-log nil)
                (org-agenda-clockreport-mode nil)))
            (todo "WAITING" ((org-agenda-overriding-header "\nWAITING")))
-           (tags (concat "w" (format-time-string "%V"))
-             ((org-agenda-overriding-header  (concat "ToDos Week " (format-time-string "%V")))
-               (org-super-agenda-groups
-                 '((:discard (:deadline t))
-                    (:discard (:scheduled t))
-                    (:discard (:todo ("DONE")))
-                    ))))
            (alltodo ""
              (
                (org-agenda-overriding-header "Tasks")

@@ -112,7 +112,8 @@ are equal return nil."
               (org-agenda-span 'day)
               (org-agenda-log-mode-items '(closed clock))
               (org-agenda-show-log t)
-              ;; (org-agenda-entry-types '(:closed :clock))
+              ; nil にしないと org-element-at-point の Warning が出る
+              (org-agenda-use-time-grid nil)
               (org-super-agenda-groups
                 '(
                    (:name "Done today"

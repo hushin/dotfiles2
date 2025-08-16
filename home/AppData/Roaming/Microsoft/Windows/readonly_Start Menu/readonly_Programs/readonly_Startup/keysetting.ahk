@@ -8,6 +8,10 @@ DetectHiddenWindows(true)
 SetWinDelay(0)
 SetTitleMatchMode("RegEx")
 
+; NOTE: SendEvent で 押しっぱなし対策
+; ref. https://did2memo.net/2024/06/11/autohotkey-ctrl-key-is-stuck-sendevent/
+SendMode("Event")
+
 ;ChangeKeyで左WinキーにF13(0064)を、右WinキーにF14(0065)を割り当てている想定
 
 ;Shift  +
@@ -27,10 +31,10 @@ F13 & f::^f
 F13 & g::^g
 F13 & h:: {
     if GetKeyState("Alt") {
-        SendEvent("#{Home}")
+        Send("#{Home}")
         return
     }
-    SendEvent("#{Down}")
+    Send("#{Down}")
     return
 }
 F13 & i::^i
@@ -57,19 +61,19 @@ F13 & 2::^2
 F13 & 3::
 {
     if GetKeyState("Shift") {
-        SendEvent("#{PrintScreen}")
+        Send("#{PrintScreen}")
         return
     }
-    SendEvent("^3")
+    Send("^3")
     return
 }
 F13 & 4::
 {
     if GetKeyState("Shift") {
-        SendEvent("#+s") ;切り取り＆スケッチ
+        Send("#+s") ;切り取り＆スケッチ
         return
     }
-    SendEvent("^4")
+    Send("^4")
     return
 }
 F13 & 5::^5
@@ -84,19 +88,19 @@ F13 & /::^/
 F13 & [::
 {
     if GetKeyState("Shift") {
-        SendEvent("^{PgUp}")
+        Send("^{PgUp}")
         return
     }
-    SendEvent("^[")
+    Send("^[")
     return
 }
 F13 & ]::
 {
     if GetKeyState("Shift") {
-        SendEvent("^{PgDn}")
+        Send("^{PgDn}")
         return
     }
-    SendEvent("^]")
+    Send("^]")
     return
 }
 F13 & +::^= ; 若干自信ない
@@ -108,7 +112,7 @@ F13 & Right::^Right
 F13 & Left::^Left
 
 ; 特殊系
-F13 & BackSpace:: SendEvent("+{Home}{BackSpace}")
+F13 & BackSpace:: Send("+{Home}{BackSpace}")
 
 ; 仮想デスクトップの移動
 ^Right::^#Right
@@ -161,42 +165,42 @@ F14 & .::#.
 
 ;; Emacs like
 #HotIf !WinActive("ahk_exe (ubuntu2204|bash|emacs|WindowsTerminal).exe")
-^p:: SendEvent("{Up}")
-^n:: SendEvent("{Down}")
-^f:: SendEvent("{Right}")
-^b:: SendEvent("{left}")
-^a:: SendEvent("{Home}")
-^e:: SendEvent("{End}")
-^v:: SendEvent("{PgDn}")
-!v:: SendEvent("{PgUp}")
-!,:: SendEvent("^{Home}")
-!.:: SendEvent("^{End}")
+^p:: Send("{Up}")
+^n:: Send("{Down}")
+^f:: Send("{Right}")
+^b:: Send("{left}")
+^a:: Send("{Home}")
+^e:: Send("{End}")
+^v:: Send("{PgDn}")
+!v:: Send("{PgUp}")
+!,:: Send("^{Home}")
+!.:: Send("^{End}")
 
-+^p:: SendEvent("+{Up}")
-+^n:: SendEvent("+{Down}")
-+^f:: SendEvent("+{Right}")
-+^b:: SendEvent("+{left}")
-+^a:: SendEvent("+{Home}")
-+^e:: SendEvent("+{End}")
-+^v:: SendEvent("+{PgDn}")
-+!v:: SendEvent("+{PgUp}")
-+!,:: SendEvent("+^{Home}")
-+!.:: SendEvent("+^{End}")
++^p:: Send("+{Up}")
++^n:: Send("+{Down}")
++^f:: Send("+{Right}")
++^b:: Send("+{left}")
++^a:: Send("+{Home}")
++^e:: Send("+{End}")
++^v:: Send("+{PgDn}")
++!v:: Send("+{PgUp}")
++!,:: Send("+^{Home}")
++!.:: Send("+^{End}")
 
-+BackSpace:: SendEvent("{Delete}")
++BackSpace:: Send("{Delete}")
 
-^d:: SendEvent("{Delete}")
-^h:: SendEvent("{BackSpace}")
+^d:: Send("{Delete}")
+^h:: Send("{BackSpace}")
 ^w::^x
 ^y::^v
 ^s::^f
 ^/::^z
-^k:: SendEvent("+{End}^x")
-^m:: SendEvent("{Enter}")
-^j:: SendEvent("{Enter}")
+^k:: Send("+{End}^x")
+^m:: Send("{Enter}")
+^j:: Send("{Enter}")
 #HotIf
 
-!BackSpace:: SendEvent("^{BackSpace}")
+!BackSpace:: Send("^{BackSpace}")
 
 ;-----------------------------------------------------------
 ; IMEの状態をセット
@@ -227,49 +231,46 @@ F13:: IME_SET(0)
 F14 up:: IME_SET(1)
 ^[::
 {
-    SendEvent("{Escape}")
+    Send("{Escape}")
     IME_SET(0)
     return
 }
 
 F13 & Tab::AltTab
-!Tab:: SendEvent("#{Tab}")
-
-; NOTE: SendEvent で 押しっぱなし対策
-; ref. https://did2memo.net/2024/06/11/autohotkey-ctrl-key-is-stuck-sendevent/
+!Tab:: Send("#{Tab}")
 
 ; LWin+Click -> Ctrl+Click
 F13 & LButton::
 {
     MouseGetPos(&x, &y)
-    SendEvent("{Ctrl down}{Click %x% %y%}{Ctrl up}")
+    Send("{Ctrl down}{Click %x% %y%}{Ctrl up}")
 }
 
 ; RWin+Click -> Win+Click
 F14 & LButton::
 {
     MouseGetPos(&x, &y)
-    SendEvent("{LWin Down}{Click %x% %y%}{LWin Up}")
+    Send("{LWin Down}{Click %x% %y%}{LWin Up}")
 }
 
 ; LWin+スクロール -> Ctrl+スクロール
-F13 & WheelUp:: SendEvent("{Ctrl down}{WheelUp}{Ctrl up}")
-F13 & WheelDown:: SendEvent("{Ctrl down}{WheelDown}{Ctrl up}")
+F13 & WheelUp:: Send("{Ctrl down}{WheelUp}{Ctrl up}")
+F13 & WheelDown:: Send("{Ctrl down}{WheelDown}{Ctrl up}")
 
 ;; Emacs 用の F13 キー設定（Application keyとして送信）
 #HotIf WinActive("ahk_exe emacs.exe")
 ; F13 を AppsKey として送信する
-F13 & a:: SendEvent("{AppsKey down}a{AppsKey up}")
-F13 & c:: SendEvent("{AppsKey down}c{AppsKey up}")
-F13 & v:: SendEvent("{AppsKey down}v{AppsKey up}")
-F13 & x:: SendEvent("{AppsKey down}x{AppsKey up}")
-F13 & z:: SendEvent("{AppsKey down}z{AppsKey up}")
-F13 & s:: SendEvent("{AppsKey down}s{AppsKey up}")
-F13 & o:: SendEvent("{AppsKey down}o{AppsKey up}")
-F13 & n:: SendEvent("{AppsKey down}n{AppsKey up}")
-F13 & w:: SendEvent("{AppsKey down}w{AppsKey up}")
-F13 & f:: SendEvent("{AppsKey down}f{AppsKey up}")
-F13 & q:: SendEvent("{AppsKey down}q{AppsKey up}")
+F13 & a:: Send("{AppsKey down}a{AppsKey up}")
+F13 & c:: Send("{AppsKey down}c{AppsKey up}")
+F13 & v:: Send("{AppsKey down}v{AppsKey up}")
+F13 & x:: Send("{AppsKey down}x{AppsKey up}")
+F13 & z:: Send("{AppsKey down}z{AppsKey up}")
+F13 & s:: Send("{AppsKey down}s{AppsKey up}")
+F13 & o:: Send("{AppsKey down}o{AppsKey up}")
+F13 & n:: Send("{AppsKey down}n{AppsKey up}")
+F13 & w:: Send("{AppsKey down}w{AppsKey up}")
+F13 & f:: Send("{AppsKey down}f{AppsKey up}")
+F13 & q:: Send("{AppsKey down}q{AppsKey up}")
 #HotIf
 
 ; sound volume
@@ -289,7 +290,7 @@ RShift & F11::
 
 RShift & F10::
 {
-    SendEvent("{Volume_Mute}")
+    Send("{Volume_Mute}")
     SoundPlay("*64")
     return
 }
@@ -316,27 +317,27 @@ F13 & `;::
 ; AHK で ctrl + ` を ctrl + F22 に変換
 ; 変換 = vkF3、無変換 = vkF4 に該当
 ; ref https://ahkwiki.net/KeyList
-^vkF3:: SendEvent("^{F22}")
-^vkF4:: SendEvent("^{F22}")
+^vkF3:: Send("^{F22}")
+^vkF4:: Send("^{F22}")
 #HotIf
 
 #HotIf WinActive("ahk_exe WindowsTerminal.exe")
-F13 & n:: SendEvent("^+n")
-F13 & t:: SendEvent("^+t")
-F13 & w:: SendEvent("^+w")
-F13 & f:: SendEvent("^+f")
-F13 & d:: SendEvent("!+d")
+F13 & n:: Send("^+n")
+F13 & t:: Send("^+t")
+F13 & w:: Send("^+w")
+F13 & f:: Send("^+f")
+F13 & d:: Send("!+d")
 #HotIf
 
 #HotIf WinActive("ahk_exe chrome.exe")
-F13 & y:: SendEvent("^h") ; 履歴
+F13 & y:: Send("^h") ; 履歴
 F13 & i:: {
     if GetKeyState("Alt") {
         ; DevTools を開く
-        SendEvent("^+i")
+        Send("^+i")
         return
     }
-    SendEvent("^i")
+    Send("^i")
     return
 }
 #HotIf
@@ -358,8 +359,8 @@ F13 & i:: {
 }
 
 #HotIf WinActive("ahk_exe Kindle.exe")
-[:: SendEvent("{Left}")
-]:: SendEvent("{Right}")
+[:: Send("{Left}")
+]:: Send("{Right}")
 #HotIf
 
 ;; 定型文
@@ -369,7 +370,7 @@ F13 & i:: {
 InsertText(Content) {
     cb_bk := ClipboardAll()
     A_Clipboard := Content
-    SendEvent("^v")
+    Send("^v")
     Sleep(100)
     A_Clipboard := cb_bk
 }

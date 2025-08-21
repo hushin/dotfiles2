@@ -16,7 +16,7 @@ end
 abbr -a gre 'git-review'
 
 function tig-review
-    set -l base git merge-base origin/(git default-branch) HEAD
+    set -l base (git merge-base origin/(git default-branch) HEAD)
     tig --reverse -w $base...HEAD
 end
 

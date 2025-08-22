@@ -12,6 +12,7 @@
       "Bash(git status:*)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
+      "Bash(git worktree:*)",
       "Bash(cat:*)",
       "Bash(grep:*)",
       "Bash(rg:*)",
@@ -42,7 +43,7 @@
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:hono.dev)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebSearch(*)"
+      "mcp__ide__getDiagnostics"
     ],
     "deny": [
       "Bash(rm -rf /)",

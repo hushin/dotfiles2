@@ -137,3 +137,6 @@ ai-docs/
 .clinerules
 memory-bank/
 **/.claude/settings.local.json
+
+# AST
+tmp-ast/

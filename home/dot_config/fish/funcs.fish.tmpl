@@ -26,7 +26,7 @@ end
 
 function copy-history -a historyNum
     set -q historyNum[1] || set historyNum 10
-    history | tail -n $historyNum | pbcopy
+    history | head -n $historyNum | tac | pbcopy
 end
 
 # https://github.com/junegunn/fzf/wiki/Examples-(fish)

@@ -39,7 +39,7 @@
 	# https://tech-broccoli.life/articles/engineer/recommend-git-aliases/
 	see = !gh repo view --web
 	# https://qiita.com/awakia/items/f14dc6310e469964a8f7
-	showpr = "!f() { git log --merges --oneline --reverse --ancestry-path $1...master | grep 'Merge pull request #' | head -n 1; }; f"
+	showpr = "!f() { git log --merges --oneline --reverse --ancestry-path $1...`git default-branch` | grep 'Merge pull request #' | head -n 1; }; f"
 	openpr = "!f() { gh browse -- `git showpr $1 | cut -f5 -d' ' | sed -e 's%#%%'`; }; f"
 
 	pushf = push --force-with-lease

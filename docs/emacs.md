@@ -10,7 +10,7 @@ doom env
 
 ## Windows で Doom Emacs が 壊れたとき
 
-`doom build` する
+`doom sync --rebuild` する
 
 それでもだめなら
 

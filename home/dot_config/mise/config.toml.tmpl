@@ -20,7 +20,6 @@ coreutils = "latest"
 lazygit = "latest"
 starship = "latest"
 delta = "latest"
-ripgrep = "latest"
 fd = "latest"
 
 {{- if ne (env "REMOTE_CONTAINERS") "true" }}
@@ -33,6 +32,7 @@ zoxide = "latest"
 
 {{- if ne .chezmoi.os "windows" }}
 "cargo:eza" = "latest"
+ripgrep = "latest"
 {{- end }}
 
 # tmux = "latest"

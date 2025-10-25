@@ -14,6 +14,7 @@
     "Starship.Starship",
     "rsteube.Carapace",
     "junegunn.fzf",
+    "BurntSushi.ripgrep.GNU",
     "eza-community.eza"
 )
 

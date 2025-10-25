@@ -20,10 +20,9 @@ config.macos_window_background_blur = 20
 -- 終了時の確認ダイアログを無効化
 config.window_close_confirmation = 'NeverPrompt'
 
--- タイトルバーを非表示
-config.window_decorations = "RESIZE"
--- タブが一つの時は非表示
-config.hide_tab_bar_if_only_one_tab = true
+config.use_fancy_tab_bar = false
+config.tab_bar_at_bottom = true
+config.tab_max_width = 100
 
 config.keys = {
   {
@@ -66,6 +65,11 @@ config.keys = {
     mods = "CMD",
     action = wezterm.action.ClearScrollback 'ScrollbackAndViewport',
   },
+  {
+    key = "C",
+    mods = "CMD|SHIFT",
+    action = wezterm.action.QuickSelect,
+  }
 }
 
 -- マウス操作の挙動設定

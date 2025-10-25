@@ -7,7 +7,6 @@
     "Microsoft.VisualStudioCode",
     "Microsoft.PowerShell",
     "Microsoft.PowerToys",
-    # "Microsoft.PCManager",
     "Dropbox.Dropbox",
     "MartiCliment.UniGetUI",
     "jdx.mise",
@@ -22,3 +21,5 @@ foreach ($package in $packages) {
     Write-Host "Installing $package..." -ForegroundColor Green
     winget install -e --id $package --source winget
 }
+
+winget install 9PM860492SZD # Microsoft PC Manager

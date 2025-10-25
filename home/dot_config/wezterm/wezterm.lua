@@ -17,6 +17,8 @@ config.initial_rows = 40
 -- ウィンドウ設定
 config.window_background_opacity = 0.95
 config.macos_window_background_blur = 20
+-- 終了時の確認ダイアログを無効化
+config.window_close_confirmation = 'NeverPrompt'
 
 -- タイトルバーを非表示
 config.window_decorations = "RESIZE"
@@ -44,7 +46,7 @@ config.keys = {
   {
     key = "w",
     mods = "CMD",
-    action = wezterm.action.CloseCurrentPane { confirm = true },
+    action = wezterm.action.CloseCurrentPane { confirm = false },
   },
   -- ⌘ [ で左のペインに移動
   {

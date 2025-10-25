@@ -275,6 +275,9 @@
         :templates org-roam-capture-ref-templates))
     nil)
   )
+(after! server
+  (unless (server-running-p)
+    (server-start)))
 
 (after! org-download
   (when (featurep :system 'windows)

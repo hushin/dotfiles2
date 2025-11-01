@@ -25,8 +25,7 @@
 	la = log --oneline --decorate --graph --branches --tags --remotes --all
 	ls = log --stat --abbrev-commit -n 1 # display previous log
 
-	# https://gist.github.com/azu/09dd6f27f52e2e8d9978
-	branch-name = symbolic-ref --short HEAD
+	branch-name = !git branch --show-current
 	# https://qiita.com/makoto_kw/items/c825e17e2a577bb83e19
 	delete-merged-branches = !git branch --merged | grep -v \\* | xargs -I % git branch -d %
 	merged-list = !git branch -r --list --merged
@@ -46,13 +45,16 @@
 	# https://motemen.hatenablog.com/entry/2022/04/git-aliases
 	fixit = commit --amend --no-edit
 
-	default-branch = !git remote show origin | sed -n '/HEAD branch/s/.*: //p'
+	default-branch = "!f() { branch=$(git remote show origin 2>/dev/null | sed -n \"s/.*HEAD branch: //p\"); if [ -n \"$branch\" ]; then echo \"$branch\"; else git config --get init.defaultBranch || echo \"main\"; fi; }; f"
 	swd = !git switch `git default-branch`
 	# トピックブランチで作業中、default branchの変更を取り入れたいとき
 	rebd = !git swd && git pull && git switch - && git rebase --rebase-merges `git default-branch`
 
 	df = diff --word-diff # 単語単位の差分表示
 	undo = reset HEAD~1 --mixed # 直前のコミットを取り消し、変更は保持
+
+	# 現在の作業ブランチをデフォルトブランチにマージし、現在の作業ブランチを削除
+	mmerge = "!b=$(git branch-name); git swd; git merge $b --no-edit; git branch -d $b"
 [interactive]
 	diffFilter = delta --color-only
 [delta]

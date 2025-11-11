@@ -9,6 +9,9 @@ go = "latest"
 # ruby = "latest"
 rust = "latest"
 bun = "latest"
+{{-   if not .personal }}
+java = "latest"
+{{-   end }}
 {{- end }}
 
 # cli

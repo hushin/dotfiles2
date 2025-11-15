@@ -83,6 +83,11 @@ chezmoi re-add C:\Users\n1\AppData\Local\Packages\Microsoft.WindowsTerminal_8wek
 - 規定のアプリ
   - PDF を Acrobat に変更
 
+### アカウント
+
+- パスキー → 詳細オプション
+  - パスキー マネージャー の 1Password を有効化
+
 ## 手動設定・アプリ
 
 ### Google 日本語入力

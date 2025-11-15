@@ -2,7 +2,7 @@ corepack
 
 # AI
 @anthropic-ai/claude-code
-@google/gemini-cli
+# @google/gemini-cli
 @github/copilot
 
 # commit

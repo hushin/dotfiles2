@@ -69,6 +69,11 @@ config.keys = {
     key = "C",
     mods = "CMD|SHIFT",
     action = wezterm.action.QuickSelect,
+  },
+  {
+    key = "Enter",
+    mods = "ALT",
+    action = wezterm.action.DisableDefaultAssignment,
   }
 }
 

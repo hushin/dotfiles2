@@ -46,7 +46,6 @@ function New-TabHere {
 }
 Set-Alias nth New-TabHere
 
-
 # key binding
 # 実行後入力待ちになるため、AcceptLine を実行する
 Set-PSReadLineKeyHandler -Chord 'Ctrl+]' -ScriptBlock { gf; [Microsoft.PowerShell.PSConsoleReadLine]::AcceptLine() }
@@ -72,6 +71,17 @@ Set-PSReadLineOption -Colors @{ "Selection" = "`e[7m" }
 Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete
 carapace _carapace | Out-String | Invoke-Expression
 
+# Windows ターミナルで同じディレクトリ内のタブまたはペインを開く
+# ref. https://learn.microsoft.com/ja-jp/windows/terminal/tutorials/new-tab-same-directory
+function Invoke-Starship-PreCommand {
+    $loc = $executionContext.SessionState.Path.CurrentLocation;
+    $prompt = "$([char]27)]9;12$([char]7)"
+    if ($loc.Provider.Name -eq "FileSystem")
+    {
+        $prompt += "$([char]27)]9;9;`"$($loc.ProviderPath)`"$([char]27)\"
+    }
+    $host.ui.Write($prompt)
+}
 # Starship の初期化
 Invoke-Expression (&starship init powershell)
 # zoxide (cdの改良) の初期化

@@ -1,0 +1,28 @@
+model = "gpt-5.1-codex-max"
+model_reasoning_effort = "medium"
+
+approval_policy = "on-request"
+sandbox_mode    = "workspace-write"
+
+[features]
+web_search_request = true
+
+[sandbox_workspace_write]
+network_access = true
+
+[mcp_servers.chrome-devtools]
+command = "npx"
+args = [
+  "-y",
+  "chrome-devtools-mcp@latest",
+  "--browserUrl",
+  "http://localhost:9222"
+]
+
+[mcp_servers.context7]
+command = "npx"
+args = ["-y", "@upstash/context7-mcp"]
+
+[notice]
+hide_gpt5_1_migration_prompt = true
+"hide_gpt-5.1-codex-max_migration_prompt" = true

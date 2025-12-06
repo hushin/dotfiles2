@@ -6,6 +6,7 @@ sandbox_mode    = "workspace-write"
 
 [features]
 web_search_request = true
+enable_experimental_windows_sandbox = true
 
 [sandbox_workspace_write]
 network_access = true

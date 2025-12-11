@@ -97,6 +97,30 @@ function gwt -d "git work tree" -a branch
     git worktree add {$gitCdupDir}git-worktrees/$branch -b $branch
 end
 
+function wt
+    # git worktree のディレクトリへ移動します
+    #
+    # [使い方]
+    #   wt          : 全 worktree からインタラクティブに選択して移動します
+    #   wt <query>  : ブランチ名やパスの一部で検索して移動します
+    #                 - ヒットが1件のみ : 選択画面を出さずに即座に移動 (高速移動)
+    #                 - ヒットが複数    : 入力値で絞り込まれた状態で選択画面を表示
+    #                 - ヒットなし      : 何もせず終了
+
+    set -l fzf_opts --height 40% --layout=reverse --border
+
+    if count $argv > /dev/null
+        set fzf_opts $fzf_opts --query "$argv" --select-1 --exit-0
+    end
+
+    set -l selected (git worktree list | fzf $fzf_opts)
+
+    if test -n "$selected"
+        set -l target_dir (echo $selected | string split -m1 " " | head -n1)
+        cd $target_dir
+    end
+end
+
 {{- if (eq .chezmoi.os "darwin") }}
 function joinpdf
     mkdir -p formatted

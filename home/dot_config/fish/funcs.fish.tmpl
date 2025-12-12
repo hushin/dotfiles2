@@ -97,12 +97,12 @@ function gwt -d "git work tree" -a branch
     git worktree add {$gitCdupDir}git-worktrees/$branch -b $branch
 end
 
-function wt
+function swt
     # git worktree のディレクトリへ移動します
     #
     # [使い方]
-    #   wt          : 全 worktree からインタラクティブに選択して移動します
-    #   wt <query>  : ブランチ名やパスの一部で検索して移動します
+    #   swt          : 全 worktree からインタラクティブに選択して移動します
+    #   swt <query>  : ブランチ名やパスの一部で検索して移動します
     #                 - ヒットが1件のみ : 選択画面を出さずに即座に移動 (高速移動)
     #                 - ヒットが複数    : 入力値で絞り込まれた状態で選択画面を表示
     #                 - ヒットなし      : 何もせず終了

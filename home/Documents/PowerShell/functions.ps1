@@ -79,3 +79,30 @@ function open {
         Write-Error "パスが見つかりません: $path"
     }
 }
+
+function gwt {
+    param([string]$branch)
+
+    $gitCdupDir = git rev-parse --show-cdup
+    git worktree add "$($gitCdupDir)git-worktrees/$branch" -b $branch
+}
+
+function swt {
+    param([string]$query)
+
+    $fzf_opts = "--border"
+
+    if ($query) {
+        $fzf_opts += " --query ""$query"" --select-1 --exit-0"
+    }
+
+    $selected = git worktree list | fzf $fzf_opts
+
+    if ($selected) {
+        # git worktree list の出力からパス部分を抽出
+        # 例: "C:/Users/n1/worktrees/my-feature HEAD      (detached)" -> "C:/Users/n1/worktrees/my-feature"
+        # 例: "C:/Users/n1/worktrees/another-branch another-branch  sha1" -> "C:/Users/n1/worktrees/another-branch"
+        $target_dir = $selected.Split(' ')[0]
+        Set-Location $target_dir
+    }
+}

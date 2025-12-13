@@ -156,6 +156,20 @@
 "
        :target (file+head "resources/rez/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}")
        :unnarrowed t)
+     ("b" "blog post" plain
+       "* Tasks
+** TODO 書く
+
+* 思い
+
+* Notes
+
+* Body
+%?
+
+"
+       :target (file+head "posts/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}")
+       :unnarrowed t)
      )
   )
 

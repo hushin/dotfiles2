@@ -9,6 +9,7 @@
       (directory-files org-directory t "\\.org$")
       (directory-files-recursively (concat org-roam-directory "areas") "\\.org$")
       (directory-files-recursively (concat org-roam-directory "projects") "\\.org$")
+      (directory-files-recursively (concat org-roam-directory "posts") "\\.org$")
       (directory-files-recursively (concat org-roam-directory "resources") "\\.org$")))
 
   (setq org-agenda-files my-default-org-agenda-files)
@@ -231,6 +232,17 @@ are equal return nil."
                     (:name "Inbox"
                       :category "Inbox")
                     ))
+               ))
+           ))
+       ("b" "blog draft posts"
+         (
+           (alltodo ""
+             (
+               (org-agenda-files
+                 (directory-files-recursively
+                   (concat (file-name-as-directory org-roam-directory) "posts")
+                   "\\.org$"))
+               (org-agenda-overriding-header "Blog Draft")
                ))
            ))
        )

@@ -366,6 +366,22 @@ mapkey('=p', '#14summarize With PerplexityAI', () => {
   tabOpenBackground(`https://www.perplexity.ai/?q=${createAiQuery()}`);
 });
 
+mapkey('=g', '#14summarize With Gemini', () => {
+  tabOpenBackground(`https://gemini.google.com/app?q=${createAiQuery()}`);
+});
+
+const createTranslateQuery = () => {
+  const title = document.title;
+  const url = window.location.href;
+  const query = `${title} ${url} を日本語で要約してください。
+専門用語は適切な訳語を使用し、コードブロックはそのまま保持してください。
+`;
+  return encodeURIComponent(query);
+};
+mapkey('=t', '#14translate With Gemini', () => {
+  tabOpenBackground(`https://gemini.google.com/app?q=${createTranslateQuery()}`);
+});
+
 unmap(';t');
 mapkey(';t', '#14google translate', () => {
   const selection = window.getSelection().toString();

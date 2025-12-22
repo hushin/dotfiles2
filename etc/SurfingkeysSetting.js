@@ -373,7 +373,7 @@ mapkey('=g', '#14summarize With Gemini', () => {
 const createTranslateQuery = () => {
   const title = document.title;
   const url = window.location.href;
-  const query = `${title} ${url} を日本語で要約してください。
+  const query = `${title} ${url} を日本語に翻訳してください。
 専門用語は適切な訳語を使用し、コードブロックはそのまま保持してください。
 `;
   return encodeURIComponent(query);

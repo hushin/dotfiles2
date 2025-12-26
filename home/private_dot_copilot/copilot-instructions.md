@@ -1,1 +1,4 @@
-Think in English and always converse in Japanese
+- Use `./ai-out/(yyyy-MM-dd)-(slug)/` as the working folder
+  - Documentation
+    - When receiving planning instructions from the user, first generate `00-plan.md`
+    - Subsequent file names should follow the pattern `(NN)-(slug)`

@@ -4,26 +4,21 @@
   "Create a new org-roam file for the current week's review."
   (interactive)
   (let* ((week-number (format-time-string "%V"))
-          (year (format-time-string "%Y"))
-          (slug (concat year "w" week-number))
-          (file-path (format "weekly/%s.org" slug))
-          (title (format "Weekly Review %sw%s" year week-number)))
+         (year (format-time-string "%G"))
+         (slug (concat year "w" week-number))
+         (file-path (format "weekly/%s.org" slug))
+         (title (format "Weekly Review %sw%s" year week-number)))
     (my/org-roam-capture-weekly title file-path)))
 
 (defun my/create-previous-weekly-review ()
   "Create a new org-roam file for the previous week's review."
   (interactive)
-  (let* ((week-number (string-to-number (format-time-string "%V")))
-          (year (string-to-number (format-time-string "%Y")))
-          (previous-week (if (= week-number 1)
-                           52
-                           (1- week-number)))
-          (adjusted-year (if (= week-number 1)
-                           (1- year)
-                           year))
-          (slug (concat (number-to-string adjusted-year) "w" (format "%02d" previous-week)))
-          (file-path (format "weekly/%s.org" slug))
-          (title (format "Weekly Review %sw%s" adjusted-year (format "%02d" previous-week))))
+  (let* ((previous-week-time (time-subtract (current-time) (days-to-time 7)))
+         (week-number (format-time-string "%V" previous-week-time))
+         (year (format-time-string "%G" previous-week-time))
+         (slug (concat year "w" week-number))
+         (file-path (format "weekly/%s.org" slug))
+         (title (format "Weekly Review %sw%s" year week-number)))
     (my/org-roam-capture-weekly title file-path)))
 
 (defun my/org-roam-capture-weekly (title file-path)
@@ -74,7 +69,7 @@ Inboxに収集する
 *** 次に取るべき行動を考える
 - [ ] アクションを推進するためのタスクを定義して追加する
   - プロジェクトリストや行動できていない項目について、次に取るべき行動は何かを考える
-  - （たまに） M-x areas, projects で棚卸
+  - (たまに) M-x areas, projects で棚卸
 {{- if .personal }}
 - [ ] Resonance Calendar =C-c a r= で読みたい本や映画の予定を立てる
 {{- end }}

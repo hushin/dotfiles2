@@ -21,3 +21,8 @@ end
 if command -v zoxide >/dev/null 2>&1
     zoxide init fish | source
 end
+
+# NOTE: .profile で設定済みだが、なぜか /opt/homebrew/bin が後ろになることがあるため、ここでもう一度設定する
+if test -d /opt/homebrew/bin
+    eval (/opt/homebrew/bin/brew shellenv)
+end

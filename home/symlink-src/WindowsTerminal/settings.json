@@ -9,8 +9,12 @@
     "firstWindowPreference": "defaultProfile",
     "initialCols": 180,
     "initialRows": 45,
-    "keybindings": 
+    "keybindings":
     [
+        {
+            "id": null,
+            "keys": "ctrl+shift+d"
+        },
         {
             "id": "Terminal.CopyToClipboard",
             "keys": "ctrl+c"
@@ -66,27 +70,32 @@
         {
             "id": "Terminal.SwitchToTab7",
             "keys": "ctrl+8"
+        },
+        {
+            "id": "Terminal.DuplicateTab",
+            "keys": "ctrl+shift+t"
         }
     ],
-    "newTabMenu": 
+    "newTabMenu":
     [
         {
             "type": "remainingProfiles"
         }
     ],
-    "profiles": 
+    "profiles":
     {
-        "defaults": 
+        "defaults":
         {
             "colorScheme": "One Half Dark",
-            "font": 
+            "font":
             {
                 "face": "UDEV Gothic NF"
             },
             "opacity": 90,
+            "startingDirectory": "%USERPROFILE%",
             "useAcrylic": true
         },
-        "list": 
+        "list":
         [
             {
                 "guid": "{4c7a72fe-17f2-545c-bf7d-e2b498fa2203}",
@@ -105,7 +114,8 @@
                 "commandline": "%SystemRoot%\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
                 "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
                 "hidden": false,
-                "name": "Windows PowerShell"
+                "name": "Windows PowerShell",
+                "startingDirectory": "%USERPROFILE%"
             },
             {
                 "commandline": "%SystemRoot%\\System32\\cmd.exe",

@@ -15,7 +15,8 @@
     "junegunn.fzf",
     "BurntSushi.ripgrep.GNU",
     "eza-community.eza",
-    "restic.restic"
+    "restic.restic",
+    "sharkdp.bat"
 )
 
 foreach ($package in $packages) {

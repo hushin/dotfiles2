@@ -14,7 +14,8 @@
     "rsteube.Carapace",
     "junegunn.fzf",
     "BurntSushi.ripgrep.GNU",
-    "eza-community.eza"
+    "eza-community.eza",
+    "restic.restic"
 )
 
 foreach ($package in $packages) {

@@ -1,5 +1,6 @@
 {
   "permissions": {
+    "defaultMode": "acceptEdits",
     "allow": [
       "Bash(npm:*)",
       "Bash(npx tsc:*)",
@@ -85,7 +86,6 @@
     ]
   },
   "model": "sonnet",
-  "autoUpdatesChannel": "latest",
   "statusLine": {
     "type": "command",
     "command": "bun x ccusage statusline"

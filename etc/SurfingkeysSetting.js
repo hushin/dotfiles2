@@ -356,12 +356,6 @@ mapkey('=c', '#14summarize With Anthropic Claude', () => {
   tabOpenBackground(`https://claude.ai/new?q=${createAiQuery()}`);
 });
 
-mapkey('=b', '#14summarize With Bing', () => {
-  tabOpenBackground(
-    `https://www.bing.com/search?showconv=1&sendquery=1&q=${createAiQuery()}`,
-  );
-});
-
 mapkey('=p', '#14summarize With PerplexityAI', () => {
   tabOpenBackground(`https://www.perplexity.ai/?q=${createAiQuery()}`);
 });
@@ -379,7 +373,9 @@ const createTranslateQuery = () => {
   return encodeURIComponent(query);
 };
 mapkey('=t', '#14translate With Gemini', () => {
-  tabOpenBackground(`https://gemini.google.com/app?q=${createTranslateQuery()}`);
+  tabOpenBackground(
+    `https://gemini.google.com/app?q=${createTranslateQuery()}`,
+  );
 });
 
 unmap(';t');

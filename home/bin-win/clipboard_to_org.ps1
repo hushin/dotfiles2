@@ -45,6 +45,8 @@ try {
         # 変換されたorg-modeテキストをクリップボードにコピー
         $orgText = Get-Content -Raw $tempOrgPath
         $cleanedText = $orgText -replace "(?ms):PROPERTIES:[\r\n]+.*?:END:[\r\n]+",""
+        # 箇条書き間の空行を削除（インデントにも対応）
+        $cleanedText = $cleanedText -replace "(?m)(^\s*- .*?)(\r?\n){2,}(?=^\s*- )", "`$1`r`n"
         [System.Windows.Forms.Clipboard]::SetText($cleanedText)
         Write-Host "HTMLからorg-mode形式への変換が完了しました。" -ForegroundColor Green
     } else {

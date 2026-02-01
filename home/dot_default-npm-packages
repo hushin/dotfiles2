@@ -1,9 +1,8 @@
 corepack
 
 # AI
-@anthropic-ai/claude-code
-# @google/gemini-cli
 @github/copilot
+# @google/gemini-cli
 
 # commit
 czg

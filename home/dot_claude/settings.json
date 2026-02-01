@@ -84,5 +84,16 @@
       "Bash(sudo rm:*)"
     ]
   },
+  "model": "sonnet",
+  "autoUpdatesChannel": "latest",
+  "statusLine": {
+    "type": "command",
+    "command": "bun x ccusage statusline"
+  },
+  "enabledPlugins": {
+    "github@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "frontend-design@claude-plugins-official": true
+  },
   "alwaysThinkingEnabled": true
 }

@@ -121,6 +121,31 @@ function swt
     end
 end
 
+function git-rebase-onto-default
+    # 1. デフォルトブランチを取得
+    set -l default_branch (git default-branch)
+    if test -z "$default_branch"
+        echo "Error: Default branch not found."
+        return 1
+    end
+
+    # 2. 親ブランチ（現在のベースとなっているブランチ）をfzfで選択
+    # 現在のブランチ以外を表示
+    set -l current_branch (git branch --show-current)
+    set -l parent_branch (git branch | string trim | grep -v "^*" | fzf --prompt "Select parent branch (upstream) to remove: " --height 40% --reverse)
+
+    if test -z "$parent_branch"
+        echo "No branch selected. Aborting."
+        return 1
+    end
+
+    # 3. 実行確認
+    echo "Executing: git rebase --onto $default_branch $parent_branch $current_branch"
+
+    # 4. リベース実行
+    git rebase --onto $default_branch $parent_branch $current_branch
+end
+
 {{- if (eq .chezmoi.os "darwin") }}
 function joinpdf
     mkdir -p formatted

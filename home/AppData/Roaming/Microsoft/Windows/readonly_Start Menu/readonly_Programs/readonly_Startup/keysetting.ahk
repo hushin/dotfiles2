@@ -296,7 +296,7 @@ RShift & F10::
 }
 
 ; WindowsTerminal 切り替え
-F13 & `;::
+RAlt & t::
 {
     terminal := WinExist("ahk_class CASCADIA_HOSTING_WINDOW_CLASS")
     ; terminal := WinExist("ahk_exe WindowsTerminal.exe")

@@ -15,3 +15,8 @@ if ! has "fetchmd"; then
     mkdir -p "$HOME/.local/bin"
     curl -fsSL https://raw.githubusercontent.com/hushin/fetchmd/main/scripts/install.sh | bash
 fi
+
+if ! git help -a | grep -qw "wt"; then
+    echo "install git-wt"
+    go install github.com/k1LoW/git-wt@latest
+fi

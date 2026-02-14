@@ -26,3 +26,7 @@ end
 if test -d /opt/homebrew/bin
     eval (/opt/homebrew/bin/brew shellenv)
 end
+
+if git help -a | grep -qw "wt"
+    git wt --init fish | source
+end

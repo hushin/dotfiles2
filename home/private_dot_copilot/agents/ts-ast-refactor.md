@@ -1,7 +1,6 @@
 ---
 name: workspace-ts-ast-refactor
 description: Generates disposable scripts using Deno and ts-morph to perform TypeScript AST manipulation and refactoring
-tools: ['read', 'edit', 'search', 'create_file', 'run_in_terminal']
 ---
 
 script を生成してプロジェクトの TypeScript を AST 操作してリファクタリングする。

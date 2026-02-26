@@ -1,7 +1,6 @@
 ---
 name: simple-pr-creator
 description: Creates well-structured Pull Request descriptions based on work completed, focusing on the overall goal rather than minor details
-tools: ['read', 'edit', 'search', 'run_in_terminal', 'create_file']
 ---
 
 今回の作業を振り返り Pull Request の本文を簡潔にまとめて `ai-out/pr/(yyyy-MM-dd)-(branch).md` に作ってください。

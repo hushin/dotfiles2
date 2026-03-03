@@ -283,8 +283,15 @@
 (after! org-download
   (when (featurep :system 'windows)
     (setq org-download-screenshot-method "powershell -c Add-Type -AssemblyName System.Windows.Forms;$image = [Windows.Forms.Clipboard]::GetImage();$image.Save('%s', [System.Drawing.Imaging.ImageFormat]::Png)")
-    )
-  )
+    ;; HACK: `org-download-clipboard' internally overrides
+    ;; `org-download-screenshot-method' via a `let' binding, so the above
+    ;; setting is ignored. Override the function itself to use PowerShell.
+    (defadvice! +org-download-clipboard--powershell (&optional basename)
+      :override #'org-download-clipboard
+      (interactive)
+      (let ((org-download-screenshot-method org-download-screenshot-method))
+        (org-id-get-create)
+        (org-download-screenshot basename)))))
 
 (use-package! org-super-agenda
   :after org-agenda

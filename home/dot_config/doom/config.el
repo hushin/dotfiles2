@@ -215,6 +215,7 @@
 
   (load! "lib/task-collection")
   (load! "lib/org-bullet-functions")
+  (load! "lib/org-task-week")
   )
 
 (map! :after evil-org

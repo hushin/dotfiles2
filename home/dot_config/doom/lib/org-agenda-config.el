@@ -160,6 +160,13 @@ are equal return nil."
                    ;;   )
                    (:discard (:anything t))
                    ))))
+           (tags-todo (concat "w" (format-time-string "%V"))
+             ((org-agenda-overriding-header  (concat "ToDos Week " (format-time-string "%V")))
+               (org-super-agenda-groups
+                 '((:discard (:deadline t))
+                    (:discard (:scheduled t))
+                    (:discard (:todo ("DONE")))
+                    ))))
            (agenda ""
              (
                (org-agenda-start-day "+1d")
@@ -167,13 +174,6 @@ are equal return nil."
                (org-agenda-show-log nil)
                (org-agenda-clockreport-mode nil)))
            (todo "WAITING" ((org-agenda-overriding-header "\nWAITING")))
-           ;; (tags (concat "w" (format-time-string "%V"))
-           ;;   ((org-agenda-overriding-header  (concat "ToDos Week " (format-time-string "%V")))
-           ;;     (org-super-agenda-groups
-           ;;       '((:discard (:deadline t))
-           ;;          (:discard (:scheduled t))
-           ;;          (:discard (:todo ("DONE")))
-           ;;          ))))
            (alltodo ""
              (
                (org-agenda-overriding-header "Tasks")
@@ -195,7 +195,7 @@ are equal return nil."
                ))
            ))
        )
-       ("w" "for Weekly review"
+       ("W" "for Weekly review"
          (
            (todo "NEXT" ((org-agenda-overriding-header "\nNEXT")))
            (agenda ""
@@ -234,6 +234,11 @@ are equal return nil."
                     ))
                ))
            ))
+       ("w" "All Weeks"
+         ((tags-todo "{^w[0-9][0-9]$}"
+            ((org-agenda-overriding-header "Tasks by ISO Week Number")
+              (org-super-agenda-groups
+                '((:auto-tags t)))))))
        ("b" "blog draft posts"
          (
            (alltodo ""

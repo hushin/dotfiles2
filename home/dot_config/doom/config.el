@@ -163,6 +163,8 @@
     (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
              (sequence "WAITING(w/!)" "|" "CANCELED(c/!)"))))
   (setq org-log-done 'time)
+  ; タグが子見出しに継承されるのを防ぐ( "@" 始まりのタグは例外)
+  (setq org-use-tag-inheritance "^@")
 
   ; auto save
   (add-hook 'auto-save-hook 'org-save-all-org-buffers)

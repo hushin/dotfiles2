@@ -77,7 +77,7 @@ deadline/scheduledなし、DONE/CANCELED以外のタスクが対象。
                   (let* ((id (my/ensure-org-id element))
                           (task-data (list
                                        :id id
-                                       :link (my/format-task-link id heading "" file-title))))
+                                       :link (my/format-task-link id heading week-tag file-title))))
                     (push task-data tasks)))))))))
     (nreverse tasks)))
 
@@ -133,11 +133,19 @@ Optional argument DAYS は期限のX日数（デフォルトは5）"
 
                   ;; タスクの情報を収集
                   (let* ((id (my/ensure-org-id element))
+                          (is-next (and todo-keyword (string= todo-keyword "NEXT")))
+                          ;; 期限が明日以降かつNEXTでなく予定が今日以前でもないもの
+                          (is-future-deadline
+                            (and deadline-date
+                              (> deadline-date today)
+                              (not is-next)
+                              (not (and scheduled-date (<= scheduled-date today)))))
                           (type (my/get-task-type deadline-date scheduled-date todo-keyword))
                           (task-data (list
                                         :id id
                                         :link (my/format-task-link id heading type file-title)
-                                        :is-next (and todo-keyword (string= todo-keyword "NEXT"))
+                                        :is-next is-next
+                                        :is-future-deadline is-future-deadline
                                         :scheduled-date scheduled-date
                                         :deadline-date deadline-date
                                         :has-scheduled (not (null scheduled-date))
@@ -145,56 +153,73 @@ Optional argument DAYS は期限のX日数（デフォルトは5）"
                     (push id collected-ids)
                     (push task-data tasks)))))))))
 
-    ;; タスクの並び替え (NEXT→予定→期限の順、日付は過去から未来へ)
-    (setq tasks
-      (sort tasks
-        (lambda (a b)
-          (cond
-            ;; NEXTを最優先
-            ((and (plist-get a :is-next) (not (plist-get b :is-next))) t)
-            ((and (not (plist-get a :is-next)) (plist-get b :is-next)) nil)
+    ;; 現在のタスクと将来期限タスクに分割
+    (let* ((current-tasks (cl-remove-if (lambda (task) (plist-get task :is-future-deadline)) tasks))
+            (future-tasks  (cl-remove-if-not (lambda (task) (plist-get task :is-future-deadline)) tasks)))
 
-            ;; 次に、予定(scheduled)があるかどうかで分類
-            ((and (plist-get a :has-scheduled) (not (plist-get b :has-scheduled))) t)
-            ((and (not (plist-get a :has-scheduled)) (plist-get b :has-scheduled)) nil)
+      ;; 現在のタスクの並び替え (NEXT→予定→期限の順、日付は過去から未来へ)
+      (setq current-tasks
+        (sort current-tasks
+          (lambda (a b)
+            (cond
+              ;; NEXTを最優先
+              ((and (plist-get a :is-next) (not (plist-get b :is-next))) t)
+              ((and (not (plist-get a :is-next)) (plist-get b :is-next)) nil)
 
-            ;; 両方予定があれば日付で比較（過去順）
-            ((and (plist-get a :has-scheduled) (plist-get b :has-scheduled))
-              (< (plist-get a :scheduled-date) (plist-get b :scheduled-date)))
+              ;; 次に、予定(scheduled)があるかどうかで分類
+              ((and (plist-get a :has-scheduled) (not (plist-get b :has-scheduled))) t)
+              ((and (not (plist-get a :has-scheduled)) (plist-get b :has-scheduled)) nil)
 
-            ;; 次に、期限(deadline)があるかどうかで分類
-            ((and (plist-get a :has-deadline) (not (plist-get b :has-deadline))) t)
-            ((and (not (plist-get a :has-deadline)) (plist-get b :has-deadline)) nil)
+              ;; 両方予定があれば日付で比較（過去順）
+              ((and (plist-get a :has-scheduled) (plist-get b :has-scheduled))
+                (< (plist-get a :scheduled-date) (plist-get b :scheduled-date)))
 
-            ;; 両方期限があれば日付で比較（過去順）
-            ((and (plist-get a :has-deadline) (plist-get b :has-deadline))
-              (< (plist-get a :deadline-date) (plist-get b :deadline-date)))
+              ;; 次に、期限(deadline)があるかどうかで分類
+              ((and (plist-get a :has-deadline) (not (plist-get b :has-deadline))) t)
+              ((and (not (plist-get a :has-deadline)) (plist-get b :has-deadline)) nil)
 
-            ;; それ以外の場合
-            (t nil)))))
+              ;; 両方期限があれば日付で比較（過去順）
+              ((and (plist-get a :has-deadline) (plist-get b :has-deadline))
+                (< (plist-get a :deadline-date) (plist-get b :deadline-date)))
 
-    ;; 収集したタスクを現在のバッファに挿入
-    (when tasks
-      (insert (mapconcat (lambda (task) (plist-get task :link)) tasks "\n"))
-      (insert "\n"))
+              ;; それ以外の場合
+              (t nil)))))
 
-    ;; 今週タグのタスクを収集して「* 今週」見出し下に挿入
-    (let* ((week-tag (concat "w" (format-time-string "%V")))
-            (weekly-tasks (my/collect-weekly-tagged-tasks))
-            ;; すでに上で挿入済みのIDを除外
-            (weekly-tasks (cl-remove-if
-                            (lambda (task) (member (plist-get task :id) collected-ids))
-                            weekly-tasks)))
-      (when weekly-tasks
-        (insert (format "* 今週 :%s:\n" week-tag))
-        (insert (mapconcat (lambda (task) (plist-get task :link)) weekly-tasks "\n"))
-        (insert "\n")
-        (message "%d個のタスクを挿入しました（うち今週タグ: %d個）"
-          (+ (length tasks) (length weekly-tasks))
-          (length weekly-tasks))))
+      ;; 将来期限タスクは期限日付順で並び替え
+      (setq future-tasks
+        (sort future-tasks
+          (lambda (a b)
+            (< (plist-get a :deadline-date) (plist-get b :deadline-date)))))
 
-    (when (and tasks (not (my/collect-weekly-tagged-tasks)))
-      (message "%d個のタスクを挿入しました" (length tasks)))))
+      ;; 現在のタスクを挿入
+      (when current-tasks
+        (insert (mapconcat (lambda (task) (plist-get task :link)) current-tasks "\n"))
+        (insert "\n"))
+
+      ;; 今週タグのタスクを収集して「* 今週」見出し下に挿入
+      (let* ((week-tag (concat "w" (format-time-string "%V")))
+              (weekly-tasks (my/collect-weekly-tagged-tasks))
+              ;; すでに上で挿入済みのIDを除外
+              (weekly-tasks (cl-remove-if
+                              (lambda (task) (member (plist-get task :id) collected-ids))
+                              weekly-tasks))
+              (weekly-count (length weekly-tasks)))
+        ;; 将来期限タスクを「* 期限が明日以降」見出し下に挿入
+        (when future-tasks
+          (insert "* 期限が明日以降\n")
+          (insert (mapconcat (lambda (task) (plist-get task :link)) future-tasks "\n"))
+          (insert "\n"))
+
+        ;; 今週タグのタスクを「* 今週」見出し下に挿入（最後）
+        (when weekly-tasks
+          (insert (format "* 今週 :%s:\n" week-tag))
+          (insert (mapconcat (lambda (task) (plist-get task :link)) weekly-tasks "\n"))
+          (insert "\n"))
+
+        (message "%d個のタスクを挿入しました（今週タグ: %d個、将来期限: %d個）"
+          (+ (length current-tasks) weekly-count (length future-tasks))
+          weekly-count
+          (length future-tasks))))))
 
 
 (provide 'task-collection)

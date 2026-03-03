@@ -1,4 +1,6 @@
 ;;; lib/org-task-week.el -*- lexical-binding: t; -*-
+
+
 (defun my/org-week-info (delta)
   "今週からDELTA週ずれた週番号を返す。年またぎ考慮。"
   (let* ((now (decode-time))
@@ -48,3 +50,20 @@ DONE/CANCELED は除外。"
   "先週の未完了タスクを今週へ持ち越し"
   (interactive)
   (my/org--bulk-shift -1 0 "先週→今週"))
+
+
+(defun my/org-generate-weekly-tags ()
+  "今週から5週間後までの週番号タグ(w01-w53)を生成して設定します。"
+  (let* ((current-week (string-to-number (format-time-string "%V")))
+          (weeks-to-show 5)
+          (tag-list '()))
+    (dotimes (i (1+ weeks-to-show))
+      (let* ((week (+ current-week i))
+              ;; 53週を超える場合は1週に戻る計算
+              (adjusted-week (if (> week 53) (- week 53) week))
+              (tag-name (format "w%02d" adjusted-week)))
+        (push (cons tag-name nil) tag-list)))
+    (setq org-tag-alist (nreverse tag-list))))
+
+;; 実行して適用
+(my/org-generate-weekly-tags)

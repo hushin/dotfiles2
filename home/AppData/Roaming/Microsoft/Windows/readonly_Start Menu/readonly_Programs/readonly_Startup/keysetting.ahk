@@ -295,22 +295,48 @@ RShift & F10::
     return
 }
 
+; アプリ起動・アクティブ切り替え用ユーティリティ
+; exeName: プロセス名 (例: "firefox.exe")
+; runCmd:  起動コマンド (省略時は exeName をそのまま Run)
+ActivateOrRun(exeName, runCmd?) {
+    ; DetectHiddenWindows を一時的に無効化して表示ウィンドウのみ対象にする
+    prev := A_DetectHiddenWindows
+    DetectHiddenWindows(false)
+    hwnd := WinExist("ahk_exe " exeName)
+    DetectHiddenWindows(prev)
+
+    if (hwnd) {
+        if WinActive("ahk_id " hwnd)
+            WinMinimize("ahk_id " hwnd)
+        else
+            WinActivate("ahk_id " hwnd)
+    } else {
+        Run(runCmd ?? exeName)
+    }
+}
+
 ; WindowsTerminal 切り替え
 RAlt & t::
 {
     terminal := WinExist("ahk_class CASCADIA_HOSTING_WINDOW_CLASS")
-    ; terminal := WinExist("ahk_exe WindowsTerminal.exe")
     if (terminal) {
-        active := WinActive("ahk_id " terminal)
-        if (active)
-            WinMinimize("ahk_id " active)
+        if WinActive("ahk_id " terminal)
+            WinMinimize("ahk_id " terminal)
         else
             WinActivate("ahk_id " terminal)
     }
     else
         Run("wt.exe")
-    return
 }
+
+; RAlt + キー でアプリ切り替え
+RAlt & 1:: ActivateOrRun("1Password.exe")
+RAlt & 2:: ActivateOrRun("claude.exe")
+RAlt & 3:: ActivateOrRun("firefox.exe")
+RAlt & 4:: ActivateOrRun("Discord.exe")
+RAlt & c:: ActivateOrRun("chrome.exe")
+RAlt & v:: ActivateOrRun("Code.exe")
+RAlt & e:: ActivateOrRun("emacs.exe")
 
 #HotIf WinActive("ahk_exe (Code.exe|Code - Insiders.exe)")
 ; Ctrl + ` でターミナルを開くように設定しておく

@@ -331,13 +331,13 @@ RAlt & t::
 
 ; RAlt + キー でアプリ切り替え
 RAlt & 1:: ActivateOrRun("1Password.exe")
-RAlt & 2:: ActivateOrRun("claude.exe")
+RAlt & 2:: ActivateOrRun("claude.exe", EnvGet("LocalAppData") "\AnthropicClaude\claude.exe")
 RAlt & 3:: ActivateOrRun("firefox.exe")
 RAlt & 4:: ActivateOrRun("Discord.exe", EnvGet("LocalAppData") "\Discord\Update.exe --processStart Discord.exe")
 RAlt & 5:: ActivateOrRun("LINE.exe", EnvGet("LocalAppData") "\LINE\bin\LineLauncher.exe")
 RAlt & c:: ActivateOrRun("chrome.exe")
 RAlt & v:: ActivateOrRun("Code.exe")
-RAlt & e:: ActivateOrRun("emacs.exe")
+RAlt & e:: ActivateOrRun("emacs.exe", EnvGet("ProgramFiles") "\Emacs\emacs-30.2\bin\runemacs.exe")
 
 #HotIf WinActive("ahk_exe (Code.exe|Code - Insiders.exe)")
 ; Ctrl + ` でターミナルを開くように設定しておく

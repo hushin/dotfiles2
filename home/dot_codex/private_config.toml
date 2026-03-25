@@ -2,11 +2,7 @@ model = "gpt-5.1-codex-max"
 model_reasoning_effort = "medium"
 
 approval_policy = "on-request"
-sandbox_mode    = "workspace-write"
-
-[features]
-web_search_request = true
-enable_experimental_windows_sandbox = true
+sandbox_mode = "workspace-write"
 
 [sandbox_workspace_write]
 network_access = true
@@ -17,7 +13,7 @@ args = [
   "-y",
   "chrome-devtools-mcp@latest",
   "--browserUrl",
-  "http://localhost:9222"
+  "http://localhost:9222",
 ]
 
 [mcp_servers.context7]

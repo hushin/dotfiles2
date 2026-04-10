@@ -17,6 +17,7 @@ softwareupdate -ia
     - 入力ソース: ^スペース 外す
     - Spotlight 検索: オフ
     - キーボード: 次のウインドウを操作対象にする Cmd-Shift-2
+    - サービス > テキスト > テキストを簡体中国語に変換: オフ
   - テキスト入力 > 入力ソース > 編集
     - すべての入力ソース
       - 文頭を自動的に大文字にする: オフ
@@ -48,6 +49,8 @@ softwareupdate -ia
 - すべて復元: Dropbox に保存している設定を Import する
 - ゼロから手動設定メモ
   - `Alt + Space`
+  - Advanced
+    - Hyper Key を Right Option に設定
   - Extensions
     - Define Word: alias `d`
     - Clipboard History: `Cmd+shift+v`
@@ -56,6 +59,8 @@ softwareupdate -ia
       - `~/raycast-commands`
     - Pomodoro
     - Visual Studio Code
+    - Applications
+      - Hyper Key のショートカットキーを追加
 
 ### Rectangle
 

@@ -6,8 +6,8 @@ has() {
     type "$1" > /dev/null 2>&1
 }
 
-# google-japanese-ime に必要
-softwareupdate --install-rosetta --agree-to-license
+# google-japanese-ime に必要 だったが、2026/2 で不要になったはず
+# softwareupdate --install-rosetta --agree-to-license
 
 if ! has "brew"; then
     # Install homebrew: https://brew.sh/

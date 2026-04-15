@@ -1,6 +1,6 @@
 {
   "permissions": {
-    "defaultMode": "acceptEdits",
+    "defaultMode": "bypassPermissions",
     "allow": [
       "Bash(npm:*)",
       "Bash(npx tsc:*)",
@@ -85,15 +85,19 @@
       "Bash(sudo rm:*)"
     ]
   },
-  "model": "sonnet",
+  "language": "日本語",
   "statusLine": {
     "type": "command",
     "command": "bun x ccusage statusline"
   },
   "enabledPlugins": {
+    "typescript-lsp@claude-plugins-official": true,
     "github@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
-    "frontend-design@claude-plugins-official": true
+    "frontend-design@claude-plugins-official": true,
+    "example-skills@anthropic-agent-skills": true,
+    "superpowers@claude-plugins-official": true
   },
-  "alwaysThinkingEnabled": true
+  "autoMemoryEnabled": false,
+  "skipDangerousModePermissionPrompt": true
 }

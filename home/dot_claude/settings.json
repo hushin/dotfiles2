@@ -1,6 +1,6 @@
 {
   "env": {
-    "ENABLE_TOOL_SEARCH": true
+    "ENABLE_TOOL_SEARCH": "true"
   },
   "permissions": {
     "allow": [
@@ -101,5 +101,6 @@
   },
   "language": "日本語",
   "autoMemoryEnabled": false,
+  "model": "opus",
   "skipDangerousModePermissionPrompt": true
 }

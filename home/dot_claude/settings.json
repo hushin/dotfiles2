@@ -94,16 +94,7 @@
     "code-simplifier@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
     "example-skills@anthropic-agent-skills": true,
-    "superpowers@claude-plugins-official": true,
-    "everything-claude-code@everything-claude-code": true
-  },
-  "extraKnownMarketplaces": {
-    "everything-claude-code": {
-      "source": {
-        "source": "git",
-        "url": "https://github.com/affaan-m/everything-claude-code.git"
-      }
-    }
+    "superpowers@claude-plugins-official": true
   },
   "language": "日本語",
   "autoMemoryEnabled": false,

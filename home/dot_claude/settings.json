@@ -1,6 +1,5 @@
 {
   "permissions": {
-    "defaultMode": "bypassPermissions",
     "allow": [
       "Bash(npm:*)",
       "Bash(npx tsc:*)",
@@ -83,21 +82,30 @@
       "Bash(rm -rf /*)",
       "Bash(rm -rf .git)",
       "Bash(sudo rm:*)"
-    ]
+    ],
+    "defaultMode": "bypassPermissions"
   },
-  "language": "日本語",
   "statusLine": {
     "type": "command",
     "command": "bun x ccusage statusline"
   },
   "enabledPlugins": {
-    "typescript-lsp@claude-plugins-official": true,
     "github@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
     "frontend-design@claude-plugins-official": true,
     "example-skills@anthropic-agent-skills": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": true,
+    "everything-claude-code@everything-claude-code": true
   },
+  "extraKnownMarketplaces": {
+    "everything-claude-code": {
+      "source": {
+        "source": "git",
+        "url": "https://github.com/affaan-m/everything-claude-code.git"
+      }
+    }
+  },
+  "language": "日本語",
   "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true
 }

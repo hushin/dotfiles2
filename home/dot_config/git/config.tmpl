@@ -55,6 +55,9 @@
 
 	# 現在の作業ブランチをデフォルトブランチにマージし、現在の作業ブランチを削除
 	mmerge = "!b=$(git branch-name); git swd; git merge $b --no-edit; git branch -d $b"
+
+	# https://zenn.dev/hfm/articles/commit-message-generated-by-ai
+	aicommit = "!f() { COMMITMSG=$(claude --no-session-persistence --print 'Generate ONLY a one-line Git commit message in English using imperative mood. The message should summarize what was changed and why, based strictly on the contents of `git diff --cached`. DO NOT add an explanation or a body. Output ONLY the commit summary line.'); git commit -m \"$COMMITMSG\" -e; }; f"
 [interactive]
 	diffFilter = delta --color-only
 [delta]

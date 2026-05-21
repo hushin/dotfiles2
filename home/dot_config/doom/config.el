@@ -217,6 +217,7 @@
 
   (load! "lib/task-collection")
   (load! "lib/org-bullet-functions")
+  (load! "lib/org-prompt-path")
   (load! "lib/org-task-week")
   )
 

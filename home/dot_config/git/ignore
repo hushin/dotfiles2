@@ -140,5 +140,7 @@ memory-bank/
 phantom.config.json
 phantom-worktrees/
 
+.playwright-mcp/
+
 # AST
 tmp-ast/

@@ -129,6 +129,7 @@ flycheck_*.el
 
 # git worktree 用
 git-worktrees/*
+.worktrees/
 
 # ai
 ref-docs/

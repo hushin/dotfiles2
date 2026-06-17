@@ -29,6 +29,11 @@ if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
 fi
 
+# set PATH so it includes bun bin if it exists
+if [ -d "$HOME/.bun/bin" ] ; then
+    PATH="$HOME/.bun/bin:$PATH"
+fi
+
 # set PATH so it includes emacs bin if it exists
 if [ -d "$HOME/.config/emacs/bin" ] ; then
     PATH="$HOME/.config/emacs/bin:$PATH"

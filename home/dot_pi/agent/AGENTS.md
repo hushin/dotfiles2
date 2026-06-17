@@ -68,3 +68,14 @@
   pueue wait <task-id> # blocks when there is no other parallel work
   pueue log <task-id> # check results/status
   ```
+
+## Documentation Lookup
+
+Always use `ctx7` for library/framework/API docs (even familiar ones — training data may be stale). Prefer over web search. Not for: refactoring, debugging business logic, code review.
+
+```bash
+ctx7 library <official-name> "<question>"  # resolve → pick best /org/project
+ctx7 docs <libraryId> "<question>"          # fetch & answer
+```
+
+Max 3 commands. Never silently fall back to training data on quota error — suggest `ctx7 login` or `CONTEXT7_API_KEY`. See `/skill:find-docs` for full details.

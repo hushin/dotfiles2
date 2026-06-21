@@ -1,0 +1,11 @@
+{
+  "lastChangelogVersion": "0.79.9",
+  "theme": "dark",
+  "defaultProvider": "opencode-go",
+  "defaultModel": "deepseek-v4-pro",
+  "defaultThinkingLevel": "high",
+  "packages": [
+    "npm:@tintinweb/pi-subagents",
+    "npm:pi-agent-browser-native"
+  ]
+}

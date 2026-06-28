@@ -28,6 +28,8 @@
 
 ## Process Guidelines
 
+- When working with Git worktrees, ensure you only edit files and branches within the directory where you were initialized.
+
 ### Progressive Disclosure
 
 - AGENTS.md assumes progressive disclosure: it contains only the minimum information needed, while task-specific knowledge and guidelines live elsewhere.

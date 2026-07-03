@@ -3,7 +3,7 @@
 ## Basic Process
 
 1. Check the latest installation method for the library
-   - Use `/gemini-search` to reference the latest Installation instructions from official documentation
+   - Refer to the official documentation to verify the latest installation instructions.
 2. Add dependencies
    - Use `pnpm add <package-name>` to add packages
    - For dev dependencies, use `pnpm add -D <package-name>`

@@ -16,7 +16,8 @@
     "BurntSushi.ripgrep.GNU",
     "eza-community.eza",
     "restic.restic",
-    "sharkdp.bat"
+    "sharkdp.bat",
+    "OliverBetz.ExifTool"
 )
 
 foreach ($package in $packages) {

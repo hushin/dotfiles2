@@ -111,9 +111,41 @@ Write-Log "PC ($PcDestRoot): $copiedPc 件コピー, $skippedPc 件スキップ 
 Write-Log "SSD ($SsdDestRoot): $copiedSsd 件コピー, $skippedSsd 件スキップ (既存)"
 Write-Log "=== 写真取り込み完了 ==="
 
+$answer = Read-Host "SDカードの元ファイルを削除しますか? (y/N)"
+if ($answer -eq 'y' -or $answer -eq 'Y') {
+    $deletedCount = 0
+    $deleteSkipped = 0
+    foreach ($entry in $exifData) {
+        $sourceFile = $entry.SourceFile
+        $shotDate = $entry.DateTimeOriginal
+        if (-not $shotDate) {
+            $shotDate = (Get-Item $sourceFile).LastWriteTime.ToString("yyyy-MM-dd")
+        }
+        $fileName = Split-Path $sourceFile -Leaf
+        $pcDestFile = Join-Path (Join-Path $PcDestRoot $shotDate) $fileName
+        $ssdDestFile = Join-Path (Join-Path $SsdDestRoot $shotDate) $fileName
+
+        if ((Test-Path $pcDestFile) -and (Test-Path $ssdDestFile)) {
+            Remove-Item -Path $sourceFile -Force
+            $deletedCount++
+        } else {
+            Write-Log "WARNING: コピー先が確認できないため削除をスキップ: $sourceFile"
+            $deleteSkipped++
+        }
+    }
+    Write-Log "SDカードから $deletedCount 件削除しました ($deleteSkipped 件スキップ)"
+} else {
+    Write-Log "SDカードの削除はスキップされました"
+}
+
 if (Test-Path $ImagingEdgeExe) {
-    Write-Log "Imaging Edge Desktop (Viewer) を起動します"
-    Start-Process -FilePath $ImagingEdgeExe
+    $answer = Read-Host "Imaging Edge Desktop (Viewer) を起動しますか? (y/N)"
+    if ($answer -eq 'y' -or $answer -eq 'Y') {
+        Write-Log "Imaging Edge Desktop (Viewer) を起動します"
+        Start-Process -FilePath $ImagingEdgeExe
+    } else {
+        Write-Log "Imaging Edge Desktop の起動はスキップされました"
+    }
 } else {
     Write-Log "WARNING: Imaging Edge Desktopが見つかりません: $ImagingEdgeExe"
 }

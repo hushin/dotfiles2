@@ -1,8 +1,9 @@
 # import-photos.ps1
-# SDカード(F:\DCIM)のRAW/JPEGを撮影日別フォルダに整理しつつ、
+# SDカード(F:\DCIM)のRAW/JPEGとF:\PRIVATE\M4ROOT\CLIPのMP4を撮影日別フォルダに整理しつつ、
 # PCローカルと外付けSSD(E:)の2箇所へ取り込む
 
 $SdCardPath = "F:\DCIM"
+$SdCardMoviePath = "F:\PRIVATE\M4ROOT\CLIP"
 $PcDestRoot = "$env:USERPROFILE\Pictures\RAW"
 $SsdDestRoot = "E:\Photos"
 $ImagingEdgeExe = "C:\Program Files\Sony\Imaging Edge\Viewer.exe"
@@ -35,8 +36,15 @@ try {
     exit 1
 }
 
-Write-Log "撮影日を取得中: $SdCardPath"
-$exifJson = & exiftool -r -j -DateTimeOriginal -d "%Y-%m-%d" $SdCardPath 2>$null
+$SourcePaths = @($SdCardPath)
+if (Test-Path $SdCardMoviePath) {
+    $SourcePaths += $SdCardMoviePath
+} else {
+    Write-Log "WARNING: 動画フォルダが見つかりません: $SdCardMoviePath"
+}
+
+Write-Log "撮影日を取得中: $($SourcePaths -join ', ')"
+$exifJson = & exiftool -r -j -DateTimeOriginal -d "%Y-%m-%d" @SourcePaths 2>$null
 $exifData = $exifJson | ConvertFrom-Json
 
 if (-not $exifData -or $exifData.Count -eq 0) {

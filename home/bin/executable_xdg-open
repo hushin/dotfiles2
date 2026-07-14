@@ -1,0 +1,35 @@
+#!/bin/sh
+# WSL用の xdg-open 代替。
+# Windowsの既定アプリ(ブラウザ等)でURL/ファイルを開く。
+#
+# claude の /login や wrangler login のようにブラウザ起動を
+# 「$BROWSER ではなく xdg-open コマンド」で行うCLIにも効くように
+# /usr/bin/xdg-open より PATH優先度の高い ~/bin に xdg-open という名前で置いている。
+# WSL以外の環境では本来の xdg-open へ委譲する。
+
+target="$1"
+
+if [ -z "$target" ]; then
+    echo "usage: xdg-open { file | URL }" >&2
+    exit 1
+fi
+
+if grep -qi microsoft /proc/version 2>/dev/null; then
+    case "$target" in
+        *://*)
+            ;;
+        *)
+            target=$(wslpath -w "$(realpath "$target")") || exit 1
+            ;;
+    esac
+    exec /mnt/c/Windows/System32/rundll32.exe url.dll,FileProtocolHandler "$target"
+fi
+
+for candidate in /usr/bin/xdg-open /usr/local/bin/xdg-open; do
+    if [ -x "$candidate" ]; then
+        exec "$candidate" "$target"
+    fi
+done
+
+echo "xdg-open: no handler found for non-WSL environment" >&2
+exit 1

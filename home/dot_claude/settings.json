@@ -45,7 +45,6 @@
       "Bash(gibo:*)",
       "Read(~/ghq/**)",
       "Edit(~/ghq/**)",
-      "Write(~/ghq/**)",
       "WebFetch(domain:tailwindcss.com)",
       "WebFetch(domain:zenn.dev)",
       "WebFetch(domain:hono.dev)",

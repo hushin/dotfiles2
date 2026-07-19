@@ -97,6 +97,73 @@ function gwt -d "git work tree" -a branch
     git worktree add {$gitCdupDir}git-worktrees/$branch -b $branch
 end
 
+function wtclean -d "Bulk delete all git-wt managed worktrees with safety checks"
+    if not command -q jq
+        echo "Error: jq is required but not installed."
+        return 1
+    end
+
+    set -l worktrees_json (git wt --json 2>/dev/null)
+    if test $status -ne 0
+        echo "Error: 'git wt' failed. Is git-wt installed?"
+        return 1
+    end
+
+    set -l git_root (git rev-parse --show-toplevel 2>/dev/null)
+    set -l to_delete_paths
+    set -l to_delete_branches
+
+    echo $worktrees_json | jq -c '.[]' | while read -l wt
+        set -l wt_path (echo $wt | jq -r '.path')
+        set -l wt_branch (echo $wt | jq -r '.branch')
+        set -l wt_bare (echo $wt | jq -r '.bare')
+
+        if test "$wt_path" = "$git_root" -o "$wt_bare" = "true"
+            continue
+        end
+
+        set -a to_delete_paths "$wt_path"
+        set -a to_delete_branches "$wt_branch"
+    end
+
+    if test (count $to_delete_paths) -eq 0
+        echo "No worktrees to delete."
+        return 0
+    end
+
+    for i in (seq 1 (count $to_delete_paths))
+        set -l wt_path "$to_delete_paths[$i]"
+        set -l wt_branch "$to_delete_branches[$i]"
+
+        set -l issues
+        set -l status_output (git -C "$wt_path" status --porcelain 2>/dev/null)
+        if test -n "$status_output"
+            set -a issues "uncommitted changes"
+        end
+        set -l remote (git -C "$wt_path" rev-parse --abbrev-ref @{u} 2>/dev/null)
+        if test -n "$remote"
+            set -l ahead (git -C "$wt_path" rev-list --count @{u}..HEAD 2>/dev/null)
+            if test "$ahead" -gt 0
+                set -a issues "$ahead unpushed commit(s)"
+            end
+        end
+
+        if test (count $issues) -gt 0
+            set -l joined (string join ", " $issues)
+            read -l -P "Delete $wt_branch ($wt_path)? $joined. [y/N] " confirm
+            if test "$confirm" != "y" -a "$confirm" != "Y"
+                echo "  Skipped: $wt_branch"
+                continue
+            end
+        end
+
+        echo "Deleting: $wt_path"
+        git wt -D "$wt_path" 2>/dev/null || echo "  ✗ Failed: $wt_path"
+    end
+
+    echo "Done."
+end
+
 function swt
     # git worktree のディレクトリへ移動します
     #

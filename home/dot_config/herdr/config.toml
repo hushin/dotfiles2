@@ -45,6 +45,9 @@ detach = "prefix+q"
 # 直前のペインに戻る (tmux: bind ^t last-pane。prefixの二重押下はHerdrで予約済みのためprefix+tに変更)
 last_pane = "prefix+t"
 
+[ui]
+prompt_new_tab_name = false
+
 [theme]
 name = "dracula"
 auto_switch = false

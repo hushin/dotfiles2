@@ -1,0 +1,50 @@
+# 参考: https://herdr.dev/ja/docs/keyboard/
+# alt+shift+記号 は direct bind だとターミナル依存で届かないことがあるため prefix 経由にする
+
+[keys]
+prefix = "ctrl+t"
+
+# タブ操作 (tmux -n直接バインド: M-n, M-1..9, M-., M-,, M-X, M-R)
+new_tab = "alt+n"
+switch_tab = "alt+1..9"
+next_tab = "alt+."
+previous_tab = "alt+,"
+rename_tab = "alt+shift+r"
+close_tab = "alt+shift+x"
+
+# 分割 (tmux -n直接バインド: M-v = 左右分割, M-V = 上下分割)
+split_vertical = "alt+v"
+split_horizontal = "alt+shift+v"
+
+# ペイン移動 (tmux -n直接バインド: M-矢印)
+focus_pane_left = "alt+left"
+focus_pane_down = "alt+down"
+focus_pane_up = "alt+up"
+focus_pane_right = "alt+right"
+
+# ペイン入れ替え (tmux -n直接バインド: M-H/J/K/L)
+swap_pane_left = "alt+shift+h"
+swap_pane_down = "alt+shift+j"
+swap_pane_up = "alt+shift+k"
+swap_pane_right = "alt+shift+l"
+
+# コピーモード (tmux -n直接バインド: M-/)
+copy_mode = "alt+/"
+
+# ワークスペース (tmuxには無い概念)
+new_workspace = "alt+shift+n"
+next_workspace = "alt+shift+j"
+previous_workspace = "alt+shift+k"
+
+# その他 (tmux側はprefix C-t経由だった項目はそのままprefix維持)
+resize_mode = "prefix+r"
+zoom = "prefix+z"
+close_pane = "prefix+x"
+detach = "prefix+q"
+
+# 直前のペインに戻る (tmux: bind ^t last-pane。prefixの二重押下はHerdrで予約済みのためprefix+tに変更)
+last_pane = "prefix+t"
+
+[theme]
+name = "dracula"
+auto_switch = false

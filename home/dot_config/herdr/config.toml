@@ -22,12 +22,6 @@ focus_pane_down = "alt+down"
 focus_pane_up = "alt+up"
 focus_pane_right = "alt+right"
 
-# ペイン入れ替え (tmux -n直接バインド: M-H/J/K/L)
-swap_pane_left = "alt+shift+h"
-swap_pane_down = "alt+shift+j"
-swap_pane_up = "alt+shift+k"
-swap_pane_right = "alt+shift+l"
-
 # コピーモード (tmux -n直接バインド: M-/)
 copy_mode = "alt+/"
 

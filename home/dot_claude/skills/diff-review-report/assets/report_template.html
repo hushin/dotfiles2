@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>差分レビュー</title>
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#fff; --ink:#14161a; --muted:#6b7280; --line:#e5e7eb;
+  --add-bg:#e6ffed; --add-ink:#046c3f; --del-bg:#ffeef0; --del-ink:#b31d28;
+  --add-hl:#acf2bd; --del-hl:#fdb8c0;
+  --high:#dc2626; --medium:#d97706; --low:#94a3b8;
+  --accent:#2563eb; --ok:#059669;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;
+  font-size:15px;line-height:1.7;}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 120px}
+a{color:var(--accent)}
+
+/* header */
+header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);
+  backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.hd{max-width:1180px;margin:0 auto;padding:14px 20px;display:flex;gap:18px;align-items:center;flex-wrap:wrap}
+.brand{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--muted)}
+.hd h1{font-size:17px;margin:0;flex:1 1 260px;line-height:1.4}
+.stats{font-family:var(--mono);font-size:13px;background:#f1f3f5;border:1px solid var(--line);
+  border-radius:8px;padding:5px 12px;white-space:nowrap}
+.stats .p{color:var(--add-ink)} .stats .m{color:var(--del-ink)}
+.prog{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.bar{width:140px;height:6px;border-radius:3px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok);width:0;transition:width .2s}
+.iconbtn{border:1px solid var(--line);background:#fff;border-radius:8px;width:30px;height:30px;
+  cursor:pointer;color:var(--muted);font-size:14px}
+
+/* section */
+.sec{margin:44px 0 14px;font-family:var(--mono);font-size:13px;letter-spacing:.12em;color:var(--muted)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.card + .card{margin-top:14px}
+
+/* overview list */
+.row{display:flex;gap:14px;align-items:flex-start;padding:14px 18px;border-left:4px solid var(--low);
+  border-bottom:1px solid var(--line);cursor:pointer;text-decoration:none;color:inherit}
+.row:last-child{border-bottom:0}
+.row:hover{background:#fafbfc}
+.row.high{border-left-color:var(--high)} .row.medium{border-left-color:var(--medium)}
+.row .t{font-weight:700;font-size:15px}
+.row .d{color:var(--muted);font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:66ch}
+.row .meta{margin-left:auto;display:flex;gap:8px;align-items:center;flex-shrink:0}
+
+.badge{font-family:var(--mono);font-size:12px;border:1px solid var(--line);border-radius:999px;
+  padding:2px 10px;color:var(--muted);background:#fff;white-space:nowrap}
+.risk{font-size:12px;border-radius:6px;padding:2px 9px;font-weight:700}
+.risk.high{background:#fee2e2;color:#991b1b}
+.risk.medium{background:#fef3c7;color:#92400e}
+.risk.low{background:#eef2f6;color:#475569}
+.count{font-size:12.5px;color:var(--high);font-weight:700}
+.flag{font-size:12px;background:#fff7ed;color:#9a3412;border:1px solid #fed7aa;border-radius:6px;padding:2px 8px}
+
+/* group detail */
+.grp{scroll-margin-top:80px}
+.grp .head{padding:18px 20px;border-left:6px solid var(--low);display:flex;gap:16px;align-items:flex-start}
+.grp.high .head{border-left-color:var(--high)} .grp.medium .head{border-left-color:var(--medium)}
+.grp h2{margin:0 0 6px;font-size:17px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.intent{margin:0;font-size:14.5px}
+.intent b{color:var(--ok);font-weight:700;margin-right:4px}
+.approve{margin-left:auto;flex-shrink:0;display:flex;gap:8px;align-items:center;border:1px solid var(--line);
+  border-radius:10px;padding:9px 14px;cursor:pointer;font-size:14px;user-select:none;background:#fff}
+.approve.on{border-color:var(--ok);background:#ecfdf5;color:#065f46}
+.approve input{width:16px;height:16px;accent-color:var(--ok)}
+
+/* findings */
+.finds{padding:0 20px 4px}
+.find{border:1px solid var(--line);border-left:4px solid var(--medium);border-radius:10px;
+  padding:12px 14px;margin:12px 0;background:#fffdf8}
+.find.error{border-left-color:var(--high);background:#fff7f7}
+.find.info{border-left-color:var(--accent);background:#f8fbff}
+.find.demoted{opacity:.82;background:#fafafa;border-left-color:var(--low)}
+.find h3{margin:0 0 6px;font-size:14.5px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.sev{font-size:11.5px;font-weight:700;border-radius:5px;padding:1px 7px}
+.sev.error{background:#fee2e2;color:#991b1b}
+.sev.warning{background:#fef3c7;color:#92400e}
+.sev.info{background:#dbeafe;color:#1e40af}
+.find dl{margin:6px 0 0;font-size:13.5px;display:grid;grid-template-columns:auto 1fr;gap:2px 10px}
+.find dt{color:var(--muted);white-space:nowrap}
+.find dd{margin:0}
+.find code,.loc{font-family:var(--mono);font-size:12.5px}
+.triage{display:flex;gap:6px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.tbtn{border:1px solid var(--line);background:#fff;border-radius:7px;padding:3px 12px;font-size:13px;cursor:pointer}
+.tbtn.on[data-v=adopt]{background:#dbeafe;border-color:#93c5fd;color:#1e40af;font-weight:700}
+.tbtn.on[data-v=reject]{background:#f3f4f6;border-color:#d1d5db;color:#374151;font-weight:700}
+.tbtn.on[data-v=hold]{background:#fef3c7;border-color:#fcd34d;color:#92400e;font-weight:700}
+
+/* diff */
+.hunks{padding:4px 20px 20px}
+.hunk{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin-top:12px}
+.hh{display:flex;gap:12px;align-items:center;padding:8px 12px;background:#f8f9fa;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:12.5px;cursor:pointer}
+.hh .id{color:var(--muted)} .hh .f{font-weight:700} .hh .r{margin-left:auto;color:var(--muted)}
+.note{padding:9px 14px;background:#f8fbff;border-bottom:1px solid var(--line);font-size:13.5px}
+table.d{width:100%;border-collapse:collapse;font-family:var(--mono);font-size:12.5px;line-height:1.55}
+table.d td{padding:0 6px;vertical-align:top;white-space:pre-wrap;word-break:break-word}
+td.n{width:1%;min-width:42px;text-align:right;color:#b9bfc7;user-select:none;background:#fcfcfd;
+  border-right:1px solid var(--line)}
+td.s{width:1%;padding:0 4px;user-select:none;color:var(--muted)}
+tr.add td{background:var(--add-bg)} tr.add td.s{color:var(--add-ink)}
+tr.del td{background:var(--del-bg)} tr.del td.s{color:var(--del-ink)}
+tr.add mark{background:var(--add-hl);color:inherit}
+tr.del mark{background:var(--del-hl);color:inherit}
+.collapsed table.d,.collapsed .note{display:none}
+
+/* generic */
+textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font:inherit;
+  font-size:14px;resize:vertical;background:#fff}
+.pad{padding:16px 20px}
+.tally{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.tally span{border:1px solid var(--line);border-radius:8px;padding:4px 12px;font-size:13.5px;background:#fff}
+.tally span.on{border-color:var(--accent);color:var(--accent);font-weight:700}
+button.pri{background:var(--accent);color:#fff;border:0;border-radius:9px;padding:10px 22px;
+  font-size:15px;font-weight:700;cursor:pointer}
+button.sec{background:#fff;color:var(--ink);border:1px solid #cbd2d9;border-radius:9px;padding:10px 22px;
+  font-size:15px;font-weight:700;cursor:pointer}
+pre.out{background:#fbfbfc;border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+  font-family:var(--mono);font-size:12.5px;line-height:1.7;white-space:pre-wrap;word-break:break-word;
+  max-height:520px;overflow:auto;margin:14px 0 0}
+.hint{color:var(--muted);font-size:13.5px}
+#help{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:50;place-items:center}
+#help.on{display:grid}
+#help div{background:#fff;border-radius:14px;padding:22px 26px;max-width:460px}
+#help kbd{font-family:var(--mono);background:#f1f3f5;border:1px solid var(--line);border-radius:5px;padding:1px 6px}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:#14161a;color:#fff;
+  padding:10px 20px;border-radius:9px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:60}
+.toast.on{opacity:1}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd">
+    <span class="brand">DIFF REVIEW</span>
+    <h1 id="title"></h1>
+    <span class="stats" id="stats"></span>
+    <span class="prog">承認 <b id="pn">0/0</b><span class="bar"><i id="pb"></i></span></span>
+    <button class="iconbtn" id="helpbtn" title="ヘルプ">?</button>
+  </div>
+</header>
+
+<div class="wrap">
+  <p class="hint" id="meta"></p>
+  <div id="overview"></div>
+
+  <div class="sec">01 / 変更グループ一覧</div>
+  <div class="card" id="list"></div>
+
+  <div class="sec">02 / 変更グループ詳細</div>
+  <div id="details"></div>
+
+  <div class="sec">03 / 指摘一覧</div>
+  <div class="card" id="findlist"></div>
+
+  <div class="sec">04 / 全体コメント</div>
+  <div class="card pad">
+    <p class="hint" style="margin-top:0">グループに紐づかない気づき、確認したいこと、次にやってほしいこと。</p>
+    <textarea id="global" rows="4" placeholder="例: テストが手薄。移行手順のドキュメントも更新してほしい。"></textarea>
+  </div>
+
+  <div class="sec">05 / フィードバック組み立て</div>
+  <div class="card pad">
+    <div class="tally" id="tally"></div>
+    <p class="hint">採用した指摘と自分で書いたコメントを、元の作業エージェントへ渡す markdown にまとめます。</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="pri" id="gen">フィードバックを生成</button>
+      <button class="sec" id="copy">クリップボードにコピー</button>
+    </div>
+    <pre class="out" id="out">まだ生成していません。</pre>
+  </div>
+</div>
+
+<div id="help"><div>
+  <h3 style="margin-top:0">キーボード</h3>
+  <p><kbd>j</kbd> / <kbd>k</kbd> 次 / 前のグループへ<br>
+     <kbd>a</kbd> 表示中のグループを承認トグル<br>
+     <kbd>g</kbd> フィードバックを生成<br>
+     <kbd>?</kbd> このヘルプ<br>
+     <kbd>Esc</kbd> 閉じる</p>
+  <p class="hint">入力内容はブラウザに自動保存されます。再読み込みしても消えません。</p>
+  <button class="sec" onclick="document.getElementById('help').classList.remove('on')">閉じる</button>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script id="data" type="application/json">__REPORT_DATA__</script>
+<script>
+const D = JSON.parse(document.getElementById('data').textContent);
+const KEY = 'diffreview:' + btoa(unescape(encodeURIComponent(D.title + '|' + D.base))).slice(0, 40);
+const S = Object.assign({approved:{}, gcomment:{}, verdict:{}, fcomment:{}, global:''},
+                        JSON.parse(localStorage.getItem(KEY) || '{}'));
+const save = () => localStorage.setItem(KEY, JSON.stringify(S));
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const RISKLABEL = {high:'要注意', medium:'注意', low:'低リスク'};
+const SEVLABEL = {error:'要修正', warning:'警告', info:'参考'};
+
+D.groups.forEach((g, i) => {
+  g.gid = 'g' + (i + 1);
+  (g.findings || []).forEach((f, j) => { f.fid = g.gid + '-f' + (j + 1); f.group = g; });
+});
+const allFindings = D.groups.flatMap(g => g.findings || []);
+
+/* ---------- header ---------- */
+document.title = D.title;
+title.textContent = D.title;
+const st = D.stats;
+stats.innerHTML = `${st.files} files / ${st.hunks} hunks <span class="p">+${st.additions}</span> <span class="m">−${st.deletions}</span>`;
+meta.textContent = [D.subtitle, D.base && ('対象: ' + D.base), D.plan && ('plan: ' + D.plan)].filter(Boolean).join('　/　');
+if (D.overview) overview.innerHTML = `<div class="card pad">${esc(D.overview).replace(/\n/g,'<br>')}</div>`;
+
+/* ---------- 01 list ---------- */
+list.innerHTML = D.groups.map(g => {
+  const n = (g.findings || []).filter(f => f.verdict !== 'demoted').length;
+  return `<a class="row ${g.risk}" href="#${g.gid}">
+    <div style="min-width:0">
+      <div class="t">${esc(g.title)}</div>
+      <div class="d">${esc(g.summary || g.intent)}</div>
+    </div>
+    <div class="meta">
+      ${n ? `<span class="count">指摘 ${n}</span>` : ''}
+      ${g.needs_improvement ? '<span class="flag">要改善</span>' : ''}
+      ${g.kind ? `<span class="badge">${esc(g.kind)}</span>` : ''}
+      <span class="badge">${g.hunks.length} hunks</span>
+      <span class="risk ${g.risk}">${RISKLABEL[g.risk]}</span>
+    </div></a>`;
+}).join('');
+
+/* ---------- diff rendering ---------- */
+function refine(rows) {           // 1:1 で置き換わった行だけ文字単位で強調する
+  for (let i = 0; i < rows.length; i++) {
+    if (rows[i].t !== 'del' || !rows[i + 1] || rows[i + 1].t !== 'add') continue;
+    if (rows[i + 2] && rows[i + 2].t === 'del') continue;
+    const a = rows[i].text, b = rows[i + 1].text;
+    let p = 0; while (p < a.length && p < b.length && a[p] === b[p]) p++;
+    let s = 0; while (s < a.length - p && s < b.length - p && a[a.length-1-s] === b[b.length-1-s]) s++;
+    if (p + s === 0 || (a.length - p - s) + (b.length - p - s) > (a.length + b.length) * 0.7) continue;
+    rows[i].hl = [p, a.length - s]; rows[i + 1].hl = [p, b.length - s];
+  }
+  return rows;
+}
+const cell = r => r.hl
+  ? esc(r.text.slice(0, r.hl[0])) + '<mark>' + esc(r.text.slice(r.hl[0], r.hl[1])) + '</mark>' + esc(r.text.slice(r.hl[1]))
+  : esc(r.text);
+
+function hunkHtml(id, note) {
+  const h = D.hunks[id];
+  if (!h) return '';
+  const rows = refine(h.lines.map(l => Object.assign({}, l)));
+  const body = rows.map(r => `<tr class="${r.t}"><td class="n">${r.o ?? ''}</td><td class="n">${r.n ?? ''}</td>`
+    + `<td class="s">${r.t === 'add' ? '+' : r.t === 'del' ? '−' : ''}</td><td>${cell(r)}</td></tr>`).join('');
+  return `<div class="hunk">
+    <div class="hh" onclick="this.parentNode.classList.toggle('collapsed')">
+      <span class="id">${h.id}</span><span class="f">${esc(h.file)}</span>
+      <span>${esc(h.header)}</span><span class="r">+${h.additions} −${h.deletions}</span>
+    </div>
+    ${note ? `<div class="note">${esc(note)}</div>` : ''}
+    <table class="d">${body}</table></div>`;
+}
+
+/* ---------- 02 details ---------- */
+function findHtml(f) {
+  return `<div class="find ${f.severity} ${f.verdict === 'demoted' ? 'demoted' : ''}" id="${f.fid}">
+    <h3><span class="sev ${f.severity}">${SEVLABEL[f.severity]}</span>${esc(f.title)}
+      ${f.stage === 'plan' ? '<span class="badge">plan照合</span>' : ''}
+      ${f.verdict === 'demoted' ? '<span class="badge">格下げ</span>' : ''}</h3>
+    <dl>
+      ${f.location ? `<dt>場所</dt><dd class="loc">${esc(f.location)}</dd>` : ''}
+      <dt>指摘</dt><dd>${esc(f.detail)}</dd>
+      ${f.suggestion ? `<dt>改善案</dt><dd>${esc(f.suggestion)}</dd>` : ''}
+      ${f.verdict_note ? `<dt>備考</dt><dd>${esc(f.verdict_note)}</dd>` : ''}
+    </dl>
+    <div class="triage" data-f="${f.fid}">
+      <button class="tbtn" data-v="adopt">採用</button>
+      <button class="tbtn" data-v="reject">却下</button>
+      <button class="tbtn" data-v="hold">保留</button>
+      <input class="fc" data-f="${f.fid}" placeholder="この指摘へのコメント (任意)"
+        style="flex:1 1 240px;border:1px solid var(--line);border-radius:7px;padding:4px 10px;font:inherit;font-size:13.5px">
+    </div></div>`;
+}
+
+details.innerHTML = D.groups.map(g => `<div class="card grp ${g.risk}" id="${g.gid}">
+  <div class="head">
+    <div style="min-width:0">
+      <h2>${g.needs_improvement ? '<span class="flag">要改善</span>' : ''}
+        <span class="risk ${g.risk}">${RISKLABEL[g.risk]}</span>${esc(g.title)}</h2>
+      <p class="intent"><b>意図:</b>${esc(g.intent)}${g.summary ? ' — ' + esc(g.summary) : ''}</p>
+    </div>
+    <label class="approve" data-g="${g.gid}"><input type="checkbox">確認して承認</label>
+  </div>
+  ${(g.findings || []).length ? `<div class="finds">${g.findings.map(findHtml).join('')}</div>` : ''}
+  <div class="hunks">
+    ${g.hunks.map(id => hunkHtml(id, (g.hunk_notes || {})[id])).join('')}
+    <div style="margin-top:14px">
+      <textarea class="gc" data-g="${g.gid}" rows="2"
+        placeholder="このグループへのコメント (人間の指摘。ここに書いた内容もフィードバックに入ります)"></textarea>
+    </div>
+  </div></div>`).join('');
+
+/* ---------- 03 finding list ---------- */
+findlist.innerHTML = allFindings.length
+  ? allFindings.map(f => `<a class="row ${f.severity === 'error' ? 'high' : f.severity === 'warning' ? 'medium' : 'low'}" href="#${f.fid}">
+      <div style="min-width:0"><div class="t">${esc(f.title)}</div>
+      <div class="d">${esc(f.group.title)}${f.location ? '　' + esc(f.location) : ''}</div></div>
+      <div class="meta"><span class="sev ${f.severity}">${SEVLABEL[f.severity]}</span>
+      <span class="badge" id="tag-${f.fid}"></span></div></a>`).join('')
+  : '<div class="pad hint">指摘はありません。</div>';
+
+/* ---------- state wiring ---------- */
+document.querySelectorAll('.approve').forEach(el => {
+  const id = el.dataset.g, box = el.querySelector('input');
+  box.checked = !!S.approved[id]; el.classList.toggle('on', box.checked);
+  box.addEventListener('change', () => {
+    S.approved[id] = box.checked; el.classList.toggle('on', box.checked); save(); progress();
+  });
+});
+document.querySelectorAll('.gc').forEach(t => {
+  t.value = S.gcomment[t.dataset.g] || '';
+  t.addEventListener('input', () => { S.gcomment[t.dataset.g] = t.value; save(); tally(); });
+});
+document.querySelectorAll('.fc').forEach(t => {
+  t.value = S.fcomment[t.dataset.f] || '';
+  t.addEventListener('input', () => { S.fcomment[t.dataset.f] = t.value; save(); tally(); });
+});
+document.querySelectorAll('.triage').forEach(box => {
+  const id = box.dataset.f;
+  const paint = () => {
+    box.querySelectorAll('.tbtn').forEach(b => b.classList.toggle('on', S.verdict[id] === b.dataset.v));
+    const tag = document.getElementById('tag-' + id);
+    if (tag) tag.textContent = {adopt:'採用', reject:'却下', hold:'保留'}[S.verdict[id]] || '未判定';
+  };
+  box.querySelectorAll('.tbtn').forEach(b => b.addEventListener('click', () => {
+    S.verdict[id] = S.verdict[id] === b.dataset.v ? undefined : b.dataset.v;
+    save(); paint(); tally();
+  }));
+  paint();
+});
+global.value = S.global || '';
+global.addEventListener('input', () => { S.global = global.value; save(); tally(); });
+
+function progress() {
+  const n = D.groups.filter(g => S.approved[g.gid]).length;
+  pn.textContent = `${n}/${D.groups.length}`;
+  pb.style.width = (D.groups.length ? n / D.groups.length * 100 : 0) + '%';
+}
+function tally() {
+  const c = {adopt:0, reject:0, hold:0, none:0};
+  allFindings.forEach(f => c[S.verdict[f.fid] || 'none']++);
+  const comments = Object.values(S.fcomment).filter(Boolean).length
+    + Object.values(S.gcomment).filter(Boolean).length + (S.global.trim() ? 1 : 0);
+  document.getElementById('tally').innerHTML =
+    `<span class="${c.adopt?'on':''}">採用 ${c.adopt}</span><span>却下 ${c.reject}</span>` +
+    `<span class="${c.hold?'on':''}">保留 ${c.hold}</span><span>未判定 ${c.none}</span>` +
+    `<span class="${comments?'on':''}">コメント ${comments}</span>`;
+}
+progress(); tally();
+
+/* ---------- 05 feedback ---------- */
+function buildMarkdown() {
+  const L = [];
+  L.push('# レビューフィードバック', '');
+  L.push('## 依頼', '');
+  L.push('- 以下の指摘が忖度なしで妥当かどうか精査してください。妥当でないものは指摘してください');
+  L.push('- 対応方針に迷う点があれば、実装前に確認してください。');
+  if (D.plan) L.push(`- plan: ${D.plan}`);
+  L.push('');
+  let n = 0;
+  allFindings.forEach(f => {
+    const v = S.verdict[f.fid];
+    if (v !== 'adopt' && v !== 'hold') return;
+    n++;
+    L.push(`### ${n}. [${SEVLABEL[f.severity]}]${v === 'hold' ? '[保留]' : ''} ${f.title}`);
+    if (f.location) L.push(`- 場所: ${f.location}`);
+    L.push(`- 変更グループの意図: ${f.group.intent}`);
+    if (f.verdict_note) L.push(`- 備考: ${f.verdict_note}`);
+    L.push(`- 指摘: ${f.detail}`);
+    if (f.suggestion) L.push(`- 改善案: ${f.suggestion}`);
+    if (S.fcomment[f.fid]) L.push(`- レビュー者コメント: ${S.fcomment[f.fid]}`);
+    L.push('');
+  });
+  const gc = D.groups.filter(g => (S.gcomment[g.gid] || '').trim());
+  if (gc.length) {
+    L.push('## レビュー者からの追加指摘', '');
+    gc.forEach(g => {
+      L.push(`### ${g.title}`);
+      L.push(`- 変更グループの意図: ${g.intent}`);
+      L.push(`- 対象 hunk: ${g.hunks.join(', ')}`);
+      L.push(`- コメント: ${S.gcomment[g.gid].trim()}`);
+      L.push('');
+    });
+  }
+  if ((S.global || '').trim()) L.push('## 全体コメント', '', S.global.trim(), '');
+  const rejected = allFindings.filter(f => S.verdict[f.fid] === 'reject');
+  if (rejected.length) {
+    L.push('## 却下した指摘 (対応不要)', '');
+    rejected.forEach(f => L.push(`- ${f.title}${S.fcomment[f.fid] ? ` — ${S.fcomment[f.fid]}` : ''}`));
+    L.push('');
+  }
+  if (n === 0 && !gc.length && !(S.global || '').trim())
+    L.push('_採用された指摘もコメントもありません。_');
+  return L.join('\n');
+}
+const toastMsg = m => { toast.textContent = m; toast.classList.add('on'); setTimeout(() => toast.classList.remove('on'), 1600); };
+gen.addEventListener('click', () => { out.textContent = buildMarkdown(); toastMsg('生成しました'); });
+copy.addEventListener('click', async () => {
+  if (out.textContent.startsWith('まだ生成')) out.textContent = buildMarkdown();
+  try { await navigator.clipboard.writeText(out.textContent); toastMsg('コピーしました'); }
+  catch { const r = document.createRange(); r.selectNode(out); getSelection().removeAllRanges();
+          getSelection().addRange(r); toastMsg('選択しました。⌘/Ctrl+C でコピー'); }
+});
+
+/* ---------- keyboard ---------- */
+const groupEls = () => [...document.querySelectorAll('.grp')];
+function current() {
+  const els = groupEls();
+  return els.find(e => e.getBoundingClientRect().bottom > 90) || els[els.length - 1];
+}
+helpbtn.addEventListener('click', () => help.classList.add('on'));
+help.addEventListener('click', e => { if (e.target === help) help.classList.remove('on'); });
+addEventListener('keydown', e => {
+  if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+  const els = groupEls(), i = els.indexOf(current());
+  if (e.key === 'j' && els[i + 1]) els[i + 1].scrollIntoView();
+  else if (e.key === 'k' && els[i - 1]) els[i - 1].scrollIntoView();
+  else if (e.key === 'a') { const b = current().querySelector('.approve input'); b.checked = !b.checked; b.dispatchEvent(new Event('change')); }
+  else if (e.key === 'g') gen.click();
+  else if (e.key === '?') help.classList.toggle('on');
+  else if (e.key === 'Escape') help.classList.remove('on');
+});
+</script>
+</body>
+</html>

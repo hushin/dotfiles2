@@ -29,6 +29,7 @@
 ## Process Guidelines
 
 - When working with Git worktrees, ensure you only edit files and branches within the directory where you were initialized.
+- When the current working directory contains `.wt/` (i.e. you are working inside a git worktree), do all work — file edits, git operations, and commands — within that worktree. Do not run commands against or make changes in the main checkout.
 
 ### Progressive Disclosure
 

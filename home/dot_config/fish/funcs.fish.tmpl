@@ -98,6 +98,18 @@ function gwt -d "git work tree" -a branch
 end
 
 function wtclean -d "Bulk delete all git-wt managed worktrees with safety checks"
+    # Usage: wtclean [-f|--force]  (force: delete without confirmation)
+    set -l force 0
+    if set -q argv[1]
+        switch $argv[1]
+            case -f --force
+                set force 1
+            case '*'
+                echo "Usage: wtclean [-f|--force]"
+                return 1
+        end
+    end
+
     if not command -q jq
         echo "Error: jq is required but not installed."
         return 1
@@ -143,17 +155,21 @@ function wtclean -d "Bulk delete all git-wt managed worktrees with safety checks
         set -l remote (git -C "$wt_path" rev-parse --abbrev-ref @{u} 2>/dev/null)
         if test -n "$remote"
             set -l ahead (git -C "$wt_path" rev-list --count @{u}..HEAD 2>/dev/null)
-            if test "$ahead" -gt 0
+            if string match -rq '^[0-9]+$' -- "$ahead"; and test "$ahead" -gt 0
                 set -a issues "$ahead unpushed commit(s)"
             end
         end
 
         if test (count $issues) -gt 0
             set -l joined (string join ", " $issues)
-            read -l -P "Delete $wt_branch ($wt_path)? $joined. [y/N] " confirm
-            if test "$confirm" != "y" -a "$confirm" != "Y"
-                echo "  Skipped: $wt_branch"
-                continue
+            if test $force -eq 1
+                echo "  Forcing: $wt_branch ($wt_path) - $joined"
+            else
+                read -l -P "Delete $wt_branch ($wt_path)? $joined. [y/N] " confirm
+                if test "$confirm" != "y" -a "$confirm" != "Y"
+                    echo "  Skipped: $wt_branch"
+                    continue
+                end
             end
         end
 

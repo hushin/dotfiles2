@@ -3,8 +3,9 @@
   "theme": "dark",
   "defaultProvider": "opencode-go",
   "defaultModel": "deepseek-v4-flash",
-  "defaultThinkingLevel": "high",
+  "defaultThinkingLevel": "max",
   "packages": [
     "npm:@tintinweb/pi-subagents"
-  ]
+  ],
+  "hideThinkingBlock": true
 }

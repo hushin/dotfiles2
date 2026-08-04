@@ -1,8 +1,9 @@
 # 参考: https://herdr.dev/ja/docs/keyboard/
 # alt+shift+記号 は direct bind だとターミナル依存で届かないことがあるため prefix 経由にする
 
+onboarding = false
 [keys]
-prefix = "ctrl+t"
+prefix = "ctrl+q"
 
 # タブ操作 (tmux -n直接バインド: M-n, M-1..9, M-., M-,, M-X, M-R)
 new_tab = "alt+n"

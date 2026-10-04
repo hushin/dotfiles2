@@ -1,12 +1,9 @@
 {
-  "lastChangelogVersion": "0.84.4",
+  "lastChangelogVersion": "1.0.1",
   "theme": "dark",
   "defaultProvider": "opencode-go",
-  "defaultModel": "deepseek-v4-flash",
+  "defaultModel": "deepseek-v4.1-flash",
   "defaultThinkingLevel": "max",
-  "packages": [
-    "npm:@tintinweb/pi-subagents",
-    "npm:pi-agent-browser-native"
-  ],
+  "packages": [],
   "hideThinkingBlock": true
 }

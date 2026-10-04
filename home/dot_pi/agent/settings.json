@@ -4,6 +4,8 @@
   "defaultProvider": "opencode-go",
   "defaultModel": "deepseek-v4.1-flash",
   "defaultThinkingLevel": "max",
-  "packages": [],
+  "packages": [
+    "npm:pi-web-access"
+  ],
   "hideThinkingBlock": true
 }

@@ -1,4 +1,5 @@
 {
   "app.model.cycleForward": [],
-  "app.model.cycleBackward": []
+  "app.model.cycleBackward": [],
+  "tui.altScreen.search": ["shift+ctrl+f", "ctrl+alt+f"]
 }

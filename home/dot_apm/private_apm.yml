@@ -1,0 +1,30 @@
+name: global
+version: 1.0.0
+description: APM project for global
+author: hushin
+Which agent platforms to deploy to (uncomment to pin):
+targets:
+  - agent-skills
+  - copilot # cloudflare がこれしか対応していないので
+
+dependencies:
+  apm:
+    - honojs/skills
+    - mattpocock/skills
+    - git: cloudflare/skills
+      skills:
+        - cloudflare
+        - nextjs-on-cloudflare
+        - wrangler
+        - workers-best-practices
+        - cloudflare-email-service
+        - turnstile-spin
+        - web-perf
+        - cloudflare-one
+    - anthropics/claude-plugins-official/plugins/code-simplifier
+    - anthropics/claude-plugins-official/plugins/frontend-design
+    - anthropics/claude-plugins-official/plugins/skill-creator
+    - GoogleChrome/modern-web-guidance
+  mcp: []
+includes: auto
+scripts: {}

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# ai-commit.sh — Copilot CLI でコミットメッセージを生成してコミット
+# ai-commit.sh — pi でコミットメッセージを生成してコミット
 #
 # 使い方:
 #   ai-commit.sh             # 1行 Conventional Commits でコミット
@@ -11,13 +11,14 @@ set -euo pipefail
 #   ai-commit.sh --no-edit   # エディタを開かず即コミット
 #
 # 前提:
-#   - GitHub Copilot CLI (`copilot`) がインストール・認証済み
+#   - pi (`pi`) がインストール・認証済み
 #   - git リポジトリ内で実行
 #
 # カスタマイズ:
 #   GIT_AI_MODEL / GIT_AI_MAX_DIFF / GIT_AI_NO_EDIT を環境変数で上書き可能
+#   GIT_AI_MODEL 未指定なら pi の defaultModel（settings.json）を使う
 
-MODEL="${GIT_AI_MODEL:-gpt-4.1}"
+MODEL="${GIT_AI_MODEL:-}"
 MAX_DIFF_LINES="${GIT_AI_MAX_DIFF:-800}"
 EDITOR_FLAG="${GIT_AI_NO_EDIT:-}"  # 空なら -e (エディタ) 付き、"1" なら省略
 
@@ -49,9 +50,9 @@ for arg in "$@"; do
 done
 
 # ── 事前チェック ───────────────────────────────────
-if ! command -v copilot &>/dev/null; then
-  _err "copilot コマンドが見つかりません。GitHub Copilot CLI をインストールしてください。"
-  _err "  https://docs.github.com/en/copilot/how-tos/set-up/install-copilot-cli"
+if ! command -v pi &>/dev/null; then
+  _err "pi コマンドが見つかりません。pi をインストールしてください。"
+  _err "  curl -fsSL https://pi.dev/install.sh | sh"
   exit 1
 fi
 
@@ -149,8 +150,8 @@ else
   MODE_LABEL="Conventional Commits (1行)"
 fi
 
-# ── Copilot CLI 呼び出し ──────────────────────────
-_info "${MODE_LABEL} — Copilot CLI (model: ${MODEL}) で生成中..."
+# ── pi 呼び出し ────────────────────────────────────
+_info "${MODE_LABEL} — pi (model: ${MODEL:-既定}) で生成中..."
 
 FULL_PROMPT="${PROMPT}
 
@@ -160,10 +161,16 @@ ${STAT}
 --- git diff --cached ---
 ${DIFF}"
 
-COMMIT_MSG=$(copilot -p "$FULL_PROMPT" --model "$MODEL" 2>/dev/null) || {
-  _err "Copilot CLI の呼び出しに失敗しました。認証状態とモデル名を確認してください。"
-  _err "  copilot auth status"
-  _err "  copilot --model ${MODEL}"
+# セッションやコンテキストファイルを読み込まず、ツールなしで一発生成させる
+PI_ARGS=(--print --no-session --no-tools --no-context-files --no-skills --no-prompt-templates --offline)
+if [[ -n "$MODEL" ]]; then
+  PI_ARGS+=(--model "$MODEL")
+fi
+
+COMMIT_MSG=$(pi "${PI_ARGS[@]}" "$FULL_PROMPT" 2>/dev/null) || {
+  _err "pi の呼び出しに失敗しました。認証状態とモデル名を確認してください。"
+  _err "  pi list-models"
+  _err "  pi ${MODEL:+--model ${MODEL} }-p 'hello'"
   exit 1
 }
 

@@ -9,7 +9,3 @@ opencode auth login opencode
 brew install apm
 apm install -g
 ```
-
-```sh
-npx modern-web-guidance@latest install
-```

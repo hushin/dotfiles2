@@ -1,9 +1,0 @@
-- Confirm with the user before executing any file deletion or move commands.
-- Do not run `git commit` unless explicitly instructed by the user.
-- Use `./ai-out/(yyyy-MM-dd)-(slug)/` as the working folder
-  - Documentation
-    - When receiving planning instructions from the user, first generate `00-plan.md`
-    - Subsequent file names should follow the pattern `(NN)-(slug)`
-- Use `./ai-out/tmp` as the temporary directory instead of `/tmp`.
-- When an esa.io URL is provided, please execute the following command to read its content: `esa get https://example.esa.io/posts/123`
-- When performing log-heavy tasks—such as building, type-checking, or using `chrome-devtools` -- please execute these via a sub-agent using the Claude Sonnet 4.5 model.

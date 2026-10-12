@@ -5,6 +5,8 @@
   "permission": {
     "external_directory": {
       "~/ghq/**": "allow",
+      "~/.nuget/**": "allow",
+      "~/.dotnet/**": "allow",
       "/tmp/**": "allow",
     },
   },

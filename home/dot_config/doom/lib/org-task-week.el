@@ -1,5 +1,28 @@
 ;;; lib/org-task-week.el -*- lexical-binding: t; -*-
 
+(defvar my/org-week-tag-future-weeks 5
+  "現在週より先の何週分のタグを将来タスクとして残すか。
+持ち越し判定（my/org--week-tag-past-p）と週番号タグ生成で共用する。")
+
+(defun my/current-week-tag ()
+  "現在の ISO 週番号タグ（例 \"w03\"）を返す。"
+  (format "w%02d" (string-to-number (format-time-string "%V"))))
+
+(defun my/org--week-tag-past-p (tag current-week)
+  "TAG（例 \"w15\"）が CURRENT-WEEK より過去の週のタグかどうか。
+現在週から my/org-week-tag-future-weeks 週先までのタグは nil を返す。"
+  (and (string-match "\\`w\\([0-9][0-9]\\)\\'" tag)
+    (let ((forward-distance (mod (- (string-to-number (match-string 1 tag)) current-week) 53)))
+      (> forward-distance my/org-week-tag-future-weeks))))
+
+(defun my/org--save-modified-agenda-buffers ()
+  "編集済みの org-agenda-files のバッファを保存する。"
+  (dolist (file (org-agenda-files))
+    (when-let ((buf (find-buffer-visiting file)))
+      (with-current-buffer buf
+        (when (buffer-modified-p)
+          (save-buffer))))))
+
 
 (defun my/org-week-info (delta)
   "今週からDELTA週ずれた週番号を返す。年またぎ考慮。"
@@ -26,12 +49,7 @@ DONE/CANCELED は除外。"
             (org-toggle-tag to-tag 'on)
             (setq count (1+ count)))))
       (format "w%02d-DONE-CANCELED" from-week) 'agenda)
-    ;; 変更されたバッファを保存
-    (dolist (file (org-agenda-files))
-      (when-let ((buf (find-buffer-visiting file)))
-        (with-current-buffer buf
-          (when (buffer-modified-p)
-            (save-buffer)))))
+    (my/org--save-modified-agenda-buffers)
     count))
 
 (defun my/org--bulk-shift (from-delta to-delta action-label)
@@ -47,15 +65,34 @@ DONE/CANCELED は除外。"
   (my/org--bulk-shift 0 1 "今週→来週"))
 
 (defun my/org-pull-from-last-week ()
-  "先週の未完了タスクを今週へ持ち越し"
+  "先週以前のすべての週のタグ(w01-w53)を今週のタグに付け替える。
+DONE/CANCELED は除外。今週および my/org-week-tag-future-weeks 週先の
+タグ（将来タスク）はそのまま残す。"
   (interactive)
-  (my/org--bulk-shift -1 0 "先週→今週"))
+  (let* ((current-week (string-to-number (format-time-string "%V")))
+          (current-tag (format "w%02d" current-week))
+          (count 0))
+    (org-map-entries
+      (lambda ()
+        (let ((todo (org-get-todo-state)))
+          (when (not (member todo '("DONE" "CANCELED")))
+            (let ((changed nil))
+              (dolist (tag (org-get-tags nil t))
+                (when (my/org--week-tag-past-p tag current-week)
+                  (org-toggle-tag tag 'off)
+                  (setq changed t)))
+                (when changed
+                  (org-toggle-tag current-tag 'on)
+                  (setq count (1+ count)))))))
+      "{^w[0-9][0-9]$}" 'agenda)
+    (my/org--save-modified-agenda-buffers)
+    (message "[先週以前→今週] 完了: %s へ %d件移動" current-tag count)))
 
 
 (defun my/org-generate-weekly-tags ()
-  "今週から5週間後までの週番号タグ(w01-w53)を生成して設定します。"
+  "今週から my/org-week-tag-future-weeks 週間後までの週番号タグ(w01-w53)を生成して設定します。"
   (let* ((current-week (string-to-number (format-time-string "%V")))
-          (weeks-to-show 5)
+          (weeks-to-show my/org-week-tag-future-weeks)
           (tag-list '()))
     (dotimes (i (1+ weeks-to-show))
       (let* ((week (+ current-week i))

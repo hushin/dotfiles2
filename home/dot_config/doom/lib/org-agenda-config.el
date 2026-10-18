@@ -206,9 +206,7 @@ are equal return nil."
            (todo "WAITING" ((org-agenda-overriding-header "\nWAITING")))
            (alltodo ""
              (
-               (org-agenda-files
-                 (append my-default-org-agenda-files
-                   (directory-files-recursively (concat org-roam-directory "zk") "\\.org$")))
+               (org-agenda-files my-default-org-agenda-files)
                (org-agenda-overriding-header "Tasks")
                (org-super-agenda-groups
                  '(
@@ -227,8 +225,6 @@ are equal return nil."
                       :file-path "areas/")
                     (:name "Resources"
                       :file-path "resources/")
-                    (:name "Zettelkasten"
-                      :file-path "zk/")
                     (:name "Inbox"
                       :category "Inbox")
                     ))
@@ -239,6 +235,15 @@ are equal return nil."
             ((org-agenda-overriding-header "Tasks by ISO Week Number")
               (org-super-agenda-groups
                 '((:auto-tags t)))))))
+       ("z" "Zettelkasten tasks"
+         ((alltodo ""
+            ((org-agenda-files
+               (directory-files-recursively
+                 (concat (file-name-as-directory org-roam-directory) "zk")
+                 "\\.org$"))
+             (org-agenda-overriding-header "Zettelkasten Tasks")
+             (org-super-agenda-groups
+               '((:auto-category t)))))))
        ("b" "blog draft posts"
          (
            (alltodo ""

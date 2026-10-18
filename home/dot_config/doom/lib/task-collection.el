@@ -9,11 +9,7 @@
 (defun my/get-title-or-filename (buffer file)
   "Get the Org file #+TITLE property or use the filename if title is nil."
   (with-current-buffer buffer
-    (or (org-element-map (org-element-parse-buffer 'element) 'keyword
-          (lambda (kw)
-            (when (string= "TITLE" (org-element-property :key kw))
-              (org-element-property :value kw)))
-          nil t)
+    (or (cadr (assoc "TITLE" (org-collect-keywords '("TITLE"))))
       (file-name-nondirectory file))))
 
 (defun my/get-task-type (deadline scheduled todo-keyword)
@@ -47,40 +43,6 @@ TODO-KEYWORD - TODOキーワード"
     file-title
     type))
 
-(defun my/collect-weekly-tagged-tasks ()
-  "org-agenda-filesから今週のタグ（例: w03）がついたタスクを収集して返す。
-deadline/scheduledなし、DONE/CANCELED以外のタスクが対象。
-戻り値: タスクデータのリスト（plist）"
-  (let* ((week-tag (concat "w" (format-time-string "%V")))
-          (tasks '()))
-    (dolist (file (org-agenda-files))
-      (let ((file-buffer (find-file-noselect file t))
-             (file-title nil))
-        (with-current-buffer file-buffer
-          (setq file-title (my/get-title-or-filename file-buffer file))
-          (org-with-wide-buffer
-            (goto-char (point-min))
-            (while (re-search-forward org-heading-regexp nil t)
-              (let* ((element (org-element-at-point))
-                      (todo-keyword (org-element-property :todo-keyword element))
-                      (tags (org-element-property :tags element))
-                      (deadline (org-element-property :deadline element))
-                      (scheduled (org-element-property :scheduled element))
-                      (heading (org-element-property :title element)))
-                ;; 今週タグあり・deadline/scheduledなし・DONE/CANCELED以外
-                (when (and todo-keyword
-                        (member week-tag tags)
-                        (not deadline)
-                        (not scheduled)
-                        (not (string= todo-keyword "DONE"))
-                        (not (string= todo-keyword "CANCELED")))
-                  (let* ((id (my/ensure-org-id element))
-                          (task-data (list
-                                       :id id
-                                       :link (my/format-task-link id heading week-tag file-title))))
-                    (push task-data tasks)))))))))
-    (nreverse tasks)))
-
 (defun my/collect-next-tasks-from-agenda-files (&optional days)
   "org-agenda-filesから条件に合うタスクを収集し、現在のバッファにリンクとして挿入する。
 収集条件:
@@ -93,8 +55,10 @@ Optional argument DAYS は期限のX日数（デフォルトは5）"
   (interactive "P")
   (let* ((days (or days 5))
           (tasks '())
+          (weekly-tasks '())
           (today (org-today))
           (future-limit (+ today days))
+          (week-tag (my/current-week-tag))
           (collected-ids '()))  ; 重複チェック用
 
     ;; ファイルごとに処理
@@ -108,6 +72,7 @@ Optional argument DAYS は期限のX日数（デフォルトは5）"
             (while (re-search-forward org-heading-regexp nil t)
               (let* ((element (org-element-at-point))
                       (todo-keyword (org-element-property :todo-keyword element))
+                      (tags (org-element-property :tags element))
                       (deadline (org-element-property :deadline element))
                       (scheduled (org-element-property :scheduled element))
                       (heading (org-element-property :title element))
@@ -151,7 +116,20 @@ Optional argument DAYS は期限のX日数（デフォルトは5）"
                                         :has-scheduled (not (null scheduled-date))
                                         :has-deadline (not (null deadline-date)))))
                     (push id collected-ids)
-                    (push task-data tasks)))))))))
+                    (push task-data tasks)))
+
+                ;; 今週タグ付き・日付なし・未完了タスクを「今週」用に収集
+                (when (and todo-keyword
+                        (member week-tag tags)
+                        (not deadline)
+                        (not scheduled)
+                        (not (string= todo-keyword "DONE"))
+                        (not (string= todo-keyword "CANCELED")))
+                  (let* ((id (my/ensure-org-id element))
+                          (task-data (list
+                                       :id id
+                                       :link (my/format-task-link id heading week-tag file-title))))
+                    (push task-data weekly-tasks)))))))))
 
     ;; 現在のタスクと将来期限タスクに分割
     (let* ((current-tasks (cl-remove-if (lambda (task) (plist-get task :is-future-deadline)) tasks))
@@ -196,30 +174,26 @@ Optional argument DAYS は期限のX日数（デフォルトは5）"
         (insert (mapconcat (lambda (task) (plist-get task :link)) current-tasks "\n"))
         (insert "\n"))
 
-      ;; 今週タグのタスクを収集して「* 今週」見出し下に挿入
-      (let* ((week-tag (concat "w" (format-time-string "%V")))
-              (weekly-tasks (my/collect-weekly-tagged-tasks))
-              ;; すでに上で挿入済みのIDを除外
-              (weekly-tasks (cl-remove-if
-                              (lambda (task) (member (plist-get task :id) collected-ids))
-                              weekly-tasks))
-              (weekly-count (length weekly-tasks)))
-        ;; 将来期限タスクを「* 期限が明日以降」見出し下に挿入
-        (when future-tasks
-          (insert "* 期限が明日以降\n")
-          (insert (mapconcat (lambda (task) (plist-get task :link)) future-tasks "\n"))
-          (insert "\n"))
+      ;; すでに上で挿入済みのIDを除外
+      (setq weekly-tasks
+        (cl-remove-if (lambda (task) (member (plist-get task :id) collected-ids)) weekly-tasks))
 
-        ;; 今週タグのタスクを「* 今週」見出し下に挿入（最後）
-        (when weekly-tasks
-          (insert (format "* 今週 :%s:\n" week-tag))
-          (insert (mapconcat (lambda (task) (plist-get task :link)) weekly-tasks "\n"))
-          (insert "\n"))
+      ;; 将来期限タスクを「* 期限が明日以降」見出し下に挿入
+      (when future-tasks
+        (insert "* 期限が明日以降\n")
+        (insert (mapconcat (lambda (task) (plist-get task :link)) future-tasks "\n"))
+        (insert "\n"))
 
-        (message "%d個のタスクを挿入しました（今週タグ: %d個、将来期限: %d個）"
-          (+ (length current-tasks) weekly-count (length future-tasks))
-          weekly-count
-          (length future-tasks))))))
+      ;; 今週タグのタスクを「* 今週」見出し下に挿入（最後）
+      (when weekly-tasks
+        (insert (format "* 今週 :%s:\n" week-tag))
+        (insert (mapconcat (lambda (task) (plist-get task :link)) weekly-tasks "\n"))
+        (insert "\n"))
+
+      (message "%d個のタスクを挿入しました（今週タグ: %d個、将来期限: %d個）"
+        (+ (length current-tasks) (length weekly-tasks) (length future-tasks))
+        (length weekly-tasks)
+        (length future-tasks)))))
 
 
 (provide 'task-collection)

@@ -123,6 +123,7 @@ chezmoi init --apply hushin/dotfiles2
 ### VSCode
 
 - Setting Sync
+- Markdown プレビューをライト + 日本語組版にするローカル拡張 [`local.markdown-preview-light-jp`](./home/dot_vscode/extensions/local.markdown-preview-light-jp-1.0.0) を `chezmoi apply` で配置する（反映には `Developer: Reload Window`）。詳細は拡張の README
 
 ### gh CLI
 

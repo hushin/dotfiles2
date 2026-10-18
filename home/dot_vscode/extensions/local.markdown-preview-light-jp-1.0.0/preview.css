@@ -1,0 +1,400 @@
+/*---------------------------------------------------------------------------------------------
+ * Markdown プレビュー: ライト表示 + 日本語組版
+ *
+ * このファイルはローカル拡張 `local.markdown-preview-light-jp` の
+ * `markdown.previewStyles` として、すべての Markdown プレビュー
+ * (Ctrl+Shift+V / Markdown Editor) に読み込まれる。ワークスペースに依存しない。
+ *
+ * 前提として知っておくと良いこと:
+ *  - 読み込み順は 組み込み media/markdown.css → media/highlight.css → このファイル。
+ *    詳細度が同じルールはこのファイルが勝つ。
+ *  - webview ホストの既定スタイルは @layer vscode-default にあるため、レイヤーを使って
+ *    いないこのファイルは詳細度に関係なく常に優先される。!important は不要。
+ *  - テーマ変数 (--vscode-*) は <html> にインラインで注入される。html で宣言しても
+ *    インラインに負けるので、上書きは <body> 側で行う (body の中の要素には継承される)。
+ *    例外は html 自身に効くもの (スクロールバーなど) で、こちらは個別に対応している。
+ *--------------------------------------------------------------------------------------------*/
+
+/* ==========================================================================
+ * 1. デザイントークン
+ *    色や書体を変えたいときは、基本的にここだけ触れば済む。
+ * ========================================================================== */
+:root {
+	color-scheme: light;
+
+	/* --- 色 --- */
+	--md-page: #ffffff;            /* ページ背景 */
+	--md-ink: #1f2328;             /* 本文 */
+	--md-ink-muted: #59636e;       /* 補助テキスト */
+	--md-surface: #f6f7f9;         /* コードブロック / 引用 / 表ヘッダー */
+	--md-surface-2: #eceff3;       /* インラインコード */
+	--md-line: #d8dee4;            /* 罫線 */
+	--md-line-strong: #b6c0c9;     /* 強めの罫線 (th, 引用の左罫) */
+	--md-link: #0969da;
+	--md-link-hover: #0550ae;
+	--md-mark: #fff3bf;            /* <mark> / 検索ハイライト */
+	--md-inline-code: #a31515;     /* VS Code Light+ の textPreformat と同じ */
+	--md-code-ink: #1f2328;        /* コードブロックの既定文字色 */
+
+	/* --- 日本語書体 ---
+	 * ラテン文字は先頭のシステム UI フォント、和文は後続の和文フォントで描かれる。
+	 * 明朝体で読みたい場合は mincho 系に差し替える:
+	 *   "BIZ UDPMincho", "BIZ UDMincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif
+	 */
+	--md-font-body:
+		-apple-system, BlinkMacSystemFont, "Segoe UI",
+		"BIZ UDPGothic", "BIZ UDGothic",
+		"Hiragino Sans", "Hiragino Kaku Gothic ProN",
+		"Noto Sans JP", "Noto Sans CJK JP",
+		"Yu Gothic UI", Meiryo, system-ui, sans-serif;
+	--md-font-heading: var(--md-font-body);
+
+	/* --- サイズ・行間 --- */
+	--md-font-size: 16px;
+	--md-line-height: 1.75;        /* 和文は 1.7〜1.8 が読みやすい */
+	--md-measure: 50em;            /* 本文の最大幅 (約50文字 / 16px なら 800px)。max-width を消せば全幅になる */
+
+	/* html がキャンバスを塗る要素。body の背景だけでは iframe の透明部分がテーマ色のまま残る。 */
+	background-color: var(--md-page);
+	/* 既定のスクロールバーはテーマの暗色 (--vscode-editor-background) を使うため上書きする */
+	scrollbar-color: rgba(31, 35, 40, 0.28) transparent;
+}
+
+/* ==========================================================================
+ * 2. 本文
+ * ========================================================================== */
+body {
+	/* --- VS Code 変数のマッピング (組み込みスタイルが参照している色) --- */
+	--vscode-editor-background: var(--md-page);
+	--vscode-editor-foreground: var(--md-ink);
+	--vscode-textLink-foreground: var(--md-link);
+	--vscode-textLink-activeForeground: var(--md-link-hover);
+	--vscode-textCodeBlock-background: var(--md-surface);
+	--vscode-textPreformat-background: var(--md-surface-2);
+	--vscode-textPreformat-foreground: var(--md-inline-code);
+	--vscode-textBlockQuote-background: var(--md-surface);
+	--vscode-textBlockQuote-border: var(--md-line-strong);
+	--vscode-widget-border: var(--md-line);
+	--vscode-editorWidget-border: var(--md-line);
+	--vscode-contrastBorder: var(--md-line-strong);
+	--vscode-keybindingLabel-background: var(--md-surface-2);
+	--vscode-keybindingLabel-foreground: var(--md-ink);
+	--vscode-keybindingLabel-border: var(--md-line);
+	--vscode-keybindingLabel-bottomBorder: var(--md-line-strong);
+	--vscode-widget-shadow: rgba(31, 35, 40, 0.12);
+	--vscode-toolbar-hoverBackground: rgba(31, 35, 40, 0.06);
+	--vscode-toolbar-activeBackground: rgba(31, 35, 40, 0.1);
+	--vscode-testing-iconPassed: #1a7f37;
+	--vscode-editorError-foreground: #cf222e;
+	--vscode-inputValidation-errorBackground: rgba(255, 129, 130, 0.12);
+	--vscode-editor-findMatchHighlightBackground: var(--md-mark);
+	--vscode-editor-findMatchBackground: #ffd43b;
+	/* 差分プレビュー (プレビュー内で差分を表示したとき) */
+	--vscode-diffEditor-insertedTextBackground: rgba(26, 127, 55, 0.13);
+	--vscode-diffEditor-removedTextBackground: rgba(207, 34, 46, 0.13);
+	--vscode-diffEditorGutter-insertedLineBackground: rgba(26, 127, 55, 0.45);
+	--vscode-diffEditorGutter-removedLineBackground: rgba(207, 34, 46, 0.45);
+	--vscode-diffEditor-insertedTextBorder: rgba(26, 127, 55, 0.5);
+	--vscode-diffEditor-removedTextBorder: rgba(207, 34, 46, 0.5);
+	--vscode-editorGutter-modifiedBackground: rgba(9, 105, 218, 0.5);
+
+	/* --- 基本 --- */
+	color-scheme: light;
+	background-color: var(--md-page);
+	color: var(--md-ink);
+	font-family: var(--md-font-body);
+	font-size: var(--md-font-size);
+	line-height: var(--md-line-height);
+	font-kerning: normal;
+	letter-spacing: 0.01em;
+
+	/* --- 日本語組版 --- */
+	line-break: strict;          /* 禁則処理を厳格に (小書き仮名・長音符の前で折らない) */
+	word-break: normal;
+	word-break: auto-phrase;     /* 文節単位で折り返す (Chrome 119+ / <html lang="ja"> が必要) */
+	text-autospace: normal;      /* 和欧・和数の間に自動でアキを挿入 */
+	text-spacing-trim: normal;   /* 約物 (、。」など) のカーニング */
+	overflow-wrap: break-word;
+}
+
+/* 本文の版面 (行長)。中央寄せにしておくと広いパネルでも読みやすい。 */
+.markdown-body {
+	max-width: var(--md-measure);
+	margin-inline: auto;
+}
+
+/* ==========================================================================
+ * 3. 見出し
+ * ========================================================================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: var(--md-font-heading);
+	font-weight: 700;
+	line-height: 1.4;
+	letter-spacing: 0.02em;
+	font-feature-settings: "palt" 1;   /* 見出しはプロポーショナル詰めで締める */
+	text-wrap: balance;                /* 折り返しの行長を揃える */
+	color: var(--md-ink);
+	margin-top: 32px;
+	margin-bottom: 12px;
+}
+
+h1 {
+	margin-top: 0;
+}
+
+/* ==========================================================================
+ * 4. コード
+ * ========================================================================== */
+/* 等幅フォントの中では和文のアキ挿入と禁則処理を持ち込まない (桁がずれるため) */
+code,
+pre,
+kbd,
+samp {
+	/* エディタ設定の editor.fontFamily を尊重しつつ、その書体が入っていない環境で
+	 * Courier New (和文を持たない) に落ちて和文だけ別書体になるのを避ける。
+	 * 和文は等幅グリッドを保てる全角フォントを後ろに並べる。 */
+	font-family:
+		"UDEV Gothic NF", "Bizin Gothic NF", "Cica",
+		"SF Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
+		"Hiragino Sans", "BIZ UDGothic", "Noto Sans JP", Meiryo, monospace;
+	text-autospace: no-autospace;
+	text-spacing-trim: space-all;
+	word-break: normal;
+	line-break: auto;
+	letter-spacing: 0;
+}
+
+code {
+	font-size: 0.92em;
+	line-height: 1.6;
+	color: var(--md-inline-code);
+}
+
+/* コードブロックの中の code は本文色 (インラインコードの赤は使わない) */
+pre code {
+	color: var(--md-code-ink);
+	background: none;
+}
+
+pre {
+	font-size: 1em;
+	line-height: 1.62;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	border-radius: 6px;
+}
+
+/* ==========================================================================
+ * 5. 罫線
+ *    組み込みスタイルは罫線色をテーマ種別 (.vscode-dark / .vscode-light) で
+ *    直書きしているため、変数の上書きが効かない。ここで上書きする。
+ * ========================================================================== */
+body:is(.vscode-dark, .vscode-light) h1,
+body:is(.vscode-dark, .vscode-light) h2,
+body:is(.vscode-dark, .vscode-light) hr,
+body:is(.vscode-dark, .vscode-light) td {
+	border-color: var(--md-line);
+}
+
+body:is(.vscode-dark, .vscode-light) th {
+	border-color: var(--md-line-strong);
+}
+
+/* カーソル行 / ホバー行の表示 (--md 側でライト用の色にする) */
+body.vscode-dark.showEditorSelection .code-active-line::before {
+	border-left: 3px solid rgba(31, 35, 40, 0.15);
+}
+
+body.vscode-dark.showEditorSelection .code-line:hover::before {
+	border-left: 3px solid rgba(31, 35, 40, 0.4);
+}
+
+/* ==========================================================================
+ * 6. 表
+ * ========================================================================== */
+table {
+	margin-bottom: 1.25em;
+	border: 1px solid var(--md-line);
+}
+
+th {
+	background-color: var(--md-surface);
+	font-weight: 700;
+}
+
+th,
+td {
+	padding: 6px 12px;
+	line-height: 1.65;
+}
+
+/* ==========================================================================
+ * 7. その他の要素
+ * ========================================================================== */
+a {
+	text-decoration: underline;
+	text-decoration-color: color-mix(in srgb, currentColor 32%, transparent);
+	text-decoration-thickness: 1px;
+	text-underline-offset: 0.15em;
+}
+
+a:hover {
+	text-decoration-color: currentColor;
+}
+
+/* リンク内のインラインコードはリンク色を継承させる */
+a code {
+	color: inherit;
+}
+
+blockquote {
+	padding: 8px 16px 8px 12px;
+	border-left-width: 4px;
+	border-radius: 4px;
+}
+
+p {
+	margin-bottom: 1.25em;
+}
+
+li p {
+	margin-bottom: 0.5em;
+}
+
+ul,
+ol {
+	margin-bottom: 1.25em;
+	padding-inline-start: 1.6em;   /* 既定の 40px は狭いパネルで広すぎる */
+}
+
+li + li {
+	margin-top: 0.25em;
+}
+
+img {
+	border-radius: 4px;
+}
+
+mark {
+	background-color: var(--md-mark);
+	color: inherit;
+	padding: 0 0.15em;
+	border-radius: 2px;
+}
+
+hr {
+	margin: 32px 0;
+}
+
+/* 組み込みは 22px (既定の行間) 前提で余白を計算している */
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 28px);
+}
+
+/* スクロールバー (scrollbar-color を解釈しない環境向けの保険) */
+::-webkit-scrollbar-corner {
+	background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: rgba(31, 35, 40, 0.28);
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background-color: rgba(31, 35, 40, 0.4);
+}
+
+::-webkit-scrollbar-thumb:active {
+	background-color: rgba(31, 35, 40, 0.55);
+}
+
+/* ==========================================================================
+ * 8. シンタックスハイライト
+ *    組み込み highlight.css の既定は VS2015 の暗色で、ライト版は .vscode-light の
+ *    ときだけ適用される。テーマは dark のままなので、ライト版をここで定義し直す。
+ *    (配色は GitHub Light を下敷きにしている)
+ * ========================================================================== */
+body.vscode-dark .hljs-keyword,
+body.vscode-dark .hljs-literal,
+body.vscode-dark .hljs-name,
+body.vscode-dark .hljs-symbol,
+body.vscode-dark .hljs-selector-tag {
+	color: #cf222e;
+}
+
+body.vscode-dark .hljs-link {
+	color: #0969da;
+	text-decoration: underline;
+}
+
+body.vscode-dark .hljs-built_in,
+body.vscode-dark .hljs-type,
+body.vscode-dark .hljs-class {
+	color: #953800;
+}
+
+body.vscode-dark .hljs-number {
+	color: #0550ae;
+}
+
+body.vscode-dark .hljs-string,
+body.vscode-dark .hljs-meta-string,
+body.vscode-dark .hljs-regexp,
+body.vscode-dark .hljs-template-tag {
+	color: #0a3069;
+}
+
+body.vscode-dark .hljs-function,
+body.vscode-dark .hljs-title,
+body.vscode-dark .hljs-selector-class,
+body.vscode-dark .hljs-selector-id {
+	color: #8250df;
+}
+
+body.vscode-dark .hljs-variable,
+body.vscode-dark .hljs-template-variable,
+body.vscode-dark .hljs-attr,
+body.vscode-dark .hljs-attribute,
+body.vscode-dark .hljs-builtin-name,
+body.vscode-dark .hljs-params {
+	color: #0550ae;
+}
+
+body.vscode-dark .hljs-comment,
+body.vscode-dark .hljs-quote,
+body.vscode-dark .hljs-doctag,
+body.vscode-dark .hljs-meta,
+body.vscode-dark .hljs-meta-keyword {
+	color: #6e7781;
+}
+
+body.vscode-dark .hljs-tag {
+	color: #116329;
+}
+
+body.vscode-dark .hljs-bullet,
+body.vscode-dark .hljs-section {
+	color: #1f2328;
+	font-weight: 600;
+}
+
+body.vscode-dark .hljs-subst,
+body.vscode-dark .hljs-formula {
+	color: #1f2328;
+}
+
+/* 差分 (addition / deletion) は薄い緑・赤の上で読める濃さにする */
+body.vscode-dark .hljs-addition {
+	color: #1a7f37;
+}
+
+body.vscode-dark .hljs-deletion {
+	color: #cf222e;
+}

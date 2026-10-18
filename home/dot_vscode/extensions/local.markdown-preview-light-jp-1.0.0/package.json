@@ -1,0 +1,17 @@
+{
+  "name": "markdown-preview-light-jp",
+  "displayName": "Markdown Preview: Light + Japanese",
+  "description": "Markdown プレビューを常にライト表示にし、日本語組版 (約物・和欧混植・文節折り返し) を整える",
+  "publisher": "local",
+  "version": "1.0.0",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": ["Other"],
+  "contributes": {
+    "markdown.previewStyles": ["./preview.css"],
+    "markdown.previewScripts": ["./preview.js"]
+  }
+}

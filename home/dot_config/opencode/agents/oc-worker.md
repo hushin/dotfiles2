@@ -1,7 +1,7 @@
 ---
 description: Headless worker for delegation from another agent. No questions, no subagents, no secret reads.
 mode: primary
-model: opencode-go/deepseek-v4.1-flash#max
+model: opencode/deepseek-v4.1-flash-free#max
 permissions:
   # The global config asks before external directory access. This worker is
   # expected to run inside a repo, so allow it explicitly instead of --auto.

@@ -1,16 +1,15 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "autoupdate": true,
+  "update": "auto",
   "model": "opencode-go/deepseek-v4.1-flash",
-  "permission": {
-    "external_directory": {
-      "~/ghq/**": "allow",
-      "~/.nuget/**": "allow",
-      "~/.dotnet/**": "allow",
-      "/tmp/**": "allow",
-    },
-  },
-  "agent": {
+  "permissions": [
+    { "action": "external_directory", "resource": "*", "effect": "ask" },
+    { "action": "external_directory", "resource": "~/ghq/**", "effect": "allow" },
+    { "action": "external_directory", "resource": "~/.nuget/**", "effect": "allow" },
+    { "action": "external_directory", "resource": "~/.dotnet/**", "effect": "allow" },
+    { "action": "external_directory", "resource": "/tmp/**", "effect": "allow" },
+  ],
+  "agents": {
     "general": {
       "model": "opencode-go/deepseek-v4.1-flash",
     },
@@ -19,10 +18,11 @@
     },
   },
   "mcp": {
-    "playwright": {
-      "type": "local",
-      "command": ["npx", "@playwright/mcp@latest"],
-      "enabled": true,
+    "servers": {
+      "playwright": {
+        "type": "local",
+        "command": ["npx", "@playwright/mcp@latest"],
+      },
     },
   },
 }

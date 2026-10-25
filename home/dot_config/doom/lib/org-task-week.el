@@ -1,19 +1,18 @@
 ;;; lib/org-task-week.el -*- lexical-binding: t; -*-
 
 (defvar my/org-week-tag-future-weeks 5
-  "現在週より先の何週分のタグを将来タスクとして残すか。
-持ち越し判定（my/org--week-tag-past-p）と週番号タグ生成で共用する。")
+  "週番号タグを生成するときに、現在週から何週先まで作るか。
+持ち越し判定には使わない（過去かどうかは単純比較で決める）。")
 
 (defun my/current-week-tag ()
   "現在の ISO 週番号タグ（例 \"w03\"）を返す。"
   (format "w%02d" (string-to-number (format-time-string "%V"))))
 
 (defun my/org--week-tag-past-p (tag current-week)
-  "TAG（例 \"w15\"）が CURRENT-WEEK より過去の週のタグかどうか。
-現在週から my/org-week-tag-future-weeks 週先までのタグは nil を返す。"
+  "TAG（例 \"w15\"）が CURRENT-WEEK より前の週のタグかどうか。
+年をまたいだ直後は前年 12 月の週タグを過去と判定しないが、許容する。"
   (and (string-match "\\`w\\([0-9][0-9]\\)\\'" tag)
-    (let ((forward-distance (mod (- (string-to-number (match-string 1 tag)) current-week) 53)))
-      (> forward-distance my/org-week-tag-future-weeks))))
+    (< (string-to-number (match-string 1 tag)) current-week)))
 
 (defun my/org--save-modified-agenda-buffers ()
   "編集済みの org-agenda-files のバッファを保存する。"
@@ -66,8 +65,7 @@ DONE/CANCELED は除外。"
 
 (defun my/org-pull-from-last-week ()
   "先週以前のすべての週のタグ(w01-w53)を今週のタグに付け替える。
-DONE/CANCELED は除外。今週および my/org-week-tag-future-weeks 週先の
-タグ（将来タスク）はそのまま残す。"
+DONE/CANCELED は除外。今週以降のタグ（将来タスク）はそのまま残す。"
   (interactive)
   (let* ((current-week (string-to-number (format-time-string "%V")))
           (current-tag (format "w%02d" current-week))

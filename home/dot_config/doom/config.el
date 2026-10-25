@@ -40,9 +40,20 @@
 ;; 無効になります。相対行番号の場合は、これを `relative' に設定してください。
 (setq display-line-numbers-type nil)
 
+;; 環境差分フラグ（.personal）は org-directory より先に読む
+(load! "lib/flags")
+
+;; ノートリポジトリ。仕事環境は同じ構成の notes-work を使う（パスは仮）
+(defvar my/notes-directory
+  (file-name-as-directory
+   (expand-file-name
+    (if my/personal-environment
+        "~/ghq/github.com/hushin/notes/"
+      "~/ghq/github.com/hushin/notes-work/"))))
+
 ;; `org' を使用していて、orgファイルを以下のデフォルトの場所に置きたくない場合は、
 ;; `org-directory' を変更してください。orgが読み込まれる前に設定する必要があります！
-(setq org-directory "~/Documents/memo/org/")
+(setq org-directory my/notes-directory)
 (setq org-roam-directory org-directory)
 (setq org-roam-file-exclude-regexp "/archives/")
 
@@ -74,9 +85,6 @@
 ;; または、`C-h o' を使用してシンボル（関数、変数、フェイスなど）を検索することもできます。
 ;;
 ;; 'gd'（または 'C-c c d'）を試して定義にジャンプし、実装方法を確認することもできます。
-
-;; Load environment-specific flags
-(load! "lib/flags")
 
 ;; Application key を Super キーとして認識させる（Windows用）
 (when (featurep :system 'windows)
@@ -153,6 +161,9 @@
 ;; org-agenda 設定
 (load! "lib/org-agenda-config")
 
+;; notes リポジトリの Git 自動同期
+(load! "lib/notes-git")
+
 (after! org
   (map!
     "C-c a" #'org-agenda
@@ -186,13 +197,13 @@
 
   (setq org-capture-templates
     '(
-       ("t" "Task" entry (file+headline "gtd.org" "Inbox")
+       ("t" "Task" entry (file+headline "gtd/inbox.org" "Inbox")
          "* TODO %? \nCREATED: %U\n %i")
-       ("n" "Task NEXT" entry (file+headline "gtd.org" "Inbox")
+       ("n" "Task NEXT" entry (file+headline "gtd/inbox.org" "Inbox")
          "* NEXT %? \nCREATED: %U\n %i ")
-       ("T" "Task from protocol" entry (file+headline "gtd.org" "Inbox")
+       ("T" "Task from protocol" entry (file+headline "gtd/inbox.org" "Inbox")
          "* TODO %? [[%:link][%:description]] \nCREATED: %U\n%i\n\n")
-       ("L" "ReadItLater" entry (file+headline "gtd.org" "ReadItLater")
+       ("L" "ReadItLater" entry (file+headline "gtd/read-it-later.org" "ReadItLater")
          "* TODO %? [[%:link][%:description]] \nCREATED: %U\n%i\n")
        ))
 
@@ -303,7 +314,3 @@
   ;; evil keymap https://github.com/alphapapa/org-super-agenda/issues/50
   (setq org-super-agenda-header-map (make-sparse-keymap))
   )
-
-(use-package! org-roam-timestamps
-  :after org-roam
-  :config (org-roam-timestamps-mode))

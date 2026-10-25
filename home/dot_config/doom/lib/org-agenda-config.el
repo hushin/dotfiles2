@@ -2,17 +2,36 @@
 
 ;; org-agenda の設定
 
-(after! org
-  ;; agenda
-  (setq my-default-org-agenda-files
-    (append
-      (directory-files org-directory t "\\.org$")
-      (directory-files-recursively (concat org-roam-directory "areas") "\\.org$")
-      (directory-files-recursively (concat org-roam-directory "projects") "\\.org$")
-      (directory-files-recursively (concat org-roam-directory "posts") "\\.org$")
-      (directory-files-recursively (concat org-roam-directory "resources") "\\.org$")))
+(defun my/org--agenda-files-in (dir)
+  "DIR（`org-roam-directory' からの相対パス）配下の org ファイルを返す。"
+  (let ((path (expand-file-name dir org-roam-directory)))
+    (when (file-directory-p path)
+      (directory-files-recursively path "\\.org$"))))
 
-  (setq org-agenda-files my-default-org-agenda-files)
+(defun my/org--default-agenda-files ()
+  "notes の meta/config.org の既定値に対応するアジェンダ対象ファイル。
+リポジトリ直下の *.org と gtd/ areas/ projects/ posts/ resources/ 配下。"
+  (append
+    (when (file-directory-p org-directory)
+      (seq-filter #'file-regular-p
+                  (directory-files org-directory t "\\.org$")))
+    (my/org--agenda-files-in "gtd")
+    (my/org--agenda-files-in "areas")
+    (my/org--agenda-files-in "projects")
+    (my/org--agenda-files-in "posts")
+    (my/org--agenda-files-in "resources")))
+
+(defun my/org--set-agenda-files ()
+  "アジェンダ対象を再計算して `org-agenda-files' に設定する。"
+  (setq my-default-org-agenda-files (my/org--default-agenda-files))
+  (setq org-agenda-files my-default-org-agenda-files))
+
+;; `custom.el' は config.el の後に読まれる。Customize が保存した古い
+;; org-agenda-files（Dropbox 時代のパス）を起動完了後に上書きする。
+(add-hook 'after-init-hook #'my/org--set-agenda-files)
+
+(after! org
+  (my/org--set-agenda-files)
 
   ;; org-roam で作ったファイルの category 表示をいい感じにする
   ;; refs. https://d12frosted.io/posts/2020-06-24-task-management-with-roam-vol2.html

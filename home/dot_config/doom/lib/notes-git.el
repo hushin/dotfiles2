@@ -24,7 +24,7 @@
 (defvar my/notes-git-push-idle-delay 90
   "保存後、push までの無操作時間（秒）。")
 
-(defvar my/notes-git-commit-delay 1
+(defvar my/notes-git-commit-delay 5
   "保存後、コミットまでの待ち時間（秒）。連続保存をまとめる。")
 
 (defvar my/notes-git--queue nil)

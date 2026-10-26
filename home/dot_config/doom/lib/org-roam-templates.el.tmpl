@@ -101,63 +101,6 @@
 "
        :target (file+head "areas/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}")
        :unnarrowed t)
-     ("r" "rez (Resonance Calendar)" plain "* ${title}
-:PROPERTIES:
-:Type: %?
-:Start: <%<%Y-%m-%d %a>>
-:Fin:
-:Canceled:
-:Rating:
-:Creator:
-:URL:
-:ReleaseDate:
-:END:
-
-** Why
-# なぜ読もう・見ようと思ったのか
-
-** Tasks
-*** TODO 読む・見る
-
-** Key Ideas
-
-** Review
-
-** Quotes
-
-** Notes
-
-"
-       :target (file+head "resources/rez/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}")
-       :unnarrowed t)
-     ("e" "exp (Experiments)" plain "* ${title}
-:PROPERTIES:
-:Type: Exp
-:Start:
-:Fin:
-:Assess: <yyyy-mm-dd aaa>
-:Qs:
-:Status:
-:Outcome:
-:END:
-
-** Tasks
-
-** 仮説
-
-** 実験手順
-
-** 観察とメモ
-
-** 結果と考察
-
-** 注意点
-
-** 次の実験アイデア
-
-"
-       :target (file+head "resources/rez/%<%Y%m%d%H%M%S>-${slug}.org" "#+title: ${title}")
-       :unnarrowed t)
      ("b" "blog post" plain
        "* Tasks
 ** TODO 書く
@@ -183,11 +126,25 @@
        :target (file+head "resources/ref/%<%Y%m%d%H%M%S>-${slug}.org"
                  "#+title: ${title}\n${ref}\n${body}")
        :unnarrowed t)
-     ("z" "rez (Resonance Calendar) from protocol" plain "%?"
+     ("z" "rez (Resonance Calendar) from protocol" plain "%?
+${ref}
+
+* Why
+# なぜ読もう・見ようと思ったのか
+
+* Tasks
+** TODO 読む・見る
+
+* Key Ideas
+
+* Review
+
+* Quotes
+
+* Notes
+"
        :target (file+head "resources/rez/%<%Y%m%d%H%M%S>-${slug}.org"
-                 "#+title: ${title}
-* ${title}
-:PROPERTIES:
+                 ":PROPERTIES:
 :Type: ${type}
 :Start: <%<%Y-%m-%d %a>>
 :Fin:
@@ -197,23 +154,7 @@
 :URL: ${ref}
 :ReleaseDate: ${releaseDate}
 :END:
-
-${ref}
-** Why
-# なぜ読もう・見ようと思ったのか
-
-** Tasks
-*** TODO 読む・見る
-
-** Key Ideas
-
-** Review
-
-** Quotes
-
-** Notes
-
-")
+#+title: ${title}")
        :unnarrowed t)
      ))
 

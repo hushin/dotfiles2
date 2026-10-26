@@ -87,20 +87,6 @@ Refer to `org-agenda-prefix-format' for more information."
           (match-beginning 1)
           (match-end 1)))))
 
-  (defun cmp-date-property-stamp (prop)
-    "Compare two `org-mode' agenda entries, `A' and `B', by some date property.
-If a is before b, return -1. If a is after b, return 1. If they
-are equal return nil."
-    ;; source: https://emacs.stackexchange.com/questions/26351/custom-sorting-for-agenda/26369#26369
-    (lambda (a b)
-      (let* ((a-pos (get-text-property 0 'org-marker a))
-              (b-pos (get-text-property 0 'org-marker b))
-              (a-date (or (org-entry-get a-pos prop)
-                        (format "<%s>" (org-read-date t nil "now"))))
-              (b-date (or (org-entry-get b-pos prop)
-                        (format "<%s>" (org-read-date t nil "now"))))
-              (cmp (compare-strings a-date nil nil b-date nil nil)))
-        (if (eq cmp t) nil (cl-signum cmp)))))
   (setq
     ;; org-agenda-skip-scheduled-if-done t
     ;; org-agenda-skip-deadline-if-done t
@@ -112,20 +98,6 @@ are equal return nil."
 
   (setq org-agenda-custom-commands
     '(
-       ("r" "Resonance Cal" tags "Type={.}"
-         ((org-agenda-files
-            (directory-files-recursively
-              (concat org-roam-directory "resources/rez") "\\.org$"))
-           (org-overriding-columns-format
-             "%35Item %Type %Start %Fin %Rating")
-           (org-agenda-cmp-user-defined
-             (cmp-date-property-stamp "Start"))
-           (org-agenda-sorting-strategy
-             '(user-defined-down))
-           (org-agenda-overriding-header "C-u r to re-run Type={.}")
-           (org-agenda-view-columns-initially t)
-           )
-         )
        ("dt" "Done today"
          ((agenda ""
             (

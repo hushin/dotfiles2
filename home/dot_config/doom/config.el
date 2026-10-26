@@ -272,9 +272,16 @@
           (not (org-in-archived-heading-p))))
 
   (load! "lib/org-roam-templates")
+  ;; org-roam の capture テンプレートに org-db の定義を登録する
+  (load! "lib/org-db")
+  (load! "lib/org-db-config")
   (load! "lib/weekly-review")
   (load! "lib/org-timestamp")
   (load! "lib/org-file-browser")
+
+  ;; org-roam のファイル群を database として見る
+  (map! :leader
+        :desc "Database view" "n D" #'my/db-open)
   )
 
 (after! org-roam-protocol

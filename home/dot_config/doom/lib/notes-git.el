@@ -6,6 +6,8 @@
 ;; - 保存から 1 秒後に自動コミット（メッセージは "emacs: <path>"）
 ;; - 保存後 90 秒アイドル、または 5 分ごとに push
 ;; - 競合・push 失敗時は停止して通知する。自動解決はしない。
+;; - SSH 鍵が使えない（スリープ中の 1Password など）・ネットワーク不通は
+;;   一時的な失敗として扱い、停止せずメッセージだけ出して次回の定期実行で再試行する。
 ;;
 ;; 手動コマンド:
 ;;   M-x my/notes-git-sync-now   … 今すぐ pull（必要なら push）
@@ -27,7 +29,20 @@
 (defvar my/notes-git-commit-delay 5
   "保存後、コミットまでの待ち時間（秒）。連続保存をまとめる。")
 
+(defvar my/notes-git-transient-error-regexp
+  (regexp-opt '("Could not read from remote repository"
+                "communication with agent failed"
+                "Permission denied (publickey)"
+                "Could not resolve host"
+                "Connection timed out"
+                "Connection refused"
+                "Network is unreachable"
+                "Operation timed out"
+                "unable to access"))
+  "一時的な失敗（鍵が使えない・ネットワーク不通）とみなす stderr のパターン。")
+
 (defvar my/notes-git--queue nil)
+(defvar my/notes-git--last-transient-error nil)
 (defvar my/notes-git--process nil)
 (defvar my/notes-git--current nil)
 (defvar my/notes-git--stopped nil)
@@ -84,6 +99,21 @@
       "競合を直したら `git rebase --continue' を実行し、"
       "`M-x my/notes-git-resume' で再開してください。")
     :error))
+
+(defun my/notes-git--fail-remote (step code stdout stderr)
+  "リモートと通信する STEP の失敗。一時的な失敗なら停止せず再試行に回す。"
+  (if (and (string-match-p my/notes-git-transient-error-regexp (or stderr ""))
+           (not (my/notes-git--operation-in-progress-p)))
+      (progn
+        (setq my/notes-git--last-transient-error
+              (format "%s git %s\n%s" (format-time-string "%F %T") step
+                      (string-trim stderr))
+              my/notes-git--queue
+              (seq-remove (lambda (a) (memq a '(pull push))) my/notes-git--queue))
+        (message "notes-git: git %s に失敗しました（鍵・ネットワークが使えない可能性）。次回の定期同期で再試行します"
+                 step)
+        (my/notes-git--done))
+    (my/notes-git--fail step code stdout stderr)))
 
 (defun my/notes-git--run (args callback)
   "notes リポジトリで git ARGS を非同期実行する。
@@ -212,7 +242,7 @@ CALLBACK は (EXIT-CODE STDOUT STDERR) を受ける。"
                 (when my/notes-git--pending-push
                   (my/notes-git--schedule-push))
                 (my/notes-git--done))
-            (my/notes-git--fail "pull --rebase" code out err)))))))
+            (my/notes-git--fail-remote "pull --rebase" code out err)))))))
 
 (defun my/notes-git--push-flow ()
   (my/notes-git--with-clean-tree
@@ -228,7 +258,7 @@ CALLBACK は (EXIT-CODE STDOUT STDERR) を受ける。"
                           (my/notes-git--cancel-push-timer)
                           (message "notes-git: push しました")
                           (my/notes-git--done))
-                      (my/notes-git--fail "push" code out err)))))))
+                      (my/notes-git--fail-remote "push" code out err)))))))
         (if (my/notes-git--modified-buffers-p)
             ;; 未保存の編集がある間は pull しない（画面の内容を上書きしない）
             (funcall do-push)
@@ -239,7 +269,7 @@ CALLBACK は (EXIT-CODE STDOUT STDERR) を受ける。"
                   (progn
                     (my/notes-git--revert-buffers)
                     (funcall do-push))
-                (my/notes-git--fail "pull --rebase (push 前)" code out err)))))))))
+                (my/notes-git--fail-remote "pull --rebase (push 前)" code out err)))))))))
 
 (defun my/notes-git--modified-buffers-p ()
   "notes 配下に未保存のバッファがあるか。"
@@ -351,7 +381,10 @@ CALLBACK は (EXIT-CODE STDOUT STDERR) を受ける。"
       (insert (format "pending push: %s\n" (if my/notes-git--pending-push "yes" "no")))
       (insert (format "current: %s\n" (or my/notes-git--current "none")))
       (when my/notes-git--stop-reason
-        (insert "\n" my/notes-git--stop-reason "\n")))
+        (insert "\n" my/notes-git--stop-reason "\n"))
+      (when my/notes-git--last-transient-error
+        (insert "\n--- last transient error ---\n"
+                my/notes-git--last-transient-error "\n")))
     (display-buffer buf)))
 
 (defun my/notes-git-setup ()

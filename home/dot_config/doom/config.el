@@ -164,6 +164,10 @@
 ;; notes リポジトリの Git 自動同期
 (load! "lib/notes-git")
 
+;; アーカイブを archives/ 配下の別ファイルへ逃がす（org を起動時に読ませない）
+(after! org
+  (load! "lib/notes-archive"))
+
 (after! org
   (map!
     "C-c a" #'org-agenda

@@ -53,9 +53,23 @@
         (progn (org-roam-tag-remove (list my/org-focus-tag))
                (message "Focus から外しました"))
       (org-roam-tag-add (list my/org-focus-tag))
-      (message "Focus に入れました"))))
+      (message "Focus に入れました")))
+  ;; org-roam の DB は保存時に更新されるので、`my/org-focus-find' にすぐ出るよう保存する
+  (save-buffer))
 
-(map! :leader :desc "Toggle focus file" "n p" #'my/org-toggle-focus)
+(defun my/org-focus-find ()
+  "`my/org-focus-tag' のついたファイルを選んで開く。"
+  (interactive)
+  (org-roam-node-visit
+   (org-roam-node-read nil
+                       (lambda (node)
+                         (and (= (org-roam-node-level node) 0)
+                              (member my/org-focus-tag (org-roam-node-tags node))))
+                       nil t "Focus: ")))
+
+(map! :leader
+      :desc "Toggle focus file" "n p" #'my/org-toggle-focus
+      :desc "Find focus file" "n P" #'my/org-focus-find)
 
 (defun my/org-agenda--file-title (item)
   "agenda の ITEM があるファイルの #+title（無ければバッファ名）。"

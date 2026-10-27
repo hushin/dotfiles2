@@ -55,7 +55,8 @@
 ;; `org-directory' を変更してください。orgが読み込まれる前に設定する必要があります！
 (setq org-directory my/notes-directory)
 (setq org-roam-directory org-directory)
-(setq org-roam-file-exclude-regexp "/archives/")
+;; org-roam-directory からの相対パスと照合されるので、先頭の archives/ も拾う
+(setq org-roam-file-exclude-regexp "\\(?:^\\|/\\)archives/")
 
 ;; パッケージを再設定する際は、設定を `after!' ブロックで囲むようにしてください。
 ;; そうしないと、Doomのデフォルト設定が上書きされる可能性があります。例：

@@ -34,6 +34,18 @@
   "vtable のテキストプロパティに使うキーマップ。
 モードのキーマップと違い親を持たせない（vtable が親を設定する）。")
 
+(defconst my/db--keys
+  '(("RET" my/db-open-row "開く")
+    ("e" my/db-edit-cell "編集")
+    ("+" my/db-add-row "新規")
+    ("S" my/db-sort-by-current-column "この列でソート")
+    ("/" my/db-add-filter "フィルタ")
+    ("\\" my/db-clear-filters "フィルタ解除")
+    ("v" my/db-switch-view "ビュー切替")
+    ("g" my/db-reload "再読込")
+    ("q" quit-window "閉じる"))
+  "database バッファのキー。(KEY COMMAND 説明) のリスト。説明はヘッダに出す。")
+
 (cl-defstruct (my/db-column (:constructor my/db--make-column))
   "database の 1 列。"
   name type options width hidden default default-p)
@@ -507,9 +519,19 @@ NOW は date 型 :default `today' の基準時刻（省略時は現在時刻）�
                            (if (eq (cdr my/db--sort) 'desc) "降順" "昇順"))
                  "なし")))
     (propertize
-     (format "%s — ビュー: %s — %d 件\nソート: %s / フィルタ: %s"
-             (my/db-table-name table) view (length rows) sort filter)
+     (concat
+      (format "%s — ビュー: %s — %d 件\nソート: %s / フィルタ: %s\n"
+              (my/db-table-name table) view (length rows) sort filter)
+      (my/db--key-help))
      'keymap my/db-mode-map)))
+
+(defun my/db--key-help ()
+  "`my/db--keys' からキーの説明行を作る。"
+  (mapconcat (pcase-lambda (`(,key ,_command ,label))
+               (concat (propertize key 'face 'help-key-binding)
+                       " " (propertize label 'face 'shadow)))
+             my/db--keys
+             "  "))
 
 (defun my/db--vtable-column (column)
   "COLUMN を vtable の列定義にする。"
@@ -740,16 +762,9 @@ COLUMN が現在のソート列なら並び順が変わるので全体を描き�
 ;;;; モードとキーバインド
 
 (defun my/db--bind-keys (map)
-  "database バッファのキーを MAP に設定する。"
-  (keymap-set map "RET" #'my/db-open-row)
-  (keymap-set map "e" #'my/db-edit-cell)
-  (keymap-set map "+" #'my/db-add-row)
-  (keymap-set map "/" #'my/db-add-filter)
-  (keymap-set map "\\" #'my/db-clear-filters)
-  (keymap-set map "v" #'my/db-switch-view)
-  (keymap-set map "g" #'my/db-reload)
-  (keymap-set map "S" #'my/db-sort-by-current-column)
-  (keymap-set map "q" #'quit-window)
+  "database バッファのキー（`my/db--keys'）を MAP に設定する。"
+  (pcase-dolist (`(,key ,command ,_label) my/db--keys)
+    (keymap-set map key command))
   map)
 
 (setq my/db-mode-map (my/db--bind-keys (make-sparse-keymap)))

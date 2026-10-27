@@ -6,8 +6,11 @@ $BackupDrive = "E:"
 $SourcePath = "$env:USERPROFILE\projects"
 $BackupPath = "$BackupDrive\restic-backup\projects"
 $ConfigPath = "$env:USERPROFILE\.config\restic"
+$HelperPath = "$ConfigPath\restic-1password.ps1"
 
-$PasswordFile = "$ConfigPath\password.txt"
+# Windows PowerShell 5.1 でネイティブコマンドの stderr をリダイレクトしたときに
+# 例外にならないよう、明示的に Continue にしておく。
+$ErrorActionPreference = "Continue"
 
 # Check if fzf is available
 function Test-FzfAvailable {
@@ -85,7 +88,6 @@ function Select-Project {
 
 function Set-ResticEnv {
     param([string]$ProjectName)
-    $env:RESTIC_PASSWORD_FILE = $PasswordFile
     $env:RESTIC_REPOSITORY = "$BackupPath\$ProjectName"
 }
 
@@ -337,11 +339,25 @@ Write-Host "Project Backup Management Tool"
 Write-Host "================================"
 Write-Host ""
 
-# Check if password file exists
-if (-not (Test-Path $PasswordFile)) {
-    Write-Host "Password file not found: $PasswordFile"
+# Load the restic password from 1Password
+if (-not (Test-Path -LiteralPath $HelperPath)) {
+    Write-Host "1Password helper not found: $HelperPath" -ForegroundColor Red
     Write-Host "Please run setup-project-backup.ps1 first"
     exit 1
+}
+. $HelperPath
+
+try {
+    $passwordSource = Set-ResticPasswordEnvironment
+}
+catch {
+    Write-Host $_.Exception.Message -ForegroundColor Red
+    exit 1
+}
+
+if ($passwordSource -eq "legacy") {
+    Write-Host "WARNING: 1Password 未設定のため旧 password.txt を使用します。" -ForegroundColor Yellow
+    Write-Host "         setup-project-backup.ps1 と migrate-restic-password.ps1 を実行してください。" -ForegroundColor Yellow
 }
 
 # Check if restic is installed

@@ -1,4 +1,4 @@
-# Interactive PowerShell Subcommand Runner
+﻿# Interactive PowerShell Subcommand Runner
 # Usage: .\my-setup.ps1 [subcommand] [arguments...]
 
 param(
@@ -55,12 +55,16 @@ function Invoke-SubCommand {
         [string[]]$Arguments
     )
 
+    if ($null -eq $Arguments) {
+        $Arguments = @()
+    }
+
     $scriptPath = Join-Path $SubCommandDir "$CommandName.ps1"
 
     if (Test-Path $scriptPath) {
         Write-Host "実行中: $CommandName" -ForegroundColor Green
-        if ($Args.Count -gt 0) {
-            Write-Host "引数: $($Args -join ' ')" -ForegroundColor Gray
+        if ($Arguments.Count -gt 0) {
+            Write-Host "引数: $($Arguments -join ' ')" -ForegroundColor Gray
         }
         Write-Host "----------------------------------------" -ForegroundColor Gray
 
@@ -128,7 +132,7 @@ function Start-InteractiveMode {
             continue
         }
 
-        Invoke-SubCommand -CommandName $selectedCommand -Args @()
+        Invoke-SubCommand -CommandName $selectedCommand -Arguments @()
 
         Write-Host ""
         Write-Host "次のコマンドを選択してください..." -ForegroundColor Cyan
@@ -148,7 +152,7 @@ elseif ($SubCommand -and $SubCommand -ne "interactive" -and $SubCommand -ne "i")
         exit 1
     }
 
-    Invoke-SubCommand -CommandName $SubCommand -Args $Arguments
+    Invoke-SubCommand -CommandName $SubCommand -Arguments $Arguments
 }
 else {
     # デフォルトで対話モードを開始

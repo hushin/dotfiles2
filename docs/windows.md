@@ -19,6 +19,35 @@ my-setup.ps1
 
 `install-0-all`
 
+### プロジェクトバックアップ (restic)
+
+`setup-project-backup` は restic のパスワードを 1Password から取得します。通常のバックアップではパスワードをディスクに保存しません。
+
+```powershell
+# 1Password に Password アイテムがなければ、確認のうえ自動生成して作成する
+my-setup.ps1 setup-project-backup
+
+# 別の vault / item を使う場合は setup script を直接実行する
+~\bin-win\setup-scripts\setup-project-backup.ps1 -OpVault "Personal" -OpItem "restic-backup"
+```
+
+- 既定の secret reference: `op://Private/restic/password`
+- 使用する reference は `~/.config/restic/1password-ref.txt` に保存されます（パスワード自体は保存しません）。
+- 1Password CLI (`op`) がインストールされ、1Password アプリとの CLI 連携が有効で、ロック解除されている必要があります。
+- `1password-ref.txt` がまだない場合、旧 `password.txt` があれば従来どおりそちらを使用します（移行期間用）。
+- スケジュールタスクは 30 分ごとに実行されます。1Password がロックされているとバックアップは失敗し、ログにエラーが残ります。
+- `RESTIC_OP_REF` 環境変数で secret reference を一時的に上書きできます。
+
+既存の `~/.config/restic/password.txt` がある場合は、先に 1Password のパスワードへ移行します。
+
+```powershell
+# 移行対象の確認
+migrate-restic-password.ps1 -DryRun
+
+# 移行 (旧パスワードは password.txt または対話入力から取得)
+migrate-restic-password.ps1
+```
+
 ## WSL
 
 ref. [WSL のインストール | Microsoft Learn](https://learn.microsoft.com/ja-jp/windows/wsl/install)

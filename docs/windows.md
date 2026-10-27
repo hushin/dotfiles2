@@ -21,7 +21,7 @@ my-setup.ps1
 
 ### プロジェクトバックアップ (restic)
 
-`setup-project-backup` は restic のパスワードを 1Password から取得します。通常のバックアップではパスワードをディスクに保存しません。
+`setup-project-backup` は restic のパスワードを 1Password から取得します。バックアップ実行時は DPAPI で暗号化したキャッシュを使うため、1Password の認証ダイアログは表示されません。
 
 ```powershell
 # 1Password に Password アイテムがなければ、確認のうえ自動生成して作成する
@@ -31,12 +31,20 @@ my-setup.ps1 setup-project-backup
 ~\bin-win\setup-scripts\setup-project-backup.ps1 -OpVault "Personal" -OpItem "restic-backup"
 ```
 
-- 既定の secret reference: `op://Private/restic/password`
-- 使用する reference は `~/.config/restic/1password-ref.txt` に保存されます（パスワード自体は保存しません）。
+- vault 名を省略すると 1Password の vault を自動選択します（1 つだけなら自動、複数なら番号で選択）。`RESTIC_OP_VAULT` 環境変数でも指定できます。
+- 既定の secret reference: `op://<vault>/restic/password`（例: `op://Personal/restic/password`）。旧版の固定値 `op://Private/restic/password` は使いません。
+- 使用する reference は `~/.config/restic/1password-ref.txt` に保存されます。
+- パスワードは `~/.config/restic/password.dpapi` に Windows DPAPI (CurrentUser) で暗号化してキャッシュされます。同じ Windows ユーザーでのみ復号でき、平文では保存されません。
 - 1Password CLI (`op`) がインストールされ、1Password アプリとの CLI 連携が有効で、ロック解除されている必要があります。
-- `1password-ref.txt` がまだない場合、旧 `password.txt` があれば従来どおりそちらを使用します（移行期間用）。
-- スケジュールタスクは 30 分ごとに実行されます。1Password がロックされているとバックアップは失敗し、ログにエラーが残ります。
+- 1Password のアプリ連携は約 10 分で再認証を要求します。30 分ごとのスケジュールタスクから毎回 `op` を呼ぶと Windows Hello のダイアログが出続けるため、バックアップはキャッシュだけを使います。
+- 1Password 側でパスワードを変更した場合は、キャッシュを更新します（このときだけ認証ダイアログが出ます）。
+  ```powershell
+  sync-restic-password.ps1
+  ```
+- 1Password アプリがスリープしていた直後の初回 `op` 呼び出しは一時的に失敗することがあるため、サインイン確認とパスワード取得は自動でリトライします。
+- `password.dpapi` がまだない場合、旧 `password.txt` があれば従来どおりそちらを使用します（移行期間用）。
 - `RESTIC_OP_REF` 環境変数で secret reference を一時的に上書きできます。
+- `password.dpapi` が壊れた・別ユーザーで作られた場合は `sync-restic-password.ps1` で作り直せます（`-Clear` で削除のみ）。
 
 既存の `~/.config/restic/password.txt` がある場合は、先に 1Password のパスワードへ移行します。
 

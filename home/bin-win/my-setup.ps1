@@ -71,11 +71,19 @@ function Invoke-SubCommand {
         try {
             # サブコマンドスクリプトを実行
             & $scriptPath @Arguments
-            Write-Host "----------------------------------------" -ForegroundColor Gray
-            Write-Host "完了: $CommandName" -ForegroundColor Green
+            if ($?) {
+                Write-Host "----------------------------------------" -ForegroundColor Gray
+                Write-Host "完了: $CommandName" -ForegroundColor Green
+            }
+            else {
+                Write-Host "----------------------------------------" -ForegroundColor Gray
+                Write-Host "失敗: $CommandName (詳細は上のエラーを確認してください)" -ForegroundColor Red
+                $script:SubCommandFailed = $true
+            }
         }
         catch {
             Write-Host "エラー: $($_.Exception.Message)" -ForegroundColor Red
+            $script:SubCommandFailed = $true
         }
     }
     else {
@@ -153,6 +161,9 @@ elseif ($SubCommand -and $SubCommand -ne "interactive" -and $SubCommand -ne "i")
     }
 
     Invoke-SubCommand -CommandName $SubCommand -Arguments $Arguments
+    if ($script:SubCommandFailed) {
+        exit 1
+    }
 }
 else {
     # デフォルトで対話モードを開始

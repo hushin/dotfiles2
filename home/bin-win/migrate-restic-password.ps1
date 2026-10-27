@@ -44,14 +44,6 @@ if ($DryRun) {
     exit 0
 }
 
-try {
-    Assert-OnePasswordSignedIn
-}
-catch {
-    Write-Error $_.Exception.Message
-    exit 1
-}
-
 # 新パスワードを先に取得しておき、旧パスワードの入力後に失敗しないようにする
 try {
     $NewPassword = Get-ResticPasswordFromOnePassword
@@ -148,6 +140,15 @@ finally {
     Remove-Item -LiteralPath $tempPasswordFile -Force -ErrorAction SilentlyContinue
     Remove-Item Env:\RESTIC_PASSWORD -ErrorAction SilentlyContinue
     Remove-Item Env:\RESTIC_REPOSITORY -ErrorAction SilentlyContinue
+}
+
+# 次回以降のバックアップで 1Password の認証ダイアログが出ないようキャッシュを更新する
+try {
+    $cacheFile = Set-ResticPasswordCache -Password $NewPassword
+    Write-Host "パスワードキャッシュを更新しました: $cacheFile"
+}
+catch {
+    Write-Host "WARNING: パスワードキャッシュを更新できませんでした: $($_.Exception.Message)" -ForegroundColor Yellow
 }
 
 if ($failed -gt 0) {

@@ -68,6 +68,9 @@ catch {
 if ($passwordSource -eq "legacy") {
     Write-Log "WARNING: 1Password 未設定のため旧 password.txt を使用します。setup-project-backup.ps1 と migrate-restic-password.ps1 を実行してください。"
 }
+elseif ($passwordSource -eq "1password") {
+    Write-Log "1Password からパスワードを取得し、DPAPI キャッシュを作成しました。"
+}
 
 Write-Log "Found $($ProjectDirs.Count) project directories"
 
@@ -111,7 +114,7 @@ foreach ($ProjectDir in $ProjectDirs) {
     } else {
         Write-Log "ERROR: Backup failed for ${ProjectName}: $backupResult"
         if ($LASTEXITCODE -eq 12) {
-            Write-Log "HINT: パスワードが一致しません。旧 password.txt で作成したリポジトリは migrate-restic-password.ps1 で移行してください。"
+            Write-Log "HINT: パスワードが一致しません。1Password 側でパスワードを変更した場合は sync-restic-password.ps1 でキャッシュを更新してください。旧 password.txt で作成したリポジトリは migrate-restic-password.ps1 で移行してください。"
         }
         continue
     }

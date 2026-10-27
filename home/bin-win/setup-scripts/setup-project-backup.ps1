@@ -3,7 +3,8 @@
 # The restic password is stored in 1Password and fetched via the 1Password CLI.
 
 param(
-    [string]$OpVault = "Private",
+    # 未指定なら 1Password の vault を自動選択する（1 つだけなら自動、複数なら選択）
+    [string]$OpVault = $env:RESTIC_OP_VAULT,
     [string]$OpItem = "restic"
 )
 
@@ -19,7 +20,6 @@ $ConfigPath = "$env:USERPROFILE\.config\restic"
 $LogPath = "$env:USERPROFILE\.logs\restic"
 $BackupScriptPath = "$ConfigPath\quick-project-backup.ps1"
 $HelperPath = "$ConfigPath\restic-1password.ps1"
-$OpRef = "op://$OpVault/$OpItem/password"
 $OpRefFile = "$ConfigPath\1password-ref.txt"
 
 # Check if restic is installed
@@ -44,15 +44,56 @@ if (-not (Test-Path -LiteralPath $HelperPath)) {
 }
 . $HelperPath
 
+# vault 名を解決する。1Password の既定以外の vault 名 (Personal など) でも
+# 動くように、存在しない vault を指定していた場合は分かりやすく案内する。
+# vault 一覧の取得がサインイン確認も兼ねる（op の呼び出し回数を減らす）。
 try {
-    Assert-OnePasswordSignedIn
+    $vaultNames = @(Get-OnePasswordVaultNames)
 }
 catch {
     Write-Error $_.Exception.Message
     exit 1
 }
 
-if (-not (Test-ResticOnePasswordItem -Vault $OpVault -Item $OpItem)) {
+if ($vaultNames.Count -eq 0) {
+    Write-Error "1Password に vault が見つかりません。1Password アプリで vault を作成してください。"
+    exit 1
+}
+
+if ([string]::IsNullOrWhiteSpace($OpVault)) {
+    if ($vaultNames.Count -eq 1) {
+        $OpVault = $vaultNames[0]
+    }
+    else {
+        Write-Host "1Password の vault を選択してください:"
+        for ($i = 0; $i -lt $vaultNames.Count; $i++) {
+            Write-Host "  $($i + 1). $($vaultNames[$i])"
+        }
+        $selection = Read-Host "番号 (1-$($vaultNames.Count))"
+        if ($selection -notmatch '^\d+$' -or [int]$selection -lt 1 -or [int]$selection -gt $vaultNames.Count) {
+            Write-Error "vault が選択されませんでした。利用可能な vault: $($vaultNames -join ', ')"
+            exit 1
+        }
+        $OpVault = $vaultNames[[int]$selection - 1]
+    }
+}
+elseif ($vaultNames -notcontains $OpVault) {
+    Write-Error "vault '$OpVault' が見つかりません。利用可能な vault: $($vaultNames -join ', ')"
+    exit 1
+}
+
+$OpRef = "op://$OpVault/$OpItem/password"
+Write-Host "Using 1Password item: $OpRef"
+
+try {
+    $itemExists = Test-ResticOnePasswordItem -Vault $OpVault -Item $OpItem
+}
+catch {
+    Write-Error $_.Exception.Message
+    exit 1
+}
+
+if (-not $itemExists) {
     Write-Host "1Password に項目 '$OpItem' が見つかりません (vault: $OpVault)。" -ForegroundColor Yellow
     $create = Read-Host "パスワードを自動生成して 1Password に作成しますか? (y/N)"
     if ($create -notmatch '^[Yy]$') {
@@ -70,10 +111,20 @@ if (-not (Test-ResticOnePasswordItem -Vault $OpVault -Item $OpItem)) {
 }
 
 try {
-    $null = Get-ResticPasswordFromOnePassword -Reference $OpRef
+    $password = Get-ResticPasswordFromOnePassword -Reference $OpRef
 }
 catch {
     Write-Error $_.Exception.Message
+    exit 1
+}
+
+# バックアップ時に 1Password の認証ダイアログが出ないよう、DPAPI で暗号化してキャッシュする
+try {
+    $cacheFile = Set-ResticPasswordCache -Password $password
+    Write-Host "Password cached (DPAPI): $cacheFile"
+}
+catch {
+    Write-Error "パスワードキャッシュを作成できませんでした: $($_.Exception.Message)"
     exit 1
 }
 
@@ -141,11 +192,15 @@ Write-Host ""
 Write-Host "Setup completed successfully!"
 Write-Host "- Backup script: $BackupScriptPath"
 Write-Host "- 1Password reference: $OpRef"
+Write-Host "- Password cache (DPAPI): $cacheFile"
 Write-Host "- Log directory: $LogPath"
 Write-Host "- Backup location: $BackupPath"
 Write-Host "- Scheduled task: $TaskName (runs every 30 minutes)"
 Write-Host ""
 Write-Host "Next steps:"
 Write-Host "1. Install restic if not already installed"
-Write-Host "2. 1Password をロック解除しておく (ロック中はバックアップが失敗します)"
+Write-Host "2. 既存リポジトリがある場合は migrate-restic-password.ps1 でパスワードを移行する"
 Write-Host "3. Run a test backup manually: $BackupScriptPath"
+Write-Host ""
+Write-Host "Note: バックアップは DPAPI キャッシュを使うため、1Password の認証ダイアログは出ません。"
+Write-Host "      1Password 側でパスワードを変更したら sync-restic-password.ps1 を実行してください。"

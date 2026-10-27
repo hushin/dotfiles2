@@ -4,7 +4,8 @@
 ;;
 ;; 値はファイル先頭の file-level `:PROPERTIES:' drawer に置く
 ;; （level 0 ノードの properties）。見出しは作らない。
-;; キーは Doom の leader から `my/db-open'（`SPC n D'）で開く。
+;; キーは Doom の leader から `my/db-open'（`SPC n D'）、
+;; rez は `my/db-open-rez'（`SPC n R'）で直接開く。
 ;;; Code:
 
 (require 'org-db)
@@ -73,6 +74,11 @@
 
 * 次の実験アイデア
 ")
+
+(defun my/db-open-rez ()
+  "Resonance Calendar（rez）を開く。"
+  (interactive)
+  (my/db-open "rez"))
 
 ;; org-roam-templates の後に読み込まれるので、同じキーの既存テンプレートを
 ;; 置き換える形で登録される。

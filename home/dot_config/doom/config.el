@@ -281,7 +281,8 @@
 
   ;; org-roam のファイル群を database として見る
   (map! :leader
-        :desc "Database view" "n D" #'my/db-open)
+        :desc "Database view" "n D" #'my/db-open
+        :desc "Resonance Calendar" "n R" #'my/db-open-rez)
   )
 
 (after! org-roam-protocol

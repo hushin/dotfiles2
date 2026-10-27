@@ -498,6 +498,8 @@ NOW は date 型 :default `today' の基準時刻（省略時は現在時刻）�
           (make-vtable
            :columns (mapcar #'my/db--vtable-column columns)
            :objects rows
+           ;; vtable の既定 face は variable-pitch なので、org と同じ等幅にする
+           :face 'default
            :keymap my/db--vtable-keymap
            :use-header-line t))
     ;; vtable のヘッダクリックによるソートは使わない（`S' でソートする）
@@ -737,7 +739,8 @@ COLUMN が現在のソート列なら並び順が変わるので全体を描き�
             my/db--rows (my/db--read-rows table)
             my/db--vtable nil)
       (my/db--render))
-    (pop-to-buffer buffer)))
+    ;; org-agenda のように今のウィンドウで開く（q で元のバッファに戻る）
+    (switch-to-buffer buffer)))
 
 (provide 'org-db)
 ;;; org-db.el ends here

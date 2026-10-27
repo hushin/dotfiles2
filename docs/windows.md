@@ -42,19 +42,8 @@ my-setup.ps1 setup-project-backup
   sync-restic-password.ps1
   ```
 - 1Password アプリがスリープしていた直後の初回 `op` 呼び出しは一時的に失敗することがあるため、サインイン確認とパスワード取得は自動でリトライします。
-- `password.dpapi` がまだない場合、旧 `password.txt` があれば従来どおりそちらを使用します（移行期間用）。
 - `RESTIC_OP_REF` 環境変数で secret reference を一時的に上書きできます。
 - `password.dpapi` が壊れた・別ユーザーで作られた場合は `sync-restic-password.ps1` で作り直せます（`-Clear` で削除のみ）。
-
-既存の `~/.config/restic/password.txt` がある場合は、先に 1Password のパスワードへ移行します。
-
-```powershell
-# 移行対象の確認
-migrate-restic-password.ps1 -DryRun
-
-# 移行 (旧パスワードは password.txt または対話入力から取得)
-migrate-restic-password.ps1
-```
 
 ## WSL
 

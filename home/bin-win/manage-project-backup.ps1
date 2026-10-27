@@ -355,9 +355,8 @@ catch {
     exit 1
 }
 
-if ($passwordSource -eq "legacy") {
-    Write-Host "WARNING: 1Password 未設定のため旧 password.txt を使用します。" -ForegroundColor Yellow
-    Write-Host "         setup-project-backup.ps1 と migrate-restic-password.ps1 を実行してください。" -ForegroundColor Yellow
+if ($passwordSource -eq "1password") {
+    Write-Host "1Password からパスワードを取得し、DPAPI キャッシュを作成しました。" -ForegroundColor DarkGray
 }
 
 # Check if restic is installed

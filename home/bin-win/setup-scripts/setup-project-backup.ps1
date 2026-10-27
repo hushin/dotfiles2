@@ -135,22 +135,12 @@ if (Test-Path -LiteralPath $OpRefFile) {
         Write-Host ""
         Write-Host "WARNING: 1Password reference を変更します: $existingRef -> $OpRef" -ForegroundColor Yellow
         Write-Host "既存の restic リポジトリは旧 reference のパスワードで作成されています。" -ForegroundColor Yellow
-        Write-Host "旧パスワードが password.txt に残っている場合のみ migrate-restic-password.ps1 で移行できます。" -ForegroundColor Yellow
+        Write-Host "パスワードが異なる場合、バックアップは失敗します。" -ForegroundColor Yellow
         Write-Host ""
     }
 }
 [System.IO.File]::WriteAllText($OpRefFile, $OpRef, [System.Text.UTF8Encoding]::new($false))
 Write-Host "1Password reference saved at: $OpRefFile"
-
-# 旧パスワードファイルが残っている場合は、移行が完了するまで削除しない
-$LegacyPasswordFile = "$ConfigPath\password.txt"
-if (Test-Path -LiteralPath $LegacyPasswordFile) {
-    Write-Host ""
-    Write-Host "WARNING: 旧パスワードファイルが見つかりました: $LegacyPasswordFile" -ForegroundColor Yellow
-    Write-Host "既存の restic リポジトリは旧パスワードで作成されています。" -ForegroundColor Yellow
-    Write-Host "migrate-restic-password.ps1 で 1Password のパスワードへ移行してから削除してください。" -ForegroundColor Yellow
-    Write-Host ""
-}
 
 # Create task scheduler task
 Write-Host "Creating scheduled task..."
@@ -199,8 +189,7 @@ Write-Host "- Scheduled task: $TaskName (runs every 30 minutes)"
 Write-Host ""
 Write-Host "Next steps:"
 Write-Host "1. Install restic if not already installed"
-Write-Host "2. 既存リポジトリがある場合は migrate-restic-password.ps1 でパスワードを移行する"
-Write-Host "3. Run a test backup manually: $BackupScriptPath"
+Write-Host "2. Run a test backup manually: $BackupScriptPath"
 Write-Host ""
 Write-Host "Note: バックアップは DPAPI キャッシュを使うため、1Password の認証ダイアログは出ません。"
 Write-Host "      1Password 側でパスワードを変更したら sync-restic-password.ps1 を実行してください。"

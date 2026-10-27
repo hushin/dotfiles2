@@ -5,10 +5,6 @@ function Get-ResticOnePasswordRefFile {
     Join-Path $env:USERPROFILE ".config\restic\1password-ref.txt"
 }
 
-function Get-ResticLegacyPasswordFile {
-    Join-Path $env:USERPROFILE ".config\restic\password.txt"
-}
-
 # 1Password のアプリ連携は約 10 分で再認証を要求する。30 分ごとに走る
 # スケジュールタスクから op を呼ぶと毎回 Windows Hello のダイアログが出るため、
 # パスワードは DPAPI (CurrentUser) で暗号化してローカルにキャッシュし、
@@ -271,16 +267,6 @@ function Set-ResticPasswordEnvironment {
     $source = "cache"
 
     if ([string]::IsNullOrEmpty($password)) {
-        # 1Password の設定がまだで旧パスワードファイルが残っている場合は、
-        # chezmoi apply 直後にスケジュールタスクが失敗しないよう従来どおり動作させる。
-        if ([string]::IsNullOrWhiteSpace($resolvedRef) -and
-            (Test-Path -LiteralPath (Get-ResticLegacyPasswordFile))) {
-            Remove-Item Env:\RESTIC_PASSWORD -ErrorAction SilentlyContinue
-            Remove-Item Env:\RESTIC_PASSWORD_COMMAND -ErrorAction SilentlyContinue
-            $env:RESTIC_PASSWORD_FILE = Get-ResticLegacyPasswordFile
-            return "legacy"
-        }
-
         # キャッシュがないときだけ 1Password から取得する（このとき認証ダイアログが出る）
         $password = Get-ResticPasswordFromOnePassword -Reference $resolvedRef
         $null = Set-ResticPasswordCache -Password $password

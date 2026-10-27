@@ -30,6 +30,43 @@
 ;; org-agenda-files（Dropbox 時代のパス）を起動完了後に上書きする。
 (add-hook 'after-init-hook #'my/org--set-agenda-files)
 
+(defun my/org-agenda--done-ancestor-p ()
+  "point の見出しの祖先に DONE / CANCELED があれば non-nil。"
+  (save-excursion
+    (cl-loop while (org-up-heading-safe)
+             thereis (member (org-get-todo-state) '("DONE" "CANCELED")))))
+
+(defun my/org-agenda-archive-done-tasks (&optional _match)
+  "アジェンダ対象の DONE / CANCELED タスクを archive sibling へ移す。
+`C-c a t 3 r * x A' の代わり。件数を確認してから実行する。
+祖先も DONE / CANCELED の見出しは親と一緒に移るので数えない。"
+  (interactive)
+  (let ((markers
+         (delq nil
+               (org-map-entries
+                (lambda ()
+                  (unless (my/org-agenda--done-ancestor-p)
+                    ;; 直前に Archive 見出しが挿入されても、この見出しを指し続ける
+                    (copy-marker (point) t)))
+                "/DONE|CANCELED" 'agenda 'archive))))
+    (cond
+     ((null markers)
+      (message "アーカイブする DONE / CANCELED タスクはありません"))
+     ((y-or-n-p (format "%d 件の DONE / CANCELED タスクをアーカイブしますか？"
+                        (length markers)))
+      (dolist (m markers)
+        (with-current-buffer (marker-buffer m)
+          (save-excursion
+            (save-restriction
+              (widen)
+              (goto-char m)
+              (org-archive-to-archive-sibling))))
+        (set-marker m nil))
+      (org-save-all-org-buffers)
+      (message "%d 件をアーカイブしました" (length markers)))
+     (t
+      (mapc (lambda (m) (set-marker m nil)) markers)))))
+
 (after! org
   (my/org--set-agenda-files)
 
@@ -98,6 +135,7 @@ Refer to `org-agenda-prefix-format' for more information."
 
   (setq org-agenda-custom-commands
     '(
+       ("A" "Archive DONE/CANCELED tasks" my/org-agenda-archive-done-tasks "")
        ("dt" "Done today"
          ((agenda ""
             (

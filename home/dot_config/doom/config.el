@@ -185,19 +185,7 @@
   (add-hook 'auto-save-hook 'org-save-all-org-buffers)
   ; 見出し入れるときは空行を入れない
   (setq org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
-  (defun my/property-values-function (property)
-    "Return allowed values for PROPERTY."
-    (cond
-      ((string= property "Type")
-        '("Book" "Web" "Anime" "Game" "Podcast" "Video" "Movie"))
-      ((string= property "Rating")
-        '("*" "**" "***" "****" "*****"))
-      ((string= property "Canceled")
-        '("true" ""))
-      ))
-
-  (setq org-property-allowed-value-functions
-    '(my/property-values-function))
+  ;; プロパティの許可値は lib/org-db-config.el の select 列から補完する
 
   (setq org-capture-templates
     '(

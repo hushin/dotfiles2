@@ -283,6 +283,43 @@ VALUES は `(\"列名\" . 表示値)' の alist。"
   "ID のノードを DB から読み直して返す。"
   (car (my/db--query-rows id)))
 
+;;;; org のプロパティ補完
+
+(defun my/db--table-for-file (file)
+  "FILE を :dir 配下に含む database を返す。"
+  (seq-find (lambda (table)
+              (my/db--in-directory-p file (my/db--directory table)))
+            (hash-table-values my/db--tables)))
+
+(defun my/db-property-allowed-values (property)
+  "`org-property-allowed-value-functions' 用。
+今のファイルが database の :dir 配下なら、PROPERTY に当たる select 列の
+:options を返す。`org-set-property' の補完と S-<right> の切り替えに使われる。"
+  (when-let* ((file (buffer-file-name (buffer-base-buffer)))
+              (table (my/db--table-for-file file))
+              (column (seq-find
+                       (lambda (column)
+                         (and (eq (my/db-column-type column) 'select)
+                              (stringp (my/db-column-name column))
+                              (string-equal-ignore-case
+                               property (my/db-column-name column))))
+                       (my/db-table-columns table))))
+    (my/db-column-options column)))
+
+(add-hook 'org-property-allowed-value-functions #'my/db-property-allowed-values)
+
+(defun my/db--next-allowed-value-at-file-level (fn &rest args)
+  "ファイル先頭の drawer でも `org-property-next-allowed-value' を使えるようにする。
+org は見出しより前で `org-heading-components' がエラーになるため、
+そこでは見出しなしとして扱う（見出し名は Effort の更新にしか使われない）。"
+  (if (org-before-first-heading-p)
+      (cl-letf (((symbol-function 'org-heading-components) #'ignore))
+        (apply fn args))
+    (apply fn args)))
+
+(advice-add 'org-property-next-allowed-value
+            :around #'my/db--next-allowed-value-at-file-level)
+
 ;;;; プロパティの書き込み
 
 (defun my/db--set-property (file property value)

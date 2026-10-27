@@ -14,7 +14,8 @@
   :dir "resources/rez/"
   :columns
   '((title :width 40)
-    ("Type" :type select :options ("Book" "Web" "Movie"))
+    ("Type" :type select
+     :options ("Book" "Web" "Anime" "Game" "Podcast" "Video" "Movie"))
     ("Start" :type date :default "today")
     ("Fin" :type date)
     ("Rating" :type select :options ("*" "**" "***" "****" "*****") :default "")

@@ -30,6 +30,39 @@
 ;; org-agenda-files（Dropbox 時代のパス）を起動完了後に上書きする。
 (add-hook 'after-init-hook #'my/org--set-agenda-files)
 
+(defconst my/org-focus-tag "@focus"
+  "「次やること」の対象ファイルにつけるファイルタグ。
+`org-use-tag-inheritance' が \"^@\" なので、見出しへ継承されるよう @ で始める。")
+
+(defun my/org--focus-file-p ()
+  "今のバッファの #+filetags に `my/org-focus-tag' があれば non-nil。"
+  (member my/org-focus-tag
+          (split-string (or (cadr (assoc "FILETAGS"
+                                         (org-collect-keywords '("filetags"))))
+                            "")
+                        ":" t)))
+
+(defun my/org-toggle-focus ()
+  "今のファイルを「次やること」の対象にする／外す（#+filetags の付け外し）。"
+  (interactive)
+  (unless (derived-mode-p 'org-mode)
+    (user-error "org ファイルではありません"))
+  (save-excursion
+    (goto-char (point-min))
+    (if (my/org--focus-file-p)
+        (progn (org-roam-tag-remove (list my/org-focus-tag))
+               (message "Focus から外しました"))
+      (org-roam-tag-add (list my/org-focus-tag))
+      (message "Focus に入れました"))))
+
+(map! :leader :desc "Toggle focus file" "n p" #'my/org-toggle-focus)
+
+(defun my/org-agenda--file-title (item)
+  "agenda の ITEM があるファイルの #+title（無ければバッファ名）。"
+  (when-let ((m (get-text-property 0 'org-marker item)))
+    (with-current-buffer (marker-buffer m)
+      (or (vulpea-buffer-prop-get "title") (buffer-name)))))
+
 (defun my/org-agenda--done-ancestor-p ()
   "point の見出しの祖先に DONE / CANCELED があれば non-nil。"
   (save-excursion
@@ -170,6 +203,12 @@ Refer to `org-agenda-prefix-format' for more information."
        ("a" "Default agenda"
          (
            (todo "NEXT" ((org-agenda-overriding-header "\nNEXT")))
+           ;; my/org-toggle-focus で印をつけたファイルのタスクをファイルごとに出す
+           (tags-todo "@focus"
+             ((org-agenda-overriding-header "\nFocus")
+               (org-agenda-hide-tags-regexp "^@focus$")
+               (org-super-agenda-groups
+                 '((:auto-map my/org-agenda--file-title)))))
            ;; TODO 会議など、今日の calendar 表示
            (agenda ""
             (

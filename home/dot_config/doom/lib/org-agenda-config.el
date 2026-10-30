@@ -42,34 +42,72 @@
                             "")
                         ":" t)))
 
-(defun my/org-toggle-focus ()
-  "今のファイルを「次やること」の対象にする／外す（#+filetags の付け外し）。"
-  (interactive)
+(defun my/org--set-focus (on)
+  "今のファイルの #+filetags に `my/org-focus-tag' を ON なら付け、nil なら外す。"
   (unless (derived-mode-p 'org-mode)
     (user-error "org ファイルではありません"))
   (save-excursion
+    ;; ファイル先頭なら org-roam-tag-* が file-level node の #+filetags を触る
     (goto-char (point-min))
-    (if (my/org--focus-file-p)
-        (progn (org-roam-tag-remove (list my/org-focus-tag))
-               (message "Focus から外しました"))
-      (org-roam-tag-add (list my/org-focus-tag))
-      (message "Focus に入れました")))
+    (cond ((and on (not (my/org--focus-file-p)))
+           (org-roam-tag-add (list my/org-focus-tag)))
+          ((and (not on) (my/org--focus-file-p))
+           (org-roam-tag-remove (list my/org-focus-tag)))))
   ;; org-roam の DB は保存時に更新されるので、`my/org-focus-find' にすぐ出るよう保存する
-  (save-buffer))
+  (save-buffer)
+  (message (if on "Focus に入れました" "Focus から外しました")))
+
+(defun my/org-add-focus ()
+  "今のファイルを「次やること」の対象にする。"
+  (interactive)
+  (my/org--set-focus t))
+
+(defun my/org-remove-focus ()
+  "今のファイルを「次やること」の対象から外す。"
+  (interactive)
+  (my/org--set-focus nil))
+
+(defun my/org-toggle-focus ()
+  "今のファイルを「次やること」の対象にする／外す。"
+  (interactive)
+  (my/org--set-focus (not (my/org--focus-file-p))))
+
+(defun my/org--focus-node-p (node)
+  "NODE が `my/org-focus-tag' のついたファイル（level 0）なら non-nil。"
+  (and (= (org-roam-node-level node) 0)
+       (member my/org-focus-tag (org-roam-node-tags node))))
 
 (defun my/org-focus-find ()
   "`my/org-focus-tag' のついたファイルを選んで開く。"
   (interactive)
   (org-roam-node-visit
-   (org-roam-node-read nil
-                       (lambda (node)
-                         (and (= (org-roam-node-level node) 0)
-                              (member my/org-focus-tag (org-roam-node-tags node))))
-                       nil t "Focus: ")))
+   (org-roam-node-read nil #'my/org--focus-node-p nil t "Focus: ")))
 
 (map! :leader
       :desc "Toggle focus file" "n p" #'my/org-toggle-focus
       :desc "Find focus file" "n P" #'my/org-focus-find)
+
+(defun my/org-agenda-focus-files (&optional _match)
+  "agenda のブロックとして `my/org-focus-tag' のファイルへのリンクを 1 行ずつ出す。
+RET（`org-agenda-switch-to'）でそのファイルを開く。"
+  (org-agenda-prepare "Focus")
+  (insert (propertize "\nFocus" 'face 'org-agenda-structure) "\n")
+  (org-agenda-mark-header-line (point-min))
+  (dolist (node (sort (seq-filter #'my/org--focus-node-p (org-roam-node-list))
+                      (lambda (a b) (string< (org-roam-node-title a)
+                                             (org-roam-node-title b)))))
+    (let ((m (with-current-buffer (find-file-noselect (org-roam-node-file node))
+               (org-agenda-new-marker (point-min)))))
+      (insert (propertize (concat "  " (org-roam-node-title node))
+                          'org-marker m
+                          'org-hd-marker m
+                          'mouse-face 'highlight
+                          'help-echo (abbreviate-file-name (org-roam-node-file node)))
+              "\n")))
+  (add-text-properties (point-min) (point-max)
+                       `(org-agenda-type focus org-redo-cmd ,org-agenda-redo-command))
+  (org-agenda-finalize)
+  (setq buffer-read-only t))
 
 (defun my/org-agenda--file-title (item)
   "agenda の ITEM があるファイルの #+title（無ければバッファ名）。"
@@ -171,6 +209,9 @@ Refer to `org-agenda-prefix-format' for more information."
           (match-beginning 1)
           (match-end 1)))))
 
+  ;; @focus は印なので、継承された見出しを含めて agenda では表示しない
+  (setq org-agenda-hide-tags-regexp (concat "^" (regexp-quote my/org-focus-tag) "$"))
+
   (setq
     ;; org-agenda-skip-scheduled-if-done t
     ;; org-agenda-skip-deadline-if-done t
@@ -183,6 +224,12 @@ Refer to `org-agenda-prefix-format' for more information."
   (setq org-agenda-custom-commands
     '(
        ("A" "Archive DONE/CANCELED tasks" my/org-agenda-archive-done-tasks "")
+       ;; my/org-toggle-focus で印をつけたファイルのタスクをファイルごとに出す
+       ("f" "Focus tasks"
+         ((tags-todo "@focus"
+            ((org-agenda-overriding-header "Focus")
+              (org-super-agenda-groups
+                '((:auto-map my/org-agenda--file-title)))))))
        ("dt" "Done today"
          ((agenda ""
             (
@@ -217,12 +264,8 @@ Refer to `org-agenda-prefix-format' for more information."
        ("a" "Default agenda"
          (
            (todo "NEXT" ((org-agenda-overriding-header "\nNEXT")))
-           ;; my/org-toggle-focus で印をつけたファイルのタスクをファイルごとに出す
-           (tags-todo "@focus"
-             ((org-agenda-overriding-header "\nFocus")
-               (org-agenda-hide-tags-regexp "^@focus$")
-               (org-super-agenda-groups
-                 '((:auto-map my/org-agenda--file-title)))))
+           ;; my/org-toggle-focus で印をつけたファイルへのリンク。タスクは C-c a f
+           (my/org-agenda-focus-files "")
            ;; TODO 会議など、今日の calendar 表示
            (agenda ""
             (

@@ -14,6 +14,62 @@ dependencies:
     - anthropics/claude-plugins-official/plugins/skill-creator
     - GoogleChrome/modern-web-guidance
     - herdrdev/herdr/skills/herdr
+    - cursor/plugins/pstack/skills/architect
+    - cursor/plugins/pstack/skills/arena
+    - cursor/plugins/pstack/skills/automate-me
+    - cursor/plugins/pstack/skills/benchmark-checklist
+    - cursor/plugins/pstack/skills/blast-radius
+    - cursor/plugins/pstack/skills/bro
+    - cursor/plugins/pstack/skills/correct
+    - cursor/plugins/pstack/skills/create-formal-verification-skill
+    - cursor/plugins/pstack/skills/create-verification-skill
+    - cursor/plugins/pstack/skills/figure-it-out
+    - cursor/plugins/pstack/skills/how
+    - cursor/plugins/pstack/skills/in-your-own-words
+    - cursor/plugins/pstack/skills/interrogate
+    - cursor/plugins/pstack/skills/ketchup-video
+    - cursor/plugins/pstack/skills/ketchup
+    - cursor/plugins/pstack/skills/maintain-formal-verification-skill
+    - cursor/plugins/pstack/skills/maintain-verification-skill
+    - cursor/plugins/pstack/skills/make-bot-ui
+    - cursor/plugins/pstack/skills/no-comments
+    - cursor/plugins/pstack/skills/poteto-help
+    - cursor/plugins/pstack/skills/poteto-mode
+    - cursor/plugins/pstack/skills/principle-attack-the-premise
+    - cursor/plugins/pstack/skills/principle-boundary-discipline
+    - cursor/plugins/pstack/skills/principle-build-the-lever
+    - cursor/plugins/pstack/skills/principle-encode-lessons-in-structure
+    - cursor/plugins/pstack/skills/principle-exhaust-the-design-space
+    - cursor/plugins/pstack/skills/principle-experience-first
+    - cursor/plugins/pstack/skills/principle-explain-the-number
+    - cursor/plugins/pstack/skills/principle-fix-root-causes
+    - cursor/plugins/pstack/skills/principle-foundational-thinking
+    - cursor/plugins/pstack/skills/principle-guard-the-context-window
+    - cursor/plugins/pstack/skills/principle-laziness-protocol
+    - cursor/plugins/pstack/skills/principle-make-operations-idempotent
+    - cursor/plugins/pstack/skills/principle-migrate-callers-then-delete-legacy-apis
+    - cursor/plugins/pstack/skills/principle-minimize-reader-load
+    - cursor/plugins/pstack/skills/principle-model-the-domain
+    - cursor/plugins/pstack/skills/principle-never-block-on-the-human
+    - cursor/plugins/pstack/skills/principle-outcome-oriented-execution
+    - cursor/plugins/pstack/skills/principle-prove-it-works
+    - cursor/plugins/pstack/skills/principle-redesign-from-first-principles
+    - cursor/plugins/pstack/skills/principle-separate-before-serializing-shared-state
+    - cursor/plugins/pstack/skills/principle-sequence-verifiable-units
+    - cursor/plugins/pstack/skills/principle-subtract-before-you-add
+    - cursor/plugins/pstack/skills/principle-test-behavior-not-implementation
+    - cursor/plugins/pstack/skills/principle-type-system-discipline
+    - cursor/plugins/pstack/skills/recall
+    - cursor/plugins/pstack/skills/reflect
+    - cursor/plugins/pstack/skills/setup-pstack
+    - cursor/plugins/pstack/skills/sharpen
+    - cursor/plugins/pstack/skills/show-me-your-work
+    - cursor/plugins/pstack/skills/statechart
+    - cursor/plugins/pstack/skills/swarm
+    - cursor/plugins/pstack/skills/technical-writing
+    - cursor/plugins/pstack/skills/typescript-best-practices
+    - cursor/plugins/pstack/skills/unslop
+    - cursor/plugins/pstack/skills/why
   mcp: []
 includes: auto
 scripts: {}

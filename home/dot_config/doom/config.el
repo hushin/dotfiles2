@@ -168,12 +168,32 @@
 (after! org
   (load! "lib/notes-archive"))
 
+;; after! の中で束縛すると、Doom が org / org-roam を遅延読み込みするまで
+;; （起動後 20 秒以上）キーが無い。コマンドを autoload にして押したときに読む
+(autoload 'org-roam-buffer-toggle "org-roam" nil t)
+(autoload 'org-roam-dailies-map "org-roam-dailies" nil t 'keymap)
+(autoload 'org-roam-dailies-goto-previous-note "org-roam-dailies" nil t)
+(autoload 'org-roam-dailies-goto-next-note "org-roam-dailies" nil t)
+;; lib/org-db は after! org-roam で読むので、org-roam を読めば定義される
+(autoload 'my/db-open "org-roam" nil t)
+(autoload 'my/db-open-rez "org-roam" nil t)
+(map!
+  "C-c a" #'org-agenda
+  "C-c c" #'org-capture
+  "C-c j" #'org-journal-new-entry
+  "C-c n l" #'org-roam-buffer-toggle
+  "C-c n f" #'org-roam-node-find
+  "C-c l" #'org-roam-dailies-goto-today
+  "C-c d" #'org-roam-dailies-map
+  :n "[ D" #'org-roam-dailies-goto-previous-note
+  :n "] D" #'org-roam-dailies-goto-next-note
+  )
+;; org-roam のファイル群を database として見る
+(map! :leader
+      :desc "Database view" "n D" #'my/db-open
+      :desc "Resonance Calendar" "n R" #'my/db-open-rez)
+
 (after! org
-  (map!
-    "C-c a" #'org-agenda
-    "C-c c" #'org-capture
-    "C-c j" #'org-journal-new-entry
-    )
   (setq org-todo-keywords
     (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
              (sequence "WAITING(w/!)" "|" "CANCELED(c/!)"))))
@@ -238,12 +258,6 @@
 
 (after! org-roam
   (map!
-    "C-c n l" #'org-roam-buffer-toggle
-    "C-c n f" #'org-roam-node-find
-    "C-c l" #'org-roam-dailies-goto-today
-    "C-c d" #'org-roam-dailies-map
-    :n "[ D" #'org-roam-dailies-goto-previous-note
-    :n "] D" #'org-roam-dailies-goto-next-note
     :map org-mode-map
     "C-c n i" #'org-roam-node-insert
     "C-M-i" #'completion-at-point
@@ -277,11 +291,6 @@
   (load! "lib/weekly-review")
   (load! "lib/org-timestamp")
   (load! "lib/org-file-browser")
-
-  ;; org-roam のファイル群を database として見る
-  (map! :leader
-        :desc "Database view" "n D" #'my/db-open
-        :desc "Resonance Calendar" "n R" #'my/db-open-rez)
   )
 
 (after! org-roam-protocol

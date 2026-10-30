@@ -333,8 +333,7 @@
   (setq editorconfig-get-properties-function #'editorconfig-core-get-properties-hash))
 
 ;; r2-uploader (files.zatsuni.dev) に画像を上げて URL のリンクを挿入する。
-;; lib/r2-uploader.el は hushin-sandbox/r2-uploader の emacs/ からのコピー。起動時には読まず、
-;; コマンドを押したときに読む
+;; lib/r2-uploader.el は起動時には読まず、コマンドを押したときに読む
 (autoload 'r2-uploader-yank-image (file-name-concat doom-user-dir "lib/r2-uploader") nil t)
 (autoload 'r2-uploader-insert-file (file-name-concat doom-user-dir "lib/r2-uploader") nil t)
 (setq r2-uploader-base-url "https://files.zatsuni.dev")

@@ -40,7 +40,8 @@
 (defcustom r2-uploader-clipboard-command
   (cond
    ((eq system-type 'windows-nt)
-    "powershell -c Add-Type -AssemblyName System.Windows.Forms;$image = [Windows.Forms.Clipboard]::GetImage();$image.Save('%s', [System.Drawing.Imaging.ImageFormat]::Png)")
+    ;; No `$' and the whole script in double quotes, so cmd and bash both pass it through unchanged.
+    "powershell -NoProfile -Command \"Add-Type -AssemblyName System.Windows.Forms; [Windows.Forms.Clipboard]::GetImage().Save('%s', [System.Drawing.Imaging.ImageFormat]::Png)\"")
    ((executable-find "wl-paste")
     "wl-paste --type image/png > %s")
    ((executable-find "xclip")

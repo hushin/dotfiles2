@@ -136,7 +136,14 @@
   (defun advice:with-japanese-coding-system (orig-fun &rest args)
     (let ((coding-system-for-write 'cp932))
       (apply orig-fun args)))
-  (advice-add '+default/search-project :around 'advice:with-japanese-coding-system))
+  (advice-add '+default/search-project :around 'advice:with-japanese-coding-system)
+  ;; Windows の compile は stdin をパイプで開いたままにし、bin/doom は stdin が端末でないと EOF まで
+  ;; 読むので doom/reload が止まる。起動直後に EOF を送る
+  (defadvice! +doom-reload-close-stdin-a (fn &rest args)
+    :around #'doom/reload
+    (add-hook 'compilation-start-hook #'process-send-eof)
+    (unwind-protect (apply fn args)
+      (remove-hook 'compilation-start-hook #'process-send-eof))))
 
 (setq calendar-week-start-day 1)
 ;; Displaying week numbers in calendar

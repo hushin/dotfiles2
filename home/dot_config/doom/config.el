@@ -337,14 +337,39 @@
 (autoload 'r2-uploader-yank-image (file-name-concat doom-user-dir "lib/r2-uploader") nil t)
 (autoload 'r2-uploader-insert-file (file-name-concat doom-user-dir "lib/r2-uploader") nil t)
 (setq r2-uploader-base-url "https://files.zatsuni.dev")
-(after! org
-  (setq org-display-remote-inline-images 'cache))
 (map! :after org
       :map org-mode-map
       :localleader
       (:prefix ("a" . "attachments")
        :desc "Upload clipboard image (R2)" "y" #'r2-uploader-yank-image
        :desc "Upload file (R2)" "U" #'r2-uploader-insert-file))
+
+;; Org 9.8 の org-link-preview は :preview を持つリンク型しか表示せず、Doom の http(s) 用
+;; :image-data-fun はもう呼ばれない。画像 URL は doom-cache-dir に一度だけ落とし、file リンクと
+;; 同じ表示処理に渡す
+(defun +org-link-preview-url-image (ov path link)
+  (when (string-match-p (image-file-name-regexp) path)
+    (let* ((url (concat (org-element-property :type link) ":" path))
+           (file (file-name-concat doom-cache-dir "org-url-images"
+                                   (concat (md5 url) "." (file-name-extension path)))))
+      (unless (file-exists-p file)
+        (make-directory (file-name-directory file) t)
+        (condition-case err
+            (url-copy-file url file)
+          (error (message "Org image preview: %s: %s" url (error-message-string err))))
+        ;; 404 などで画像でない中身が保存されたら捨てる
+        (when (and (file-exists-p file) (not (image-type-from-file-header file)))
+          (delete-file file)))
+      (when (file-exists-p file)
+        (org-link-preview-file ov file link)))))
+(after! ol
+  (dolist (type '("http" "https"))
+    (org-link-set-parameters type :preview #'+org-link-preview-url-image)))
+;; Doom の RET などは旧 API の org-display-inline-images で画像を出すが、それは file / attachment
+;; リンクしか見ないので、:preview を使う org-link-preview-region に回す
+(defadvice! +org-display-inline-images-via-link-preview-a (&optional include-linked refresh beg end)
+  :override #'org-display-inline-images
+  (org-link-preview-region include-linked refresh beg end))
 
 ;; r2-uploader のトークンは 1Password の op://Personal/<host>/r2-uploader から読む。
 ;; ほかの auth-source の検索で op (と生体認証) が走らないよう、r2-uploader だけに絞る。

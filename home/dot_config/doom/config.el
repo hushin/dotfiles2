@@ -115,7 +115,6 @@
 (map! :n "x" 'delete-char)
 
 ;; leader key
-(add-hook! 'org-mode-hook #'+org-init-keybinds-h)
 (setq evil-snipe-override-evil-repeat-keys nil)
 (setq doom-localleader-key ",")
 (setq doom-localleader-alt-key "M-,")
@@ -251,6 +250,17 @@
     )
   (setq org-roam-completion-everywhere nil)
 
+  ;; 元実装は file-truename を 1 ファイル 2 回呼ぶ。Windows では 1 回 1ms 超かかり、
+  ;; 初回の org-roam-db-sync（agenda の Focus など）が org-roam-list-files で 8 秒止まる
+  (defadvice! my/org-roam-descendant-of-p-a (a b)
+    :override #'org-roam-descendant-of-p
+    (when (and a b)
+      (let ((a (replace-regexp-in-string "^\\([A-Za-z]\\):" 'downcase (expand-file-name a) t t))
+            (b (file-name-as-directory
+                (replace-regexp-in-string "^\\([A-Za-z]\\):" 'downcase (expand-file-name b) t t))))
+        (and (not (string= (file-name-as-directory a) b))
+             (string-prefix-p b a)))))
+
   (setq org-roam-node-display-template
     (format "%s ${doom-hierarchy:*} %s"
       (propertize "${doom-type:15}" 'face 'font-lock-keyword-face)
@@ -307,6 +317,11 @@
       (let ((org-download-screenshot-method org-download-screenshot-method))
         (org-id-get-create)
         (org-download-screenshot basename)))))
+
+;; Doom は editorconfig バイナリがあれば使う関数にするが、バイナリは入れておらず、
+;; ファイルを開くたびに長い PATH を executable-find する（agenda の初回で約 1 秒）
+(after! editorconfig
+  (setq editorconfig-get-properties-function #'editorconfig-core-get-properties-hash))
 
 (use-package! org-super-agenda
   :after org-agenda

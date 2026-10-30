@@ -332,6 +332,34 @@
 (after! editorconfig
   (setq editorconfig-get-properties-function #'editorconfig-core-get-properties-hash))
 
+;; r2-uploader (files.zatsuni.dev) に画像を上げて URL のリンクを挿入する。
+;; lib/r2-uploader.el は hushin-sandbox/r2-uploader の emacs/ からのコピー。起動時には読まず、
+;; コマンドを押したときに読む
+(autoload 'r2-uploader-yank-image (file-name-concat doom-user-dir "lib/r2-uploader") nil t)
+(autoload 'r2-uploader-insert-file (file-name-concat doom-user-dir "lib/r2-uploader") nil t)
+(setq r2-uploader-base-url "https://files.zatsuni.dev")
+(after! org
+  (setq org-display-remote-inline-images 'cache))
+(map! :after org
+      :map org-mode-map
+      :localleader
+      (:prefix ("a" . "attachments")
+       :desc "Upload clipboard image (R2)" "y" #'r2-uploader-yank-image
+       :desc "Upload file (R2)" "U" #'r2-uploader-insert-file))
+
+;; r2-uploader のトークンは 1Password の op://Personal/<host>/r2-uploader から読む。
+;; ほかの auth-source の検索で op (と生体認証) が走らないよう、r2-uploader だけに絞る。
+(use-package! auth-source-1password
+  :when (executable-find "op")
+  :after auth-source
+  :config
+  (setq auth-source-1password-vault "Personal"
+        auth-source-1password-construct-secret-reference
+        (lambda (_backend _type host user _port)
+          (when (equal user "r2-uploader")
+            (format "%s/%s/%s" auth-source-1password-vault host user))))
+  (auth-source-1password-enable))
+
 (use-package! org-super-agenda
   :after org-agenda
   :hook (org-agenda-mode . org-super-agenda-mode)

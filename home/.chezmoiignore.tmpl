@@ -29,3 +29,10 @@ Documents/
 {{ end }}
 
 symlink-src/
+
+{{- /* 暗号化した個人用ファイルは、age の秘密鍵があるマシンだけに置く(初回は鍵の取り出し後、もう一度 apply する) */}}
+{{- if not (stat (joinPath .chezmoi.homeDir ".config/chezmoi/key.txt")) }}
+.agents/skills/kakeibo-review
+{{- end }}
+.agents/skills/kakeibo-review/**/.DS_Store
+.agents/skills/kakeibo-review/.DS_Store

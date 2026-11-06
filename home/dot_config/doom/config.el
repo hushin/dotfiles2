@@ -200,6 +200,30 @@
       :desc "Database view" "n D" #'my/db-open
       :desc "Resonance Calendar" "n R" #'my/db-open-rez)
 
+(defvar my/org-auto-save--running nil
+  "`my/org-auto-save-buffers-h' の多重実行を防ぐフラグ。")
+
+(defun my/org-auto-save-buffers-h ()
+  "auto-save のタイミングで、確認なしに保存できる org バッファだけを保存する。
+`org-save-all-org-buffers' はディスク側が更新されたバッファで y-or-n-p を出し、
+その入力待ちの間に auto-save が再び走って再帰し、max-lisp-eval-depth に達する。"
+  (unless my/org-auto-save--running
+    (let ((my/org-auto-save--running t))
+      (dolist (buf (buffer-list))
+        (with-current-buffer buf
+          (when (and (derived-mode-p 'org-mode)
+                     buffer-file-name
+                     (buffer-modified-p))
+            (if (and (verify-visited-file-modtime buf)
+                     (file-writable-p buffer-file-name)
+                     ;; 他の Emacs がロックしていると確認が出る
+                     (memq (file-locked-p buffer-file-name) '(nil t)))
+                (let ((inhibit-message t))
+                  (with-demoted-errors "org auto-save: %S"
+                    (save-buffer)))
+              (message "org auto-save: %s はディスク側で変更されたため保存を見送りました"
+                       (buffer-name)))))))))
+
 (after! org
   (setq org-todo-keywords
     (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d)")
@@ -209,7 +233,7 @@
   (setq org-use-tag-inheritance "^@")
 
   ; auto save
-  (add-hook 'auto-save-hook 'org-save-all-org-buffers)
+  (add-hook 'auto-save-hook #'my/org-auto-save-buffers-h)
   ; 見出し入れるときは空行を入れない
   (setq org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
   ;; プロパティの許可値は lib/org-db-config.el の select 列から補完する

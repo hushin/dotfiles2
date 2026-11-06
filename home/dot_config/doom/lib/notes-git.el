@@ -231,18 +231,21 @@ CALLBACK は (EXIT-CODE STDOUT STDERR) を受ける。"
                           (my/notes-git--fail "commit" code out err))))))))))))))
 
 (defun my/notes-git--pull-flow ()
-  (my/notes-git--with-clean-tree
-    (lambda ()
-      (my/notes-git--run
-        '("pull" "--rebase")
-        (lambda (code out err)
-          (if (zerop code)
-              (progn
-                (my/notes-git--revert-buffers)
-                (when my/notes-git--pending-push
-                  (my/notes-git--schedule-push))
-                (my/notes-git--done))
-            (my/notes-git--fail-remote "pull --rebase" code out err)))))))
+  (if (my/notes-git--modified-buffers-p)
+      ;; 未保存の編集がある間は pull しない（編集中のファイルをディスク側で書き換えない）
+      (my/notes-git--done)
+    (my/notes-git--with-clean-tree
+      (lambda ()
+        (my/notes-git--run
+          '("pull" "--rebase")
+          (lambda (code out err)
+            (if (zerop code)
+                (progn
+                  (my/notes-git--revert-buffers)
+                  (when my/notes-git--pending-push
+                    (my/notes-git--schedule-push))
+                  (my/notes-git--done))
+              (my/notes-git--fail-remote "pull --rebase" code out err))))))))
 
 (defun my/notes-git--push-flow ()
   (my/notes-git--with-clean-tree

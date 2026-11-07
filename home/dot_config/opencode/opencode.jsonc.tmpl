@@ -23,6 +23,16 @@
         "type": "local",
         "command": ["npx", "@playwright/mcp@latest"],
       },
+      "browse": {
+        "type": "local",
+        "command": [
+          "{{ .chezmoi.homeDir }}/.local/bin/browse{{ if eq .chezmoi.os "windows" }}.exe{{ end }}",
+          "mcp",
+        ],
+        "environment": {
+          "OPENCODE_BROWSER_RUNTIME": "auto-update",
+        },
+      },
     },
   },
 }

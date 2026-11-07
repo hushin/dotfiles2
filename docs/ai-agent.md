@@ -108,3 +108,77 @@ browse settings
 ```sh
 browse uninstall
 ```
+
+## Google Workspace CLI (gws)
+
+Gmail などを CLI から操作するための `gws`。MCP サーバーではない（`gws mcp` は v0.8.0 で削除）。Google 公式サポート製品ではない点に注意。
+
+### インストール
+
+```powershell
+npm install -g --allow-scripts=@googleworkspace/cli @googleworkspace/cli
+gws --version
+```
+
+- npm 11 以降は postinstall script が既定でブロックされるため、バイナリを取得する `--allow-scripts` が必要
+- npm の global prefix は `%APPDATA%\npm` に固定済み（[Windows セットアップ](windows.md) の Node.js / npm を参照）
+- 更新も同じコマンドを再実行
+
+### OAuth クライアント
+
+GCP プロジェクトで Gmail API を有効化し、OAuth クライアント（デスクトップ アプリ）を作成しておく。
+
+- GCP プロジェクト: `hobby-487823`
+- OAuth クライアント: `gws CLI`（デスクトップ アプリ）
+- 1Password: `Personal/google-workspace-mcp`（username = client ID、password = client secret）
+- 同意画面: External / Testing、テストユーザーに使用する Gmail アカウントを追加
+
+初回ログイン時だけ 1Password から環境変数として注入する。
+
+```powershell
+op run --env-file="$HOME\.config\opencode\secrets.env" -- gws auth login --readonly --services gmail
+```
+
+- `--scopes gmail` は v0.22.5 ではサービス名を解決せず、そのまま OAuth スコープとして送るため使わない。`--services gmail` と `--readonly` を使う
+- ログイン後、gws が client ID/secret を `~/.config/gws/client_secret.json` に保存する（リポジトリには置かない）
+- トークンは `~/.config/gws/credentials.enc` に OS キーリングの鍵で AES-256-GCM 暗号化して保存される
+
+### 認証状態と動作確認
+
+```powershell
+gws auth status
+gws gmail users messages list --params '{\"userId\":\"me\",\"maxResults\":5}'
+gws gmail +triage --max 5
+```
+
+> [!NOTE]
+> PowerShell から `--params` に JSON を渡すときは、内側の `"` を `\"` でエスケープする（そのまま `'{"..."}'` だと quote が剥がれて `Invalid --params JSON` になる）。
+
+### 再認証と 7 日失効
+
+OAuth 同意画面が「テスト」のままだと、リフレッシュトークンが 7 日で失効する。`invalid_grant` などの認証エラーが出たら再ログインする。
+
+```powershell
+op run --env-file="$HOME\.config\opencode\secrets.env" -- gws auth login --readonly --services gmail
+```
+
+恒久的に避けるには OAuth 同意画面を「本番環境」に公開する（個人利用なら未確認のままでも使えるが、表示と制限は Google の画面に従う）。
+
+### Agent Skills
+
+chezmoi 管理: `home/dot_agents/skills/gws-*` → `~/.agents/skills/`。
+
+- `gws-shared`: 認証・グローバルフラグ・セキュリティ規則
+- `gws-gmail`: Gmail API 全体
+- `gws-gmail-triage`: 未読サマリー（`+triage`）
+- `gws-gmail-read`: 本文・ヘッダー抽出（`+read`）
+
+追加で取得する場合:
+
+```powershell
+npx skills add https://github.com/googleworkspace/cli/tree/main/skills/gws-gmail -g --copy -y
+chezmoi add --recursive ~/.agents/skills/gws-gmail
+```
+
+送信・削除などの書き込み系（`gws-gmail-send` など）は、読み取り運用が安定してから追加する。
+

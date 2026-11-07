@@ -8,6 +8,13 @@
 curl -fsSL https://pi.dev/install.sh | sh
 ```
 
+設定ファイルは chezmoi 管理（`~/.pi/agent/`）。
+
+- MCP サーバーは `~/.pi/agent/mcp.json`（`home/dot_pi/agent/mcp.json.tmpl` から生成）
+- `browse` の `command` はテンプレートで `~/.local/bin/browse`（Windows は `browse.exe`）に展開される
+- pi は `command` / `args` / `cwd` の先頭 `~/` をホームとして展開するため、opencode と違って絶対パスにしなくてよい
+- セッション起動中に MCP 設定を変えた場合は `/reload`（または再起動）が必要
+
 ## OpenCode
 
 ```sh
@@ -103,6 +110,8 @@ browse install   # 拡張機能の再ペアリング
 ```
 
 ### 他のエージェントにも追加
+
+pi は `~/.pi/agent/mcp.json` を chezmoi で管理しているので、`browse install` は不要（インストーラの自動登録は pi に対応していない）。
 
 ```sh
 browse install --agent claude

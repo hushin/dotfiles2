@@ -26,8 +26,9 @@
 (defvar my/notes-git-push-idle-delay 90
   "保存後、push までの無操作時間（秒）。")
 
-(defvar my/notes-git-commit-delay 5
-  "保存後、コミットまでの待ち時間（秒）。連続保存をまとめる。")
+(defvar my/notes-git-commit-delay 30
+  "保存後、コミットするまでの無操作時間（秒）。
+org は数秒ごとに自動保存されるので、手が止まってからまとめてコミットする。")
 
 (defvar my/notes-git-transient-error-regexp
   (regexp-opt '("Could not read from remote repository"
@@ -302,11 +303,12 @@ CALLBACK は (EXIT-CODE STDOUT STDERR) を受ける。"
       (message "notes-git: %d 個のバッファを読み直しました" reverted))))
 
 (defun my/notes-git--schedule-commit ()
-  (when (timerp my/notes-git--commit-timer)
-    (cancel-timer my/notes-git--commit-timer))
-  (setq my/notes-git--commit-timer
-        (run-with-timer my/notes-git-commit-delay nil
-                        #'my/notes-git--commit-now)))
+  ;; アイドルタイマーは、無操作時間がしきい値に達した時点で発火する。
+  ;; 既に予約済みなら、そのまま次の無操作を待てばよい。
+  (unless (timerp my/notes-git--commit-timer)
+    (setq my/notes-git--commit-timer
+          (run-with-idle-timer my/notes-git-commit-delay nil
+                               #'my/notes-git--commit-now))))
 
 (defun my/notes-git--commit-now ()
   (setq my/notes-git--commit-timer nil)

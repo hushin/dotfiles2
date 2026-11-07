@@ -232,8 +232,13 @@
   ; タグが子見出しに継承されるのを防ぐ( "@" 始まりのタグは例外)
   (setq org-use-tag-inheritance "^@")
 
-  ; auto save
+  ; auto save: 3 秒手が止まったら org バッファを保存する
   (add-hook 'auto-save-hook #'my/org-auto-save-buffers-h)
+  (defvar my/org-auto-save--idle-timer nil)
+  (when (timerp my/org-auto-save--idle-timer)
+    (cancel-timer my/org-auto-save--idle-timer))
+  (setq my/org-auto-save--idle-timer
+        (run-with-idle-timer 3 t #'my/org-auto-save-buffers-h))
   ; 見出し入れるときは空行を入れない
   (setq org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
   ;; プロパティの許可値は lib/org-db-config.el の select 列から補完する

@@ -157,6 +157,26 @@ gws --version
 - npm の global prefix は `%APPDATA%\npm` に固定済み（[Windows セットアップ](windows.md) の Node.js / npm を参照）
 - 更新も同じコマンドを再実行
 
+#### WSL / Linux
+
+```sh
+npm install -g --allow-scripts=@googleworkspace/cli @googleworkspace/cli
+gws --version
+```
+
+- mise 管理の node（`node = "lts"`）側に入る。node のバージョンを切り替えると `gws is not provided by the active node` になるので、その node で入れ直す
+- OAuth クライアントは Windows 側の `%USERPROFILE%\.config\gws\client_secret.json` を `~/.config/gws/` にコピーしてもよいし、WSL から `op.exe` で取り出してもよい
+- `op` は WSL から `op.exe`（`WinGet\Links` 経由で PATH 済み）として呼べる。ただし `op.exe run` は Windows プロセスとして起動するため WSL の `gws` は渡せない。`op.exe read` で値を取って環境変数に入れる（1Password デスクトップのロック解除が必要）
+
+```sh
+export GOOGLE_WORKSPACE_CLI_CLIENT_ID="$(op.exe read 'op://Personal/google-workspace-mcp/username')"
+export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(op.exe read 'op://Personal/google-workspace-mcp/password')"
+gws auth login --readonly --services gmail
+```
+
+- `GOOGLE_WORKSPACE_CLI_CLIENT_ID` / `GOOGLE_WORKSPACE_CLI_CLIENT_SECRET` があれば `client_secret.json` 無しでもログインできる（ログイン時に `~/.config/gws/client_secret.json` が作られる）
+- `gws auth login` は `http://localhost:<port>` でコールバックを待つ。WSL のブラウザが開かない場合は、表示された URL を Windows 側のブラウザで開く
+
 ### OAuth クライアント
 
 GCP プロジェクトで Gmail API を有効化し、OAuth クライアント（デスクトップ アプリ）を作成しておく。
@@ -175,6 +195,7 @@ op run --env-file="$HOME\.config\opencode\secrets.env" -- gws auth login --reado
 - `--scopes gmail` は v0.22.5 ではサービス名を解決せず、そのまま OAuth スコープとして送るため使わない。`--services gmail` と `--readonly` を使う
 - ログイン後、gws が client ID/secret を `~/.config/gws/client_secret.json` に保存する（リポジトリには置かない）
 - トークンは `~/.config/gws/credentials.enc` に OS キーリングの鍵で AES-256-GCM 暗号化して保存される
+- WSL 側の鍵は `~/.config/gws/.encryption_key`（ファイル）。Windows 側の `credentials.enc` は復号できないので、WSL では別途ログインが必要
 
 ### 認証状態と動作確認
 
@@ -184,8 +205,16 @@ gws gmail users messages list --params '{\"userId\":\"me\",\"maxResults\":5}'
 gws gmail +triage --max 5
 ```
 
+```sh
+# WSL / Linux (bash) は JSON をそのまま渡せる
+gws gmail users messages list --params '{"userId":"me","maxResults":5}'
+```
+
 > [!NOTE]
 > PowerShell から `--params` に JSON を渡すときは、内側の `"` を `\"` でエスケープする（そのまま `'{"..."}'` だと quote が剥がれて `Invalid --params JSON` になる）。
+
+> [!NOTE]
+> `gws auth status` の `token_error: "The OAuth client was deleted."` は、保存済み `client_secret.json` の OAuth クライアントが GCP 側で削除された状態。`client_secret.json` を差し替えて `gws auth login` し直す。
 
 ### 再認証と 7 日失効
 
@@ -193,6 +222,13 @@ OAuth 同意画面が「テスト」のままだと、リフレッシュトー�
 
 ```powershell
 op run --env-file="$HOME\.config\opencode\secrets.env" -- gws auth login --readonly --services gmail
+```
+
+```sh
+# WSL / Linux は op.exe read で環境変数に入れてから実行
+export GOOGLE_WORKSPACE_CLI_CLIENT_ID="$(op.exe read 'op://Personal/google-workspace-mcp/username')"
+export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(op.exe read 'op://Personal/google-workspace-mcp/password')"
+gws auth login --readonly --services gmail
 ```
 
 恒久的に避けるには OAuth 同意画面を「本番環境」に公開する（個人利用なら未確認のままでも使えるが、表示と制限は Google の画面に従う）。

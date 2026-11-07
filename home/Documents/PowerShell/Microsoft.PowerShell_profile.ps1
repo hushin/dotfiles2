@@ -2,6 +2,12 @@
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 
+# mise: 対話シェルでは実際のツールの bin を PATH に入れる。
+# npm のグローバル bin は node.exe を PATH から探すため、shim だけでは動かない。
+if (-not $env:MISE_SHELL -and (Get-Command mise -ErrorAction SilentlyContinue)) {
+    (&mise activate pwsh) | Out-String | Invoke-Expression
+}
+
 $env:FZF_DEFAULT_COMMAND = 'rg -g "" --hidden --ignore ".git"'
 $env:FZF_DEFAULT_OPTS = "--height 70% --layout=reverse --border --ansi --inline-info"
 

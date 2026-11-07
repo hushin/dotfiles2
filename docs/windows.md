@@ -45,6 +45,30 @@ my-setup.ps1 setup-project-backup
 - `RESTIC_OP_REF` 環境変数で secret reference を一時的に上書きできます。
 - `password.dpapi` が壊れた・別ユーザーで作られた場合は `sync-restic-password.ps1` で作り直せます（`-Clear` で削除のみ）。
 
+## Node.js / npm
+
+Node.js は mise 管理。PowerShell プロファイルで `mise activate pwsh` を有効にしている（`home/Documents/PowerShell/Microsoft.PowerShell_profile.ps1`）。
+
+- 対話シェルでは実体の `node.exe` が PATH に入る。npm のグローバル bin（`.ps1` シム）は `node.exe` を PATH から探すため、mise の shim だけでは動かない
+- プロファイルを読まない GUI アプリ向けに `%LOCALAPPDATA%\mise\shims` もユーザー PATH に追加済み
+
+### npm install -g
+
+`~/.npmrc`（chezmoi: `home/dot_npmrc.tmpl`）で Windows のみ prefix を固定している。
+
+```
+prefix=C:/Users/<user>/AppData/Roaming/npm
+```
+
+- Node.js のバージョンを上げてもグローバル CLI が残る
+- `%APPDATA%\npm` はユーザー PATH に追加済み（`home/.chezmoiscripts/1_windows/run_onchange_after_06_npm_global_path.ps1`）
+- Node.js のバージョンごとに入れ直したい CLI は `mise use -g npm:<package>` を使う（mise の npm backend。グローバル設定に記録され、shim が作られる）
+
+> [!NOTE]
+> mise の `node.npm_shim`（`npm install -g` 後の自動 `mise reshim`）は Windows では無効。prefix を固定しているため reshim は不要。
+>
+> npm 11 以降は postinstall script が既定でブロックされる。必要な場合だけ `npm install -g --allow-scripts=<package> <package>` を使う。
+
 ## WSL
 
 ref. [WSL のインストール | Microsoft Learn](https://learn.microsoft.com/ja-jp/windows/wsl/install)

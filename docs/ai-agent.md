@@ -59,6 +59,30 @@ Chrome に拡張機能が入っていない場合は、開いたページ（Chro
 > `~/.config/opencode/opencode.jsonc` は chezmoi 管理。インストーラは Windows 固定パス（`C:\Users\...`）を書き込むが、テンプレート側に browse のエントリを含めてあるので、インストール後に `chezmoi apply --force ~/.config/opencode/opencode.jsonc` でテンプレートの内容（`.chezmoi.homeDir` 由来のパス）に戻す。
 > 再度 `browse install` を実行しても、既存の `browse` エントリは「different server」として変更されない。
 
+### WSL から Windows の Chrome を使う
+
+WSL に Linux の Chrome が入っていると、`browse install` / `browse extension` はそちらを開こうとする。実際の操作対象は relay につながった Chrome 拡張なので、relay を Windows 側に 1 つだけ置いて WSL から共有する。
+
+| 役割 | 実体 | chezmoi |
+| --- | --- | --- |
+| relay と拡張機能のペアリング | Windows (`browse.exe serve`) | `home/AppData/Roaming/Microsoft/Windows/readonly_Start Menu/readonly_Programs/readonly_Startup/browse-relay.vbs` |
+| relay トークンの同期 | WSL (`~/.local/share/browse/relay-token`) | `home/.chezmoiscripts/2_wsl/run_always_after_02_browse-relay-token.sh` |
+
+- Windows はログオン時に relay を非表示で自動起動する（`%USERPROFILE%\.local\bin\browse.exe serve`）
+- WSL は mirrored ネットワークで `127.0.0.1:19988` を共有し、Windows 側の `relay-token` を `chezmoi apply` のたびに同期する
+
+初回の順番:
+
+1. Windows: `browse install`（Chrome 拡張とペアリング）
+2. WSL: `browse install --no-open`（MCP 登録のみ。Linux のブラウザを開かない）
+3. WSL: `chezmoi apply`（relay トークンを同期）
+4. WSL: `browse status` で `Relay: http://127.0.0.1:19988` と `Extension: connected` を確認
+
+> [!WARNING]
+> WSL で `browse relay restart` を実行しない。Windows の relay を止めて WSL 側に別 relay を立ててしまい、拡張機能の再ペアリングが必要になる。再起動は Windows のターミナルで `browse relay restart`。
+>
+> Windows 側の browse を再インストールしてトークンが変わった場合は、WSL で `chezmoi apply` すれば再同期される。
+
 ### 動作確認
 
 ```sh

@@ -165,12 +165,18 @@ gws --version
 ```
 
 - mise 管理の node（`node = "lts"`）側に入る。node のバージョンを切り替えると `gws is not provided by the active node` になるので、その node で入れ直す
-- OAuth クライアントは Windows 側の `%USERPROFILE%\.config\gws\client_secret.json` を `~/.config/gws/` にコピーしてもよいし、WSL から `op.exe` で取り出してもよい
-- `op` は WSL から `op.exe`（`WinGet\Links` 経由で PATH 済み）として呼べる。ただし `op.exe run` は Windows プロセスとして起動するため WSL の `gws` は渡せない。`op.exe read` で値を取って環境変数に入れる（1Password デスクトップのロック解除が必要）
+- OAuth クライアントは Windows 側の `%USERPROFILE%\.config\gws\client_secret.json` を `~/.config/gws/` にコピーしてもよいし、WSL から `ksec` で取り出してもよい（[ksec](./ksec.md)）
+- `op.exe run` は Windows プロセスとして起動するため WSL の `gws` は渡せない。`op.exe read` も 1Password アプリのオートロック（既定 10 分）に追随し、間隔をあけるたびに PIN を要求される
+- WSL では **初回だけ** `ksec from-op` で取り出し、以後は `ksec get`（PIN なし）を環境変数に入れる
 
 ```sh
-export GOOGLE_WORKSPACE_CLI_CLIENT_ID="$(op.exe read 'op://Personal/google-workspace-mcp/username')"
-export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(op.exe read 'op://Personal/google-workspace-mcp/password')"
+# 初回だけ。このときだけ 1Password のロック解除を求められる
+ksec from-op GWS_CLIENT_ID     'op://Personal/google-workspace-mcp/username'
+ksec from-op GWS_CLIENT_SECRET 'op://Personal/google-workspace-mcp/password'
+
+# 以後は PIN 入力なしで読める
+export GOOGLE_WORKSPACE_CLI_CLIENT_ID="$(ksec get GWS_CLIENT_ID)"
+export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(ksec get GWS_CLIENT_SECRET)"
 gws auth login --readonly --services gmail
 ```
 
@@ -225,9 +231,9 @@ op run --env-file="$HOME\.config\opencode\secrets.env" -- gws auth login --reado
 ```
 
 ```sh
-# WSL / Linux は op.exe read で環境変数に入れてから実行
-export GOOGLE_WORKSPACE_CLI_CLIENT_ID="$(op.exe read 'op://Personal/google-workspace-mcp/username')"
-export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(op.exe read 'op://Personal/google-workspace-mcp/password')"
+# WSL / Linux は ksec から環境変数に入れてから実行（初回は ksec from-op で登録）
+export GOOGLE_WORKSPACE_CLI_CLIENT_ID="$(ksec get GWS_CLIENT_ID)"
+export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(ksec get GWS_CLIENT_SECRET)"
 gws auth login --readonly --services gmail
 ```
 

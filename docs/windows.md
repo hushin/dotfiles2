@@ -37,6 +37,7 @@ my-setup.ps1 setup-project-backup
 - パスワードは `~/.config/restic/password.dpapi` に Windows DPAPI (CurrentUser) で暗号化してキャッシュされます。同じ Windows ユーザーでのみ復号でき、平文では保存されません。
 - 1Password CLI (`op`) がインストールされ、1Password アプリとの CLI 連携が有効で、ロック解除されている必要があります。
 - 1Password のアプリ連携は約 10 分で再認証を要求します。30 分ごとのスケジュールタスクから毎回 `op` を呼ぶと Windows Hello のダイアログが出続けるため、バックアップはキャッシュだけを使います。
+- WSL 側で同じ問題を避けるには `ksec`（DPAPI）を使います（[ksec](./ksec.md)）。
 - 1Password 側でパスワードを変更した場合は、キャッシュを更新します（このときだけ認証ダイアログが出ます）。
   ```powershell
   sync-restic-password.ps1

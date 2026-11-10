@@ -1,0 +1,216 @@
+#!/usr/bin/env bash
+# ksec -- DPAPI-backed local secret store for WSL2
+#
+# macOS のログイン Keychain 相当。Windows の DPAPI (ユーザーログオンに紐づく鍵) で
+# 暗号化するので、読み出し時にパスフレーズや PIN は一切要求されない。
+# 逆に、blob を別マシン・別ユーザーへコピーしても復号できない。
+#
+# --- usage ---
+#   ksec set NAME                  # エコーなしプロンプトで入力
+#   echo "$TOKEN" | ksec set NAME  # パイプでも可 (末尾改行も保持)
+#   ksec get NAME                  # 標準出力へ (既定で末尾に改行を 1 つ付ける)
+#   ksec get -n NAME               # 改行を付けずに出す
+#   ksec list                      # 登録名の一覧
+#   ksec has NAME                  # 存在チェック (終了コードのみ)
+#   ksec rm NAME                   # 削除
+#   ksec from-op NAME 'op://vault/item/field'
+#                                  # 1Password から 1 回だけ読んで保存 (移行用)
+#   ksec doctor                    # interop と保存領域の健全性チェック
+#
+# 保存先: ~/.local/share/ksec/NAME.dpapi  (KSEC_DIR で変更可)
+# 前提: WSL2 + Windows interop (powershell.exe, wslpath)
+# 詳細: docs/ksec.md
+
+set -euo pipefail
+
+DIR="${KSEC_DIR:-$HOME/.local/share/ksec}"
+LIB="$DIR/.lib"
+PS="${KSEC_PS:-powershell.exe}"
+
+die() { printf 'ksec: %s\n' "$*" >&2; exit 1; }
+
+usage() {
+  sed -n '/^# --- usage ---$/,/^# 保存先/p' "$0" |
+    sed -e '1d' -e '$d' -e 's/^# \{0,1\}//'
+}
+
+need_ps() {
+  command -v "$PS" >/dev/null 2>&1 ||
+    die "powershell.exe が見つかりません。ksec は WSL2 専用です (Windows DPAPI を使用)"
+  command -v wslpath >/dev/null 2>&1 || die "wslpath が見つかりません"
+}
+
+is_wsl() { grep -qi microsoft /proc/version 2>/dev/null; }
+
+# PowerShell 用の変換スクリプトを初回にだけ書き出す (秘密情報ではない)
+ensure_lib() {
+  mkdir -p "$DIR" "$LIB"
+  chmod 700 "$DIR" "$LIB"
+
+  if [ ! -f "$LIB/encrypt.ps1" ]; then
+    cat >"$LIB/encrypt.ps1" <<'PS1'
+$ErrorActionPreference = 'Stop'
+$b64 = [Console]::In.ReadToEnd()
+$b64 = ($b64 -replace '\s', '')
+if ([string]::IsNullOrEmpty($b64)) { Write-Error 'empty input'; exit 2 }
+$utf8  = [Text.Encoding]::UTF8
+$plain = $utf8.GetString([Convert]::FromBase64String($b64))
+$sec   = ConvertTo-SecureString $plain -AsPlainText -Force
+[Console]::Out.Write(($sec | ConvertFrom-SecureString))
+PS1
+  fi
+
+  if [ ! -f "$LIB/decrypt.ps1" ]; then
+    cat >"$LIB/decrypt.ps1" <<'PS1'
+$ErrorActionPreference = 'Stop'
+$hex = (Get-Content -LiteralPath $args[0] -Raw)
+if ([string]::IsNullOrWhiteSpace($hex)) { Write-Error 'empty blob'; exit 2 }
+$sec = ConvertTo-SecureString $hex.Trim()
+$ptr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec)
+try {
+  $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
+  $b64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($plain))
+  [Console]::Out.Write($b64)
+} finally {
+  [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr)
+}
+PS1
+  fi
+}
+
+valid_name() { [[ "${1:-}" =~ ^[A-Za-z0-9._-]+$ ]] || die "名前は [A-Za-z0-9._-] のみ: '$1'"; }
+
+cmd_set() {
+  local name="${1:-}" value
+  valid_name "$name"
+  local target="$DIR/$name.dpapi" tmp
+  tmp="$(mktemp "${TMPDIR:-/tmp}/ksec.XXXXXX")"
+  chmod 600 "$tmp"
+  trap 'rm -f "$tmp"' EXIT
+
+  if [ -t 0 ]; then
+    read -rsp "value for $name: " value
+    printf '\n' >&2
+    [ -n "$value" ] || die "空の値は保存しません"
+    printf '%s' "$value" | base64 -w0 >"$tmp"
+  else
+    # パイプ入力は末尾改行も含めて byte 単位でそのまま保持する
+    base64 -w0 >"$tmp"
+    [ -s "$tmp" ] || die "空の値は保存しません"
+  fi
+
+  local blob
+  blob="$("$PS" -NoProfile -NonInteractive -ExecutionPolicy Bypass \
+    -File "$(wslpath -w "$LIB/encrypt.ps1")" <"$tmp" | tr -d '\r\n')"
+
+  [[ "$blob" =~ ^[0-9a-f]+$ ]] || die "暗号化に失敗しました"
+
+  (umask 077; printf '%s\n' "$blob" >"$target.tmp")
+  mv -f "$target.tmp" "$target"
+  printf 'stored: %s\n' "$name" >&2
+}
+
+cmd_get() {
+  local name="" newline=1
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      -n|--no-newline) newline=0 ;;
+      -h|--help) usage; exit 0 ;;
+      -*) die "unknown flag: $1" ;;
+      *) name="$1" ;;
+    esac
+    shift
+  done
+  valid_name "$name"
+  local target="$DIR/$name.dpapi"
+  [ -f "$target" ] || die "未登録: $name"
+
+  local b64
+  b64="$("$PS" -NoProfile -NonInteractive -ExecutionPolicy Bypass \
+    -File "$(wslpath -w "$LIB/decrypt.ps1")" "$(wslpath -w "$target")" | tr -d '\r\n')"
+  [ -n "$b64" ] || die "復号に失敗: $name"
+
+  if [ "$newline" -eq 1 ]; then
+    printf '%s' "$b64" | base64 -d
+    printf '\n'
+  else
+    printf '%s' "$b64" | base64 -d
+  fi
+}
+
+cmd_list() {
+  [ -d "$DIR" ] || return 0
+  local f n any=0
+  for f in "$DIR"/*.dpapi; do
+    [ -e "$f" ] || continue
+    n="$(basename "$f" .dpapi)"
+    any=1
+    printf '%s\n' "$n"
+  done
+  [ "$any" -eq 1 ] || printf '(empty)\n' >&2
+}
+
+cmd_has() { valid_name "${1:-}"; [ -f "$DIR/$1.dpapi" ]; }
+
+cmd_rm() {
+  valid_name "${1:-}"
+  [ -f "$DIR/$1.dpapi" ] || die "未登録: $1"
+  rm -f "$DIR/$1.dpapi"
+  printf 'removed: %s\n' "$1" >&2
+}
+
+# 1Password からの移行用。op のロック解除を 1 回だけ要求する。
+cmd_from_op() {
+  local name="${1:-}" ref="${2:-}"
+  valid_name "$name"
+  [ -n "$ref" ] || die "usage: ksec from-op NAME 'op://vault/item/field'"
+
+  local opbin
+  for opbin in op.exe op; do
+    command -v "$opbin" >/dev/null 2>&1 && break
+    opbin=""
+  done
+  [ -n "$opbin" ] || die "1Password CLI (op / op.exe) が見つかりません"
+
+  printf '1Password から読み出します (ロック中なら解除を求められます): %s\n' "$ref" >&2
+  "$opbin" read --no-newline "$ref" | cmd_set "$name"
+}
+
+cmd_doctor() {
+  local ng=0
+  printf 'wsl        : %s\n' "$(is_wsl && echo yes || echo 'no (WSL2 専用)')"
+  printf 'powershell : %s\n' "$(command -v "$PS" 2>/dev/null || echo MISSING)"
+  printf 'wslpath    : %s\n' "$(command -v wslpath 2>/dev/null || echo MISSING)"
+  printf 'store      : %s\n' "$DIR"
+
+  if ! need_ps 2>/dev/null; then
+    printf 'round-trip : SKIP (前提コマンドが無い)\n'
+    return 1
+  fi
+
+  ensure_lib
+  local probe="probe-$$-$(date +%s)" got=""
+  printf '%s' "$probe" | cmd_set __doctor__ 2>/dev/null || ng=1
+  got="$(cmd_get -n __doctor__ 2>/dev/null || true)"
+  rm -f "$DIR/__doctor__.dpapi"
+
+  if [ "$got" = "$probe" ]; then
+    printf 'round-trip : ok (暗号化/復号に成功)\n'
+  else
+    printf 'round-trip : NG (DPAPI が使えません)\n'
+    ng=1
+  fi
+  return "$ng"
+}
+
+case "${1:-}" in
+  set)     need_ps; ensure_lib; shift; cmd_set "$@" ;;
+  get)     need_ps; ensure_lib; shift; cmd_get "$@" ;;
+  list|ls) cmd_list ;;
+  has)     cmd_has "${2:-}" ;;
+  rm|del)  cmd_rm "${2:-}" ;;
+  from-op) need_ps; ensure_lib; shift; cmd_from_op "$@" ;;
+  doctor)  cmd_doctor ;;
+  -h|--help|help|"") usage ;;
+  *) die "unknown command: $1 (ksec --help)" ;;
+esac

@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+# jsearch — Jina AI web search (s.jina.ai).
+#
+# Key source (first hit wins):
+#   1. $JINA_API_KEY
+#   2. ksec (WSL の Windows DPAPI。解錠も PIN も不要)  ← 通常はこれ
+#   3. 1Password CLI on demand (may prompt)
+#
+# --- usage ---
+#   jsearch <query...>              search; titles + URLs + snippets (no page content)
+#   jsearch -c|--content <query...> search and inline page content
+#   jsearch --help                  show this help
+#
+# Overrides:
+#   JINA_KSEC_NAME     ksec entry name (default: JINA_API_KEY)
+#   JINA_OP_REF        1Password reference (default: op://Personal/JINA_API_KEY/password)
+#   JINA_RESPOND_WITH  X-Respond-With value (default: no-content; empty = Jina default)
+#
+# 1Password から初回だけ移行する:
+#   ksec from-op JINA_API_KEY 'op://Personal/JINA_API_KEY/password'
+#
+# The key is never echoed and never placed in curl's argv: it is passed through
+# a stdin config (-K -).
+
+set -euo pipefail
+
+KSEC_NAME="${JINA_KSEC_NAME:-JINA_API_KEY}"
+OP_REF="${JINA_OP_REF:-op://Personal/JINA_API_KEY/password}"
+RESPOND_WITH="${JINA_RESPOND_WITH:-no-content}"
+
+die() { printf 'jsearch: %s\n' "$*" >&2; exit 2; }
+
+usage() {
+  sed -n '/^# --- usage ---$/,/^# 1Password から初回だけ移行する:/p' "$0" |
+    sed -e '1d' -e '$d' -e 's/^# \{0,1\}//'
+}
+
+case "${1:-}" in
+  -h|--help) usage; exit 0 ;;
+  -c|--content) RESPOND_WITH=""; shift ;;
+esac
+
+[ $# -ge 1 ] || die "使い方: jsearch [-c|--content] <query...>"
+
+strip_key() { tr -d '\r\n' | tr -cd 'A-Za-z0-9._~-'; }
+
+key=""
+if [ -n "${JINA_API_KEY:-}" ]; then
+  key="$(printf '%s' "$JINA_API_KEY" | strip_key)"
+  src="\$JINA_API_KEY"
+elif command -v ksec >/dev/null 2>&1 && ksec has "$KSEC_NAME" 2>/dev/null; then
+  key="$(ksec get -n "$KSEC_NAME" | strip_key)"
+  src="ksec:$KSEC_NAME"
+else
+  if command -v op.exe >/dev/null 2>&1; then
+    op="$(command -v op.exe)"
+  elif command -v op >/dev/null 2>&1; then
+    op="$(command -v op)"
+  else
+    die "Jina API キーが見つかりません。登録: ksec from-op $KSEC_NAME '$OP_REF'"
+  fi
+  # The desktop app may be locked; op.exe then waits for an unlock prompt.
+  key="$(timeout 90 "$op" read "$OP_REF" 2>/dev/null | strip_key || true)"
+  src="$OP_REF"
+fi
+
+[ -n "$key" ] || die "Jina API キーを取得できませんでした ($src)。登録: ksec from-op $KSEC_NAME '$OP_REF'"
+
+encoded="$(jq -rn --arg q "$*" '$q|@uri')"
+
+args=(-fsSL --max-time 90 -H 'Accept: text/plain')
+[ -n "$RESPOND_WITH" ] && args+=(-H "X-Respond-With: $RESPOND_WITH")
+
+printf 'header = "Authorization: Bearer %s"\n' "$key" \
+  | curl "${args[@]}" -K - "https://s.jina.ai/${encoded}"

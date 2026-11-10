@@ -69,6 +69,13 @@ export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(ksec get GWS_CLIENT_SECRET)"
 ksec get GITHUB_TOKEN | clip.exe
 ```
 
+## このリポジトリでの登録
+
+| name | 取得元 | 使う側 |
+|---|---|---|
+| `GWS_CLIENT_ID` / `GWS_CLIENT_SECRET` | `op://Personal/google-workspace-mcp/{username,password}` | gws の再ログイン（[ai-agent.md](./ai-agent.md)） |
+| `JINA_API_KEY` | `op://Personal/JINA_API_KEY/password` | `~/bin/jsearch`（`$JINA_API_KEY` → ksec → `op` の順に解決） |
+
 ## 1Password からの移行
 
 ```sh

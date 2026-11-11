@@ -1,0 +1,20 @@
+{
+  "name": "dsh-profile-web",
+  "private": true,
+  "dsh": {
+    "profile": {
+      "bundles": [
+        "@deepseek-ai/dsh-base",
+        "@deepseek-ai/dsh-web-app",
+        "dsh-edit-last",
+        "@hushin/dsh-browse-mcp",
+        "dsh-reply-hint"
+      ]
+    }
+  },
+  "dependencies": {
+    "@hushin/dsh-browse-mcp": "link:~/.dsh/plugins/dsh-browse-mcp",
+    "dsh-edit-last": "link:~/.dsh/plugins/dsh-edit-last",
+    "dsh-reply-hint": "link:~/.dsh/plugins/dsh-reply-hint"
+  }
+}

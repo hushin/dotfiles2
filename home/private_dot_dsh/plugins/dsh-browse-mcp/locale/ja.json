@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Browse MCP",
+    "description": "ローカルの browse MCP サーバーを接続し、ペアリング済みブラウザの閲覧・操作をエージェントに許可します。"
+  }
+}

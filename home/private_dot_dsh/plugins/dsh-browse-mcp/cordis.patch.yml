@@ -1,0 +1,10 @@
+- insert:
+    - id: browse-mcp
+      name: '@deepseek-ai/dsh-mcp-client'
+      config:
+        serverName: browse
+        transport: stdio
+        command: browse
+        args: ['mcp']
+        startupTimeoutMs: 60000
+        failOnStartupError: false

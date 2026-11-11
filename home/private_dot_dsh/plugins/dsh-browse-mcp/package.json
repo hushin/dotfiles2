@@ -1,0 +1,21 @@
+{
+  "name": "@hushin/dsh-browse-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Registers the local browse MCP server with DeepSeek Harness.",
+  "exports": {
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

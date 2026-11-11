@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Browse MCP",
+    "description": "Connects the local browse MCP server so agents can inspect and drive the paired browser."
+  }
+}

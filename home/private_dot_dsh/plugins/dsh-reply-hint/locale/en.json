@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Reply hint",
+    "description": "Predicts the next message you will send and shows it as ghost text in the empty composer; press Tab to fill the draft."
+  }
+}

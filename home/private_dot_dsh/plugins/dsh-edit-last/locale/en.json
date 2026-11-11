@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Edit last message",
+    "description": "Withdraws the most recently sent message from the model context and puts its text back in the composer for editing."
+  }
+}

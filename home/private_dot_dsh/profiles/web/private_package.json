@@ -7,13 +7,13 @@
         "@deepseek-ai/dsh-base",
         "@deepseek-ai/dsh-web-app",
         "dsh-edit-last",
-        "@hushin/dsh-browse-mcp",
+        "@hushin/dsh-mcp",
         "dsh-reply-hint"
       ]
     }
   },
   "dependencies": {
-    "@hushin/dsh-browse-mcp": "link:~/.dsh/plugins/dsh-browse-mcp",
+    "@hushin/dsh-mcp": "link:~/.dsh/plugins/dsh-mcp",
     "dsh-edit-last": "link:~/.dsh/plugins/dsh-edit-last",
     "dsh-reply-hint": "link:~/.dsh/plugins/dsh-reply-hint"
   }

@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "MCP servers",
+    "description": "Connects local MCP servers such as the browse server so agents can use their tools."
+  }
+}

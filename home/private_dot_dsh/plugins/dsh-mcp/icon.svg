@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="MCP servers">
+  <rect width="64" height="64" rx="14" fill="#334155"/>
+  <rect x="14" y="15" width="36" height="13" rx="3.5" fill="none" stroke="#ffffff" stroke-width="2.6"/>
+  <rect x="14" y="36" width="36" height="13" rx="3.5" fill="none" stroke="#ffffff" stroke-width="2.6"/>
+  <circle cx="21.5" cy="21.5" r="2.2" fill="#ffffff"/>
+  <circle cx="21.5" cy="42.5" r="2.2" fill="#ffffff"/>
+  <path d="M28 21.5h15M28 42.5h15" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round"/>
+</svg>

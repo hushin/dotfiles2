@@ -1,0 +1,50 @@
+{{- if and .personal (ne .chezmoi.os "windows") -}}
+#!/bin/sh
+# chezmoi の age 秘密鍵を 1Password(Personal/chezmoi-age-key)から ~/.config/chezmoi/key.txt に取り出す。
+#
+# - 鍵がすでにあれば何もしない。run_always にしているのは、鍵を置けないまま一度走っただけで
+#   run_onchange の記録が付き、op を後から入れても二度と再実行されなくなるのを避けるため。
+#   (鍵がある通常時はこのスクリプトは先頭の [ -f ] で即終了する)
+# - WSL には Linux 版 op が無いことが多いので、Windows 版の op.exe も interop 経由で使う。
+# - 暗号化ファイル(encrypted_*)は鍵が無いと .chezmoiignore で除外されるので、
+#   鍵を置けたあとにもう一度 chezmoi apply する。
+set -eu
+
+key="$HOME/.config/chezmoi/key.txt"
+[ -f "$key" ] && exit 0
+
+item="op://Personal/chezmoi-age-key/password"
+tmp="$key.tmp"
+
+mkdir -p "$(dirname "$key")"
+umask 077
+rm -f "$tmp"
+
+# 1Password CLI で鍵を読み出す。timeout は、1Password アプリがロックされていて
+# PIN 待ちのまま止まるのを防ぐため。age の秘密鍵らしくない内容は捨てる。
+fetch() {
+  if command -v timeout >/dev/null 2>&1; then
+    timeout 120 "$1" read --no-newline "$item" >"$tmp"
+  else
+    "$1" read --no-newline "$item" >"$tmp"
+  fi && grep -q 'AGE-SECRET-KEY-1' "$tmp"
+}
+
+found=""
+for cmd in op.exe op; do
+  if command -v "$cmd" >/dev/null 2>&1 && fetch "$cmd"; then
+    found="$cmd"
+    break
+  fi
+done
+
+if [ -n "$found" ]; then
+  echo >>"$tmp"
+  mv "$tmp" "$key"
+  echo "age 鍵を配置しました ($found)。暗号化ファイルを入れるため、もう一度 chezmoi apply してください" >&2
+else
+  rm -f "$tmp"
+  echo "1Password から age 鍵を取り出せませんでした。暗号化ファイルは配置されません" >&2
+  echo "  Linux/macOS では op を、WSL では Windows 版 op.exe を PATH に置いてください" >&2
+fi
+{{- end }}

@@ -8,7 +8,7 @@
 
 {{- if $personal }}
 # 個人用ファイル(encrypted_*)の暗号化。秘密鍵は 1Password の Personal/chezmoi-age-key にあり、
-# run_onchange_before_00_age-key.sh が ~/.config/chezmoi/key.txt に取り出す。
+# run_always_before_00_age-key.sh が ~/.config/chezmoi/key.txt に取り出す。
 encryption = "age"
 [age]
   identity = {{ joinPath .chezmoi.homeDir ".config/chezmoi/key.txt" | quote }}

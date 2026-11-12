@@ -1,21 +1,8 @@
 {
-  "model": "opus",
-  "language": "japanese",
   "env": {
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet"
   },
-  "statusLine": {
-    "type": "command",
-    "command": "bash ~/.claude/statusline.sh",
-    "padding": 0
-  },
-  "tui": "fullscreen",
-  "theme": "dark",
-  "modelSettings": {
-    "claude-opus-5-5": {
-      "effortLevel": "high"
-    }
-  },
+  "model": "opus",
   "hooks": {
     "SessionStart": [
       {
@@ -29,5 +16,19 @@
         ]
       }
     ]
-  }
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "bash ~/.claude/statusline.sh",
+    "padding": 0
+  },
+  "language": "japanese",
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  },
+  "tui": "fullscreen",
+  "theme": "dark",
+  "switchModelsOnFlag": false
 }

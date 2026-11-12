@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# shiguredo/deepseek-harness の shiguredo ブランチを取り込み、再ビルドする。
+# ローカル変更があるときは中断する（--force で破棄して追従）。
+set -euo pipefail
+
+DSH_REPO="${DSH_REPO:-$HOME/ghq/github.com/shiguredo/deepseek-harness}"
+BRANCH="${DSH_BRANCH:-shiguredo}"
+FORCE=0
+[[ "${1:-}" == "--force" ]] && FORCE=1
+
+cd "$DSH_REPO"
+
+if ! git diff --quiet || ! git diff --cached --quiet; then
+  if [[ "$FORCE" != "1" ]]; then
+    echo "dsh-web-update: ローカル変更があります。中断します（破棄するなら --force）。" >&2
+    git status --short >&2
+    exit 1
+  fi
+  git reset --hard
+fi
+
+echo "== git fetch =="
+git fetch origin "$BRANCH"
+before="$(git rev-parse HEAD)"
+echo "== checkout origin/$BRANCH =="
+git checkout -q "$BRANCH" 2>/dev/null || git checkout -q -B "$BRANCH" "origin/$BRANCH"
+git reset --hard "origin/$BRANCH"
+after="$(git rev-parse HEAD)"
+echo "before=$before"
+echo "after =$after"
+
+if [[ "$before" == "$after" ]]; then
+  echo "dsh-web-update: 変更なし（$after）"
+  exit 0
+fi
+
+echo "== pnpm install =="
+pnpm install
+echo "== pnpm run build =="
+pnpm run build
+
+echo "dsh-web-update: 完了（$after）。起動中のサーバーは dsh-web restart で反映されます。"

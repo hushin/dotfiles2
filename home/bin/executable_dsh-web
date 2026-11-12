@@ -1,0 +1,323 @@
+#!/usr/bin/env bash
+# DeepSeek Harness (shiguredo fork) Web UI ランチャー
+#
+#   dsh-web            起動（未起動なら）して URL を開く
+#   dsh-web url        URL だけ表示する
+#   dsh-web status     起動状態を表示する
+#   dsh-web logs      ログを追う
+#   dsh-web stop       停止する
+#   dsh-web restart    再起動する
+#
+# 環境変数: DSH_REPO / DSH_WEB_PORT / DSH_WEB_WORKDIR
+set -euo pipefail
+
+DSH_REPO="${DSH_REPO:-$HOME/ghq/github.com/shiguredo/deepseek-harness}"
+DSH_WEB_PORT="${DSH_WEB_PORT:-3080}"
+DSH_WEB_WORKDIR="${DSH_WEB_WORKDIR:-$HOME}"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/dsh"
+LOG="$STATE_DIR/web.log"
+PIDFILE="$STATE_DIR/web.pid"
+BASE_URL="http://127.0.0.1:${DSH_WEB_PORT}"
+
+mkdir -p "$STATE_DIR"
+
+# --- プロセス探索 ------------------------------------------------------------
+# ポートを監視するのが唯一の確実な情報源。pidfile だけに頼ると、pnpm ラッパー
+# だけが終了して node が孤児になった場合や、外から起動されたサーバーを取り
+# 逃す（これが「stop しても止まらない」の原因だった）。
+
+port_listening() {
+  [[ -n "$(ss -lntH "sport = :${DSH_WEB_PORT}" 2>/dev/null || true)" ]]
+}
+
+# ポートを LISTEN している pid（権限等で取れなければ空）
+port_pid() {
+  ss -lptnH "sport = :${DSH_WEB_PORT}" 2>/dev/null \
+    | sed -n 's/.*pid=\([0-9][0-9]*\).*/\1/p' | head -1
+}
+
+# pidfile の pid。2 フィールド目は書き込んだときのポートで、別ポート向けの
+# pidfile を誤って使わないためのもの（旧形式の 1 フィールドも受け付ける）。
+pidfile_pid() {
+  [[ -f "$PIDFILE" ]] || return 1
+  local pid port
+  read -r pid port < "$PIDFILE" || true
+  [[ -n "${pid:-}" ]] || return 1
+  if [[ -n "${port:-}" && "$port" != "$DSH_WEB_PORT" ]]; then return 1; fi
+  kill -0 "$pid" 2>/dev/null && printf '%s\n' "$pid"
+}
+
+is_dsh_web() {
+  local pid="${1:-}"
+  [[ -n "$pid" && -r "/proc/$pid/cmdline" ]] || return 1
+  tr '\0' ' ' < "/proc/$pid/cmdline" | grep -q -- 'apps/cli/src/bin\.ts web'
+}
+
+# pid 自身または子孫が dsh web か（pnpm ラッパーごと掴むため）
+tree_has_dsh_web() {
+  local pid="${1:-}" depth="${2:-0}" child
+  (( depth > 3 )) && return 1
+  is_dsh_web "$pid" && return 0
+  for child in $(pgrep -P "$pid" 2>/dev/null || true); do
+    tree_has_dsh_web "$child" $((depth + 1)) && return 0
+  done
+  return 1
+}
+
+# 稼働中の dsh web の pid。pidfile が死んでいてもポートから拾い直す。
+server_pid() {
+  local pid
+  if pid="$(pidfile_pid)"; then
+    if is_dsh_web "$pid"; then printf '%s\n' "$pid"; return 0; fi
+  fi
+  pid="$(port_pid)"
+  if is_dsh_web "$pid"; then printf '%s\n' "$pid"; return 0; fi
+  return 1
+}
+
+current_url() {
+  [[ -f "$LOG" ]] || return 1
+  local url
+  url="$(grep -oE "${BASE_URL}/\?token=[A-Za-z0-9_-]+" "$LOG" | tail -1 || true)"
+  [[ -n "$url" ]] || return 1
+  printf '%s\n' "$url"
+}
+
+wait_for_url() {
+  local pid
+  for _ in $(seq 1 120); do
+    current_url >/dev/null 2>&1 && return 0
+    pid="$(pidfile_pid || true)"
+    if [[ -z "$pid" ]]; then
+      echo "dsh-web: サーバーが起動しませんでした。ログ: $LOG" >&2
+      tail -20 "$LOG" >&2 || true
+      return 1
+    fi
+    sleep 0.5
+  done
+  echo "dsh-web: URL の出力を待ちすぎました。ログ: $LOG" >&2
+  return 1
+}
+
+# ワークスペースの package.json が宣言するビルド成果物（exports の ./lib/*.js と
+# dsh.client）で欠けているものを列挙する。新しいパッケージを追加する pull の後は
+# apps/web/dist が残っていてもプラグイン側の lib が無く、起動時に plugin の
+# activate が失敗するため、起動前に検出する。
+missing_artifacts() {
+  node -e '
+    const fs = require("fs");
+    const path = require("path");
+    const root = process.argv[1];
+    const collect = (value, targets) => {
+      if (typeof value === "string") targets.push(value);
+      else if (value && typeof value === "object") for (const nested of Object.values(value)) collect(nested, targets);
+    };
+    const missing = [];
+    for (const group of fs.readdirSync(path.join(root, "packages"), { withFileTypes: true })) {
+      if (!group.isDirectory()) continue;
+      for (const entry of fs.readdirSync(path.join(root, "packages", group.name), { withFileTypes: true })) {
+        if (!entry.isDirectory()) continue;
+        const dir = path.join(root, "packages", group.name, entry.name);
+        const manifest = path.join(dir, "package.json");
+        if (!fs.existsSync(manifest)) continue;
+        const pkg = JSON.parse(fs.readFileSync(manifest, "utf8"));
+        const targets = [];
+        collect(pkg.main, targets);
+        collect(pkg.exports, targets);
+        for (const target of targets) {
+          if (!target.startsWith("./lib/") || !target.endsWith(".js")) continue;
+          if (!fs.existsSync(path.join(dir, target))) missing.push(path.join(dir, target));
+        }
+        if (pkg.dsh?.client && !fs.existsSync(path.join(dir, "lib/client.js"))) {
+          missing.push(path.join(dir, "lib/client.js"));
+        }
+      }
+    }
+    process.stdout.write([...new Set(missing)].map((file) => `${file}\n`).join(""));
+  ' "$DSH_REPO"
+}
+
+# --- コマンド ----------------------------------------------------------------
+
+start() {
+  local pid child
+
+  # 既に動いていれば何もしない（pidfile が無くてもポートで判定する）
+  if pid="$(server_pid)"; then return 0; fi
+
+  if port_listening; then
+    echo "dsh-web: ポート ${DSH_WEB_PORT} は dsh web 以外のプロセスが使用中です:" >&2
+    ss -lptnH "sport = :${DSH_WEB_PORT}" >&2 || true
+    exit 1
+  fi
+
+  if [[ ! -d "$DSH_REPO" ]]; then
+    echo "dsh-web: リポジトリが見つかりません: $DSH_REPO" >&2
+    exit 1
+  fi
+  if [[ ! -f "$DSH_REPO/apps/cli/src/bin.ts" ]]; then
+    echo "dsh-web: CLI が見つかりません: $DSH_REPO/apps/cli/src/bin.ts" >&2
+    exit 1
+  fi
+  if [[ ! -d "$DSH_REPO/apps/web/dist" ]]; then
+    echo "dsh-web: ビルド成果物がありません。先に次を実行してください:" >&2
+    echo "  cd $DSH_REPO && pnpm run build" >&2
+    exit 1
+  fi
+
+  local missing count shown line
+  missing="$(missing_artifacts)"
+  if [[ -n "$missing" ]]; then
+    count="$(grep -c . <<< "$missing")"
+    echo "dsh-web: ビルド成果物が不足しています（${count} 件）。ソース更新後の再ビルドが必要です:" >&2
+    shown=0
+    while IFS= read -r line; do
+      if (( shown < 5 )); then echo "  $line" >&2; fi
+      shown=$((shown + 1))
+    done <<< "$missing"
+    if (( count > 5 )); then echo "  ... 他 $((count - 5)) 件" >&2; fi
+    echo "dsh-web: cd $DSH_REPO && pnpm install && pnpm run build を実行してから再試行してください" >&2
+    exit 1
+  fi
+  if ! command -v pnpm >/dev/null 2>&1; then
+    echo "dsh-web: pnpm が見つかりません" >&2
+    exit 1
+  fi
+
+  # 前回のログは token URL の記録なので消さずに退避する
+  if [[ -s "$LOG" ]]; then mv -f "$LOG" "$LOG.1"; fi
+  : > "$LOG"
+
+  (
+    cd "$DSH_REPO"
+    nohup pnpm dsh web --no-open --port "$DSH_WEB_PORT" >>"$LOG" 2>&1 &
+    printf '%s %s\n' "$!" "$DSH_WEB_PORT" > "$PIDFILE"
+  )
+
+  if ! wait_for_url; then
+    child="$(cut -d' ' -f1 "$PIDFILE" 2>/dev/null || true)"
+    if [[ -n "${child:-}" ]] && kill -0 "$child" 2>/dev/null && tree_has_dsh_web "$child"; then
+      kill -TERM "$child" 2>/dev/null || true
+      pkill -TERM -P "$child" 2>/dev/null || true
+      sleep 1
+      kill -KILL "$child" 2>/dev/null || true
+      pkill -KILL -P "$child" 2>/dev/null || true
+    fi
+    rm -f "$PIDFILE"
+    exit 1
+  fi
+
+  # pnpm ラッパーではなく、実際に LISTEN しているサーバーの pid を記録する
+  pid="$(port_pid)"
+  if is_dsh_web "$pid"; then
+    printf '%s %s\n' "$pid" "$DSH_WEB_PORT" > "$PIDFILE"
+  fi
+}
+
+stop() {
+  local pids=() pid p dup
+
+  if pid="$(pidfile_pid)"; then
+    tree_has_dsh_web "$pid" && pids+=("$pid")
+  fi
+  pid="$(port_pid)"
+  if is_dsh_web "$pid"; then
+    dup=0
+    for p in "${pids[@]}"; do [[ "$p" == "$pid" ]] && dup=1; done
+    (( dup )) || pids+=("$pid")
+  fi
+
+  if (( ${#pids[@]} == 0 )); then
+    rm -f "$PIDFILE"
+    if port_listening; then
+      echo "dsh-web: 停止対象の dsh web が見つかりません（ポート ${DSH_WEB_PORT} は使用中）:" >&2
+      ss -lptnH "sport = :${DSH_WEB_PORT}" >&2 || true
+      return 1
+    fi
+    echo "dsh-web: 起動していません"
+    return 0
+  fi
+
+  for pid in "${pids[@]}"; do
+    kill -TERM "$pid" 2>/dev/null || true
+    pkill -TERM -P "$pid" 2>/dev/null || true
+  done
+
+  for _ in $(seq 1 20); do
+    local alive=0
+    for pid in "${pids[@]}"; do
+      if kill -0 "$pid" 2>/dev/null; then alive=1; fi
+    done
+    (( alive )) || break
+    sleep 0.5
+  done
+
+  for pid in "${pids[@]}"; do
+    if kill -0 "$pid" 2>/dev/null; then kill -KILL "$pid" 2>/dev/null || true; fi
+    pkill -KILL -P "$pid" 2>/dev/null || true
+  done
+
+  rm -f "$PIDFILE"
+
+  for _ in $(seq 1 20); do
+    port_listening || break
+    sleep 0.25
+  done
+  if port_listening; then
+    echo "dsh-web: 停止できませんでした（ポート ${DSH_WEB_PORT} がまだ使用中）:" >&2
+    ss -lptnH "sport = :${DSH_WEB_PORT}" >&2 || true
+    return 1
+  fi
+  echo "dsh-web: 停止しました"
+}
+
+case "${1:-open}" in
+  open|start)
+    start
+    if url="$(current_url)"; then
+      echo "dsh-web: $url"
+      if [[ "${DSH_WEB_NO_BROWSER:-0}" != "1" ]]; then
+        if command -v xdg-open >/dev/null 2>&1; then
+          (xdg-open "$url" >/dev/null 2>&1 &) || true
+        fi
+      fi
+    else
+      echo "dsh-web: 起動中ですがログに token URL がありません ($LOG)" >&2
+      echo "dsh-web: 新しい URL が必要なら dsh-web restart" >&2
+      exit 1
+    fi
+    ;;
+  url)
+    start
+    if url="$(current_url)"; then
+      echo "$url"
+    else
+      echo "dsh-web: 起動中ですがログに token URL がありません ($LOG)" >&2
+      exit 1
+    fi
+    ;;
+  status)
+    if pid="$(server_pid)"; then
+      echo "dsh-web: 起動中 (pid $pid) $(current_url 2>/dev/null || echo 'URL 不明')"
+    elif port_listening; then
+      echo "dsh-web: ポート ${DSH_WEB_PORT} は dsh web 以外が使用中"
+    else
+      echo "dsh-web: 停止中"
+    fi
+    ;;
+  logs)
+    tail -f "$LOG"
+    ;;
+  stop)
+    stop
+    ;;
+  restart)
+    stop
+    start
+    current_url
+    ;;
+  *)
+    sed -n '2,12p' "$0"
+    exit 1
+    ;;
+esac

@@ -14,6 +14,7 @@ curl -fsSL https://pi.dev/install.sh | sh
 - `browse` の `command` はテンプレートで `~/.local/bin/browse`（Windows は `browse.exe`）に展開される
 - pi は `command` / `args` / `cwd` の先頭 `~/` をホームとして展開するため、opencode と違って絶対パスにしなくてよい
 - セッション起動中に MCP 設定を変えた場合は `/reload`（または再起動）が必要
+- `browse` を入れる前に起動していたセッションでは MCP サーバーの起動に失敗しているので、インストール後に `/reload` する
 
 ## OpenCode
 
@@ -111,7 +112,10 @@ browse install   # 拡張機能の再ペアリング
 
 ### 他のエージェントにも追加
 
-pi は `~/.pi/agent/mcp.json` を chezmoi で管理しているので、`browse install` は不要（インストーラの自動登録は pi に対応していない）。
+pi は `~/.pi/agent/mcp.json` を chezmoi で管理しているので、`browse install` による登録は不要。
+
+- `browse install` は pi を検出するが、既存の `browse` エントリは「different server」として変更しない（`description` 付きのためテンプレート由来の定義がそのまま残る）
+- インストーラは「バイナリ配置 + Chrome 拡張のペアリング」だけに使えばよい。`--no-setup` でバイナリのみ入れて `browse install -y` でペアリングする手順でもよい
 
 ```sh
 browse install --agent claude

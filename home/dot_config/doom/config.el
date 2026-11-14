@@ -184,12 +184,35 @@
 ;; lib/org-db は after! org-roam で読むので、org-roam を読めば定義される
 (autoload 'my/db-open "org-roam" nil t)
 (autoload 'my/db-open-rez "org-roam" nil t)
+
+;; org-roam はファイル先頭の :ID: だけでなく、ID 付きの見出しもノードとして索引する。
+;; そのため areas/ projects/ gtd/ の TODO タスク見出しが `C-c n f' の候補に混ざる。
+;; ファイル自身のノード（level 0）だけを通す述語で除外する。
+(defun my/org-roam--file-node-p (node)
+  "NODE がファイル自身（level 0）のノードなら non-nil。
+level 0 のノードはファイル先頭の :ID: を持つ org-roam 管理ファイルのみ。"
+  (zerop (org-roam-node-level node)))
+
+(defun my/org-roam-node-find (&optional other-window initial-input)
+  "`org-roam-node-find' の候補を org-roam 管理ファイル（level 0）だけに絞る。
+見出しノードまで含めた従来の一覧は `M-x org-roam-node-find' で出せる。"
+  (interactive "P")
+  (org-roam-node-find other-window initial-input #'my/org-roam--file-node-p))
+
+(cl-defun my/org-roam-node-insert (&optional filter-fn &key templates info)
+  "`org-roam-node-insert' の候補を org-roam 管理ファイル（level 0）だけに絞る。
+見出しノードまで含めた従来の一覧は `M-x org-roam-node-insert' で出せる。"
+  (interactive)
+  (org-roam-node-insert (or filter-fn #'my/org-roam--file-node-p)
+                        :templates templates
+                        :info info))
+
 (map!
   "C-c a" #'org-agenda
   "C-c c" #'org-capture
   "C-c j" #'org-journal-new-entry
   "C-c n l" #'org-roam-buffer-toggle
-  "C-c n f" #'org-roam-node-find
+  "C-c n f" #'my/org-roam-node-find
   "C-c l" #'org-roam-dailies-goto-today
   "C-c d" #'org-roam-dailies-map
   :n "[ D" #'org-roam-dailies-goto-previous-note
@@ -295,7 +318,7 @@
 (after! org-roam
   (map!
     :map org-mode-map
-    "C-c n i" #'org-roam-node-insert
+    "C-c n i" #'my/org-roam-node-insert
     "C-M-i" #'completion-at-point
     )
   (setq org-roam-completion-everywhere nil)

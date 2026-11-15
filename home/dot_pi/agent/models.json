@@ -1,0 +1,33 @@
+{
+  "providers": {
+    "deploy": {
+      "baseUrl": "https://api-sf1.deploy.com/api/v1",
+      "api": "openai-completions",
+      "apiKey": "!$HOME/bin/ksec get -n DEPLOY_API_KEY",
+      "models": [
+        {
+          "id": "deepseek-ai/deepseek-v4.1-flash-1017",
+          "name": "Deepseek 4.1 Flash",
+          "reasoning": true,
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": "low",
+            "low": "low",
+            "medium": "high",
+            "high": "high",
+            "xhigh": "max",
+            "max": "max"
+          },
+          "input": ["text", "image"],
+          "contextWindow": 1000000,
+          "maxTokens": 32768,
+          "compat": {
+            "supportsDeveloperRole": false,
+            "supportsReasoningEffort": true,
+            "maxTokensField": "max_tokens"
+          }
+        }
+      ]
+    }
+  }
+}

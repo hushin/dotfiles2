@@ -1,0 +1,5 @@
+# ksec は実行環境ごとにエンコーディングの制約が厳しい。git に書き換えさせない。
+# - bash 実装は CRLF が混じると `bad interpreter` で起動しない
+# - .cmd は cmd.exe が OEM コードページで読むので ASCII + CRLF を固定
+home/bin/executable_ksec text eol=lf
+home/bin-win/*.cmd text eol=crlf

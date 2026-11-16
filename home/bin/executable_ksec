@@ -1,9 +1,15 @@
 #!/usr/bin/env bash
-# ksec -- DPAPI-backed local secret store for WSL2
+# ksec -- PIN なしで読めるローカル秘密情報ストア (WSL / Git Bash / macOS)
 #
-# macOS のログイン Keychain 相当。Windows の DPAPI (ユーザーログオンに紐づく鍵) で
-# 暗号化するので、読み出し時にパスフレーズや PIN は一切要求されない。
-# 逆に、blob を別マシン・別ユーザーへコピーしても復号できない。
+# 暗号化は実行環境ごとの仕組みに任せ、コマンドと保存の意味は共通にする:
+#
+#   dpapi     Windows の DPAPI (ユーザーログオンに紐づく鍵)。WSL2 と Git Bash から
+#             powershell.exe 経由で使う。読み出しで PIN は要求されない。
+#   keychain  macOS。マスターキーをログイン Keychain に置き、秘密の本体はそのキーで
+#             openssl 暗号化したファイルにする。Keychain を触るのは初回だけ。
+#
+# どちらも「同じユーザーとして動くプロセスは復号できる」「blob を別ユーザー・別マシンへ
+# コピーしても復号できない」という同じ強さになる。
 #
 # --- usage ---
 #   ksec set NAME                  # エコーなしプロンプトで入力
@@ -15,10 +21,10 @@
 #   ksec rm NAME                   # 削除
 #   ksec from-op NAME 'op://vault/item/field'
 #                                  # 1Password から 1 回だけ読んで保存 (移行用)
-#   ksec doctor                    # interop と保存領域の健全性チェック
+#   ksec doctor                    # バックエンドと保存領域の健全性チェック
 #
-# 保存先: ~/.local/share/ksec/NAME.dpapi  (KSEC_DIR で変更可)
-# 前提: WSL2 + Windows interop (powershell.exe, wslpath)
+# 保存先: ~/.local/share/ksec/NAME.<backend>  (KSEC_DIR で変更可)
+# バックエンド: KSEC_BACKEND=dpapi|keychain (既定は自動判定)
 # 詳細: docs/ksec.md
 
 set -euo pipefail
@@ -34,77 +40,259 @@ usage() {
     sed -e '1d' -e '$d' -e 's/^# \{0,1\}//'
 }
 
-need_ps() {
-  command -v "$PS" >/dev/null 2>&1 ||
-    die "powershell.exe が見つかりません。ksec は WSL2 専用です (Windows DPAPI を使用)"
-  command -v wslpath >/dev/null 2>&1 || die "wslpath が見つかりません"
+# --- 実行環境の判定 ---------------------------------------------------------
+
+is_wsl() { [ -r /proc/version ] && grep -qi microsoft /proc/version 2>/dev/null; }
+
+# Git Bash / MSYS / Cygwin。WSL とは排他 (uname が MINGW/MSYS/CYGWIN を返す)。
+is_windows_shell() {
+  case "$(uname -s 2>/dev/null || echo unknown)" in
+    MINGW* | MSYS* | CYGWIN*) return 0 ;;
+    *) return 1 ;;
+  esac
 }
 
-is_wsl() { grep -qi microsoft /proc/version 2>/dev/null; }
+# シェルのパスを Windows 形式へ変換する。Git Bash は cygpath、WSL は wslpath。
+to_windows() {
+  if is_windows_shell; then
+    cygpath -w "$1"
+  elif command -v wslpath >/dev/null 2>&1; then
+    wslpath -w "$1"
+  else
+    die "パス変換コマンドがありません (wslpath / cygpath)"
+  fi
+}
 
-# PowerShell 用の変換スクリプトを初回にだけ書き出す (秘密情報ではない)
+pick_backend() {
+  if [ -n "${KSEC_BACKEND:-}" ]; then
+    printf '%s\n' "$KSEC_BACKEND"
+    return 0
+  fi
+  case "$(uname -s 2>/dev/null || echo unknown)" in
+    Darwin) printf 'keychain\n'; return 0 ;;
+    MINGW* | MSYS* | CYGWIN*) printf 'dpapi\n'; return 0 ;;
+  esac
+  if is_wsl; then
+    printf 'dpapi\n'
+  else
+    printf 'unsupported\n'
+  fi
+}
+
+BACKEND="$(pick_backend)"
+case "$BACKEND" in
+  dpapi | keychain | unsupported) ;;
+  *) die "KSEC_BACKEND='$BACKEND' は不正です (dpapi | keychain)" ;;
+esac
+EXT="$BACKEND"
+
+# --- base64 ----------------------------------------------------------------
+
+# openssl があれば使う。BSD base64 の -d/-D の差を気にしなくて済む。
+b64enc() {
+  if command -v openssl >/dev/null 2>&1; then
+    openssl base64 -A
+  else
+    base64 | tr -d '\n'
+  fi
+}
+
+b64dec() {
+  if command -v openssl >/dev/null 2>&1; then
+    openssl base64 -d -A
+  else
+    base64 -d 2>/dev/null || base64 -D
+  fi
+}
+
+# --- DPAPI バックエンド (WSL2 / Git Bash) ----------------------------------
+#
+# 生成する .ps1 は 3 つの制約を守る:
+#   - ASCII のみ。Windows PowerShell 5.1 は BOM の無いファイルを OEM コードページで
+#     読むため、非 ASCII があると構文エラーになる。
+#   - UTF-8 BOM を付ける。ASCII だけなら不要だが、将来コメントを足しても壊れない。
+#   - ConvertTo-SecureString を使わない。pwsh 7 から起動すると PSModulePath が混ざり、
+#     5.1 側でモジュール解決に失敗する。.NET の ProtectedData を直接使う。
+#     DPAPI が保護するのは UTF-16LE なので、既存 blob と形式互換。
+
+DPAPI_LIB="$LIB/dpapi"
+
+need_dpapi() {
+  command -v "$PS" >/dev/null 2>&1 ||
+    die "powershell.exe が見つかりません (dpapi バックエンドは Windows の DPAPI を使います)"
+  if ! is_windows_shell && ! command -v wslpath >/dev/null 2>&1; then
+    die "wslpath / cygpath が見つかりません"
+  fi
+}
+
 ensure_lib() {
-  mkdir -p "$DIR" "$LIB"
-  chmod 700 "$DIR" "$LIB"
+  mkdir -p "$DIR" "$LIB" "$DPAPI_LIB"
+  chmod 700 "$DIR" "$LIB" "$DPAPI_LIB" 2>/dev/null || true
 
-  if [ ! -f "$LIB/encrypt.ps1" ]; then
-    cat >"$LIB/encrypt.ps1" <<'PS1'
+  if [ ! -f "$DPAPI_LIB/enc.ps1" ]; then
+    {
+      printf '\xef\xbb\xbf'
+      cat <<'PS1'
 $ErrorActionPreference = 'Stop'
+Add-Type -AssemblyName System.Security
 $b64 = [Console]::In.ReadToEnd()
 $b64 = ($b64 -replace '\s', '')
 if ([string]::IsNullOrEmpty($b64)) { Write-Error 'empty input'; exit 2 }
-$utf8  = [Text.Encoding]::UTF8
-$plain = $utf8.GetString([Convert]::FromBase64String($b64))
-$sec   = ConvertTo-SecureString $plain -AsPlainText -Force
-[Console]::Out.Write(($sec | ConvertFrom-SecureString))
+$plain = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($b64))
+$bytes = [Security.Cryptography.ProtectedData]::Protect(
+  [Text.Encoding]::Unicode.GetBytes($plain), $null, 'CurrentUser')
+[Console]::Out.Write((-join ($bytes | ForEach-Object { $_.ToString('x2') })))
 PS1
+    } >"$DPAPI_LIB/enc.ps1"
   fi
 
-  if [ ! -f "$LIB/decrypt.ps1" ]; then
-    cat >"$LIB/decrypt.ps1" <<'PS1'
+  if [ ! -f "$DPAPI_LIB/dec.ps1" ]; then
+    {
+      printf '\xef\xbb\xbf'
+      cat <<'PS1'
 $ErrorActionPreference = 'Stop'
-$hex = (Get-Content -LiteralPath $args[0] -Raw)
+Add-Type -AssemblyName System.Security
+$hex = [IO.File]::ReadAllText($args[0]).Trim()
 if ([string]::IsNullOrWhiteSpace($hex)) { Write-Error 'empty blob'; exit 2 }
-$sec = ConvertTo-SecureString $hex.Trim()
-$ptr = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($sec)
-try {
-  $plain = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($ptr)
-  $b64 = [Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($plain))
-  [Console]::Out.Write($b64)
-} finally {
-  [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($ptr)
+$bytes = New-Object byte[] ($hex.Length / 2)
+for ($i = 0; $i -lt $bytes.Length; $i++) {
+  $bytes[$i] = [Convert]::ToByte($hex.Substring($i * 2, 2), 16)
 }
+$raw = [Security.Cryptography.ProtectedData]::Unprotect($bytes, $null, 'CurrentUser')
+$plain = [Text.Encoding]::Unicode.GetString($raw)
+[Console]::Out.Write([Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($plain)))
 PS1
+    } >"$DPAPI_LIB/dec.ps1"
   fi
 }
 
-valid_name() { [[ "${1:-}" =~ ^[A-Za-z0-9._-]+$ ]] || die "名前は [A-Za-z0-9._-] のみ: '$1'"; }
+# 平文 (stdin) -> blob (stdout)
+enc_dpapi() {
+  local blob
+  blob="$(b64enc | "$PS" -NoProfile -NonInteractive -ExecutionPolicy Bypass \
+    -File "$(to_windows "$DPAPI_LIB/enc.ps1")" | tr -d '\r\n')"
+  [[ "$blob" =~ ^[0-9a-f]+$ ]] || die "暗号化に失敗しました"
+  printf '%s\n' "$blob"
+}
+
+# blob (stdin) -> 平文 (stdout)
+dec_dpapi() {
+  local blob tmp out
+  blob="$(cat)"
+  [ -n "$blob" ] || die "復号に失敗: 空の blob"
+  tmp="$(mktemp "${TMPDIR:-/tmp}/ksec.XXXXXX")"
+  KSEC_TMP="$tmp"
+  chmod 600 "$tmp"
+  printf '%s' "$blob" >"$tmp"
+  out="$("$PS" -NoProfile -NonInteractive -ExecutionPolicy Bypass \
+    -File "$(to_windows "$DPAPI_LIB/dec.ps1")" "$(to_windows "$tmp")" | tr -d '\r\n')"
+  rm -f "$tmp"
+  [ -n "$out" ] || die "復号に失敗: DPAPI が使えません"
+  printf '%s' "$out" | b64dec
+}
+
+# --- keychain バックエンド (macOS) -----------------------------------------
+#
+# マスターキーはログイン Keychain の generic password に 1 つだけ置く。秘密の本体は
+# そのキーで暗号化したファイルなので、list / has / rm は Keychain に触らずに済み、
+# プロンプトが出るのはマスターキーを作る最初の 1 回だけになる。
+#
+# マスターキーは -pass env: と security -i (stdin) で渡すので argv に載らない。
+# プロセス一覧から見える。以後の読み書きは環境変数渡しで argv に出ない。
+
+need_keychain() {
+  command -v security >/dev/null 2>&1 || die "security コマンドが見つかりません (macOS 専用です)"
+  command -v openssl >/dev/null 2>&1 || die "openssl が見つかりません"
+}
+
+# 呼び出し元の標準入力は秘密情報かもしれない。security に食わせないよう </dev/null を付ける。
+# 初回の登録も security -i (stdin からコマンドを読む) を使い、鍵を argv に載せない。
+master_key() {
+  local svc="${KSEC_KEYCHAIN_SERVICE:-ksec:master}" acct key
+  acct="${USER:-$(id -un)}"
+  if key="$(security find-generic-password -s "$svc" -a "$acct" -w 2>/dev/null </dev/null)" &&
+    [ -n "$key" ]; then
+    printf '%s' "$key"
+    return 0
+  fi
+  key="$(openssl rand -hex 32 </dev/null)"
+  printf 'add-generic-password -U -s %s -a %s -w %s\n' "$svc" "$acct" "$key" |
+    security -i >/dev/null 2>&1 ||
+    die "Keychain にマスターキーを保存できません (login Keychain が解錠されているか確認)"
+  printf '%s' "$key"
+}
+
+# 平文 (stdin) -> blob (stdout)。鍵は -pass env: で渡し argv に載せない。
+enc_keychain() {
+  local key
+  key="$(master_key)"
+  KSEC_MASTER_KEY="$key" openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -salt \
+    -base64 -A -pass env:KSEC_MASTER_KEY || die "暗号化に失敗しました"
+}
+
+# blob (stdin) -> 平文 (stdout)
+dec_keychain() {
+  local key blob
+  key="$(master_key)"
+  blob="$(cat)"
+  [ -n "$blob" ] || die "復号に失敗: 空の blob"
+  printf '%s' "$blob" | KSEC_MASTER_KEY="$key" openssl enc -d -aes-256-cbc -pbkdf2 \
+    -iter 200000 -base64 -A -pass env:KSEC_MASTER_KEY ||
+    die "復号に失敗 (マスターキーが違う可能性があります)"
+}
+
+# --- 共通 -------------------------------------------------------------------
+
+enc_blob() { "enc_$BACKEND"; }
+dec_blob() { "dec_$BACKEND"; }
+
+# 前提コマンドの確認。呼び出し側で die させたくない場所では (require_backend) と
+# サブシェルで包む。
+require_backend() {
+  case "$BACKEND" in
+    dpapi) need_dpapi ;;
+    keychain) need_keychain ;;
+    *)
+      die "未対応の環境です (対応: WSL2 / Git Bash / macOS)。KSEC_BACKEND=dpapi|keychain で明示できます"
+      ;;
+  esac
+}
+
+valid_name() { [[ "${1:-}" =~ ^[A-Za-z0-9._-]+$ ]] || die "名前は [A-Za-z0-9._-] のみ: '${1:-}'"; }
+
+entry_path() { printf '%s/%s.%s' "$DIR" "$1" "$EXT"; }
+
+# --- コマンド ---------------------------------------------------------------
 
 cmd_set() {
   local name="${1:-}" value
   valid_name "$name"
-  local target="$DIR/$name.dpapi" tmp
+  require_backend
+  [ "$BACKEND" = "dpapi" ] && ensure_lib
+
+  local target tmp blob
+  target="$(entry_path "$name")"
   tmp="$(mktemp "${TMPDIR:-/tmp}/ksec.XXXXXX")"
+  KSEC_TMP="$tmp"
+  trap 'rm -f "${KSEC_TMP:-}"' EXIT
   chmod 600 "$tmp"
-  trap 'rm -f "$tmp"' EXIT
 
   if [ -t 0 ]; then
-    read -rsp "value for $name: " value
+    read -rsp "value for $name: " value || true
     printf '\n' >&2
     [ -n "$value" ] || die "空の値は保存しません"
-    printf '%s' "$value" | base64 -w0 >"$tmp"
+    printf '%s' "$value" >"$tmp"
   else
     # パイプ入力は末尾改行も含めて byte 単位でそのまま保持する
-    base64 -w0 >"$tmp"
+    cat >"$tmp"
     [ -s "$tmp" ] || die "空の値は保存しません"
   fi
 
-  local blob
-  blob="$("$PS" -NoProfile -NonInteractive -ExecutionPolicy Bypass \
-    -File "$(wslpath -w "$LIB/encrypt.ps1")" <"$tmp" | tr -d '\r\n')"
+  blob="$(enc_blob <"$tmp")"
+  [ -n "$blob" ] || die "暗号化に失敗しました"
 
-  [[ "$blob" =~ ^[0-9a-f]+$ ]] || die "暗号化に失敗しました"
-
+  mkdir -p "$DIR"
+  chmod 700 "$DIR" 2>/dev/null || true
   (umask 077; printf '%s\n' "$blob" >"$target.tmp")
   mv -f "$target.tmp" "$target"
   printf 'stored: %s\n' "$name" >&2
@@ -122,40 +310,41 @@ cmd_get() {
     shift
   done
   valid_name "$name"
-  local target="$DIR/$name.dpapi"
+  require_backend
+  [ "$BACKEND" = "dpapi" ] && ensure_lib
+
+  local target
+  target="$(entry_path "$name")"
   [ -f "$target" ] || die "未登録: $name"
 
-  local b64
-  b64="$("$PS" -NoProfile -NonInteractive -ExecutionPolicy Bypass \
-    -File "$(wslpath -w "$LIB/decrypt.ps1")" "$(wslpath -w "$target")" | tr -d '\r\n')"
-  [ -n "$b64" ] || die "復号に失敗: $name"
-
-  if [ "$newline" -eq 1 ]; then
-    printf '%s' "$b64" | base64 -d
-    printf '\n'
-  else
-    printf '%s' "$b64" | base64 -d
-  fi
+  dec_blob <"$target"
+  [ "$newline" -eq 1 ] && printf '\n'
+  return 0
 }
 
 cmd_list() {
   [ -d "$DIR" ] || return 0
   local f n any=0
-  for f in "$DIR"/*.dpapi; do
+  for f in "$DIR"/*."$EXT"; do
     [ -e "$f" ] || continue
-    n="$(basename "$f" .dpapi)"
+    n="$(basename "$f" ".$EXT")"
     any=1
     printf '%s\n' "$n"
   done
   [ "$any" -eq 1 ] || printf '(empty)\n' >&2
 }
 
-cmd_has() { valid_name "${1:-}"; [ -f "$DIR/$1.dpapi" ]; }
+cmd_has() {
+  valid_name "${1:-}"
+  [ -f "$(entry_path "$1")" ]
+}
 
 cmd_rm() {
   valid_name "${1:-}"
-  [ -f "$DIR/$1.dpapi" ] || die "未登録: $1"
-  rm -f "$DIR/$1.dpapi"
+  local target
+  target="$(entry_path "$1")"
+  [ -f "$target" ] || die "未登録: $1"
+  rm -f "$target"
   printf 'removed: %s\n' "$1" >&2
 }
 
@@ -166,7 +355,7 @@ cmd_from_op() {
   [ -n "$ref" ] || die "usage: ksec from-op NAME 'op://vault/item/field'"
 
   local opbin
-  for opbin in op.exe op; do
+  for opbin in op op.exe; do
     command -v "$opbin" >/dev/null 2>&1 && break
     opbin=""
   done
@@ -177,39 +366,48 @@ cmd_from_op() {
 }
 
 cmd_doctor() {
-  local ng=0
-  printf 'wsl        : %s\n' "$(is_wsl && echo yes || echo 'no (WSL2 専用)')"
-  printf 'powershell : %s\n' "$(command -v "$PS" 2>/dev/null || echo MISSING)"
-  printf 'wslpath    : %s\n' "$(command -v wslpath 2>/dev/null || echo MISSING)"
+  local ng=0 probe got
+  printf 'os         : %s\n' "$(uname -s 2>/dev/null || echo unknown)"
+  printf 'shell      : %s\n' "$(if is_windows_shell; then echo git-bash; elif is_wsl; then echo wsl; else echo posix; fi)"
+  printf 'backend    : %s%s\n' "$BACKEND" "$([ -n "${KSEC_BACKEND:-}" ] && echo ' (KSEC_BACKEND)' || echo ' (auto)')"
   printf 'store      : %s\n' "$DIR"
 
-  if ! need_ps 2>/dev/null; then
+  case "$BACKEND" in
+    dpapi)
+      printf 'powershell : %s\n' "$(command -v "$PS" 2>/dev/null || echo MISSING)"
+      printf 'path conv  : %s\n' "$(if is_windows_shell; then command -v cygpath; else command -v wslpath; fi 2>/dev/null || echo MISSING)"
+      ;;
+    keychain)
+      printf 'security   : %s\n' "$(command -v security 2>/dev/null || echo MISSING)"
+      printf 'openssl    : %s\n' "$(command -v openssl 2>/dev/null || echo MISSING)"
+      ;;
+  esac
+
+  if ! (require_backend) 2>/dev/null; then
     printf 'round-trip : SKIP (前提コマンドが無い)\n'
     return 1
   fi
-
-  ensure_lib
-  local probe="probe-$$-$(date +%s)" got=""
-  printf '%s' "$probe" | cmd_set __doctor__ 2>/dev/null || ng=1
+  probe="probe-$$-$(date +%s)"
+  printf '%s' "$probe" | cmd_set __doctor__ >/dev/null 2>&1 || ng=1
   got="$(cmd_get -n __doctor__ 2>/dev/null || true)"
-  rm -f "$DIR/__doctor__.dpapi"
+  rm -f "$(entry_path __doctor__)"
 
   if [ "$got" = "$probe" ]; then
     printf 'round-trip : ok (暗号化/復号に成功)\n'
   else
-    printf 'round-trip : NG (DPAPI が使えません)\n'
+    printf 'round-trip : NG (暗号化/復号に失敗しました)\n'
     ng=1
   fi
   return "$ng"
 }
 
 case "${1:-}" in
-  set)     need_ps; ensure_lib; shift; cmd_set "$@" ;;
-  get)     need_ps; ensure_lib; shift; cmd_get "$@" ;;
+  set)     shift; cmd_set "$@" ;;
+  get)     shift; cmd_get "$@" ;;
   list|ls) cmd_list ;;
   has)     cmd_has "${2:-}" ;;
   rm|del)  cmd_rm "${2:-}" ;;
-  from-op) need_ps; ensure_lib; shift; cmd_from_op "$@" ;;
+  from-op) shift; cmd_from_op "$@" ;;
   doctor)  cmd_doctor ;;
   -h|--help|help|"") usage ;;
   *) die "unknown command: $1 (ksec --help)" ;;

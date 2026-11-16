@@ -1,1 +1,8 @@
 eval "$(mise activate zsh)"
+
+# ~/bin (~/bin/ksec など) を PATH に載せる。~/.profile は zsh から読まれないため、
+# macOS ではここで追加しないと ksec が見つからない。
+case ":$PATH:" in
+  *":$HOME/bin:"*) ;;
+  *) [ -d "$HOME/bin" ] && PATH="$HOME/bin:$PATH" ;;
+esac

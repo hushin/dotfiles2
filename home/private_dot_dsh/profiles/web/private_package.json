@@ -9,6 +9,7 @@
         "dsh-edit-last",
         "@hushin/dsh-mcp",
         "dsh-reply-hint",
+        "dsh-ghq",
         "@deepseek-ai/dsh-experimental-auto-review",
         "@deepseek-ai/dsh-experimental-forge-bundle"
       ]
@@ -17,6 +18,7 @@
   "dependencies": {
     "@hushin/dsh-mcp": "link:~/.dsh/plugins/dsh-mcp",
     "dsh-edit-last": "link:~/.dsh/plugins/dsh-edit-last",
-    "dsh-reply-hint": "link:~/.dsh/plugins/dsh-reply-hint"
+    "dsh-reply-hint": "link:~/.dsh/plugins/dsh-reply-hint",
+    "dsh-ghq": "link:~/.dsh/plugins/dsh-ghq"
   }
 }

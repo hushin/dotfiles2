@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "ghq workspaces",
+    "description": "Lists the repositories ghq manages and opens the chosen one as a workspace with a new session. The ghq button sits at the sidebar foot, directly above Settings; it only reads what ghq already cloned and never runs ghq get."
+  }
+}

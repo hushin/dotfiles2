@@ -95,7 +95,7 @@ WSL に Linux の Chrome が入っていると、`browse install` / `browse exte
 4. WSL: `browse status` で `Relay: http://127.0.0.1:19988` と `Extension: connected` を確認
 
 > [!WARNING]
-> WSL で `browse relay restart` を実行しない。Windows の relay を止めて WSL 側に別 relay を立ててしまい、拡張機能の再ペアリングが必要になる。再起動は Windows のターミナルで `browse relay restart`。
+> WSL で `browse restart` を実行しない。Windows の relay を止めて WSL 側に別 relay を立ててしまい、拡張機能の再ペアリングが必要になる。再起動は Windows のターミナルで `browse restart`（`browse-relay.vbs` の `browse.exe serve` で古い relay が残っている場合は `Stop-Process -Name browse` で止めてから `browse restart`）。
 >
 > Windows 側の browse を再インストールしてトークンが変わった場合は、WSL で `chezmoi apply` すれば再同期される。
 
@@ -114,8 +114,9 @@ browse status
 接続できないとき:
 
 ```sh
-browse doctor    # インストール・ランタイムの診断
-browse install   # 拡張機能の再ペアリング
+browse status    # セットアップ・relay・拡張機能の状態確認
+browse pair      # 拡張機能の再ペアリング
+browse install   # 再セットアップ
 ```
 
 ### 他のエージェントにも追加
@@ -202,7 +203,8 @@ GCP プロジェクトで Gmail API を有効化し、OAuth クライアント�
 - GCP プロジェクト: `hobby-487823`
 - OAuth クライアント: `gws CLI`（デスクトップ アプリ）
 - 1Password: `Personal/google-workspace-mcp`（username = client ID、password = client secret）
-- 同意画面: External / Testing、テストユーザーに使用する Gmail アカウントを追加
+- 同意画面: External / 本番環境（未確認アプリ。ブランディングにホームページ / プライバシーポリシーとして `https://zatsuni.dev/`、承認済みドメインに `zatsuni.dev` を設定して公開済み）
+  - 認可時に「このアプリは Google で確認されていません」画面が出たら「詳細」→「gws CLI（安全ではないページ）に移動」で続行する（未確認アプリのユーザー上限は 100）
 
 初回ログイン時だけ 1Password から環境変数として注入する。
 
@@ -234,9 +236,9 @@ gws gmail users messages list --params '{"userId":"me","maxResults":5}'
 > [!NOTE]
 > `gws auth status` の `token_error: "The OAuth client was deleted."` は、保存済み `client_secret.json` の OAuth クライアントが GCP 側で削除された状態。`client_secret.json` を差し替えて `gws auth login` し直す。
 
-### 再認証と 7 日失効
+### 再認証
 
-OAuth 同意画面が「テスト」のままだと、リフレッシュトークンが 7 日で失効する。`invalid_grant` などの認証エラーが出たら再ログインする。
+OAuth 同意画面は「本番環境」に公開済みのため 7 日失効はしない（テスト中に戻すとリフレッシュトークンが 7 日で失効する）。スコープ変更や `invalid_grant` などの認証エラーが出たときは再ログインする。
 
 ```powershell
 op run --env-file="$HOME\.config\opencode\secrets.env" -- gws auth login --readonly --services gmail
@@ -248,8 +250,6 @@ export GOOGLE_WORKSPACE_CLI_CLIENT_ID="$(ksec get GWS_CLIENT_ID)"
 export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(ksec get GWS_CLIENT_SECRET)"
 gws auth login --readonly --services gmail
 ```
-
-恒久的に避けるには OAuth 同意画面を「本番環境」に公開する（個人利用なら未確認のままでも使えるが、表示と制限は Google の画面に従う）。
 
 ### Agent Skills
 

@@ -1,0 +1,5 @@
+{
+  "allowNonWorkspaceAccess": true,
+  "model": "Gemini 4 Neon (High)",
+  "agentMode": "auto"
+}

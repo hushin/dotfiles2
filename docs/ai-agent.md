@@ -1,271 +1,83 @@
 # AI エージェント セットアップ
 
-雑多なAI agent セットアップ用メモ
+chezmoi で自動化できない手動作業（認証・Chrome 拡張ペアリング・外部サービス設定）のみ記載。
 
-## pi
-
-```sh
-curl -fsSL https://pi.dev/install.sh | sh
-```
-
-設定ファイルは chezmoi 管理（`~/.pi/agent/`）。
-
-- MCP サーバーは `~/.pi/agent/mcp.json`（`home/dot_pi/agent/mcp.json.tmpl` から生成）
-- `browse` の `command` はテンプレートで `~/.local/bin/browse`（Windows は `browse.exe`）に展開される
-- pi は `command` / `args` / `cwd` の先頭 `~/` をホームとして展開するため、opencode と違って絶対パスにしなくてよい
-- セッション起動中に MCP 設定を変えた場合は `/reload`（または再起動）が必要
-- `browse` を入れる前に起動していたセッションでは MCP サーバーの起動に失敗しているので、インストール後に `/reload` する
+ツール本体のインストールと設定ファイル（`~/.claude/`, `~/.pi/`, `~/.config/opencode/`, `~/.gemini/`, `~/.apm/`, `~/.agents/skills/`）は chezmoi で管理している。
 
 ## OpenCode
 
 ```sh
-curl -fsSL https://opencode.ai/v2/install | bash
-
 opencode auth login opencode
 ```
 
-設定ファイルは chezmoi 管理（`~/.config/opencode/`）。
+## pi
 
-- `~/.config/opencode/opencode.jsonc` は `home/dot_config/opencode/opencode.jsonc.tmpl` から生成される
-- モデルや MCP サーバーを変えるときは chezmoi ソース側（`.tmpl`）を編集して `chezmoi apply` する
-- 直接 `~/.config/opencode/opencode.jsonc` を編集した場合は `chezmoi diff` で確認して取り込む
-
-## Antigravity
-
-設定ファイルは chezmoi 管理（`~/.gemini/config/mcp_config.json`）。
-
-- MCP サーバーは `~/.gemini/config/mcp_config.json`（`home/dot_gemini/config/mcp_config.json.tmpl` から生成）
-- `browse` の `command` はテンプレートで `.chezmoi.homeDir` 由来の絶対パス（Windows は `browse.exe`）に展開される
-- 確認は `agy mcp list`、またはセッション内で `/mcp`
-
-## apm
+`~/.pi/agent/models.json` が `ksec` 経由で Deploy の API キーを読むため、初回のみ 1Password から登録する（[ksec](./ksec.md)）。
 
 ```sh
-brew install apm
-apm install -g
+ksec from-op DEPLOY_API_KEY "op://Personal/deploy com api key/credential"
 ```
 
 ## browse
 
-`browse` は拡張機能経由でユーザーの Chrome を操作する MCP サーバー。ログイン済みのセッション・拡張機能をそのまま使えるので、認証情報をエージェントに渡さずにブラウザ操作を任せられる。
+Chrome 拡張のインストールとペアリングのみ手動（MCP 設定・Windows の relay 自動起動・WSL のトークン同期は chezmoi 管理）。
 
-### インストール
+### 初回セットアップ
 
-Windows (PowerShell):
+- **Windows**
+  ```powershell
+  irm https://opencode.ai/browse/install.ps1 | iex
+  chezmoi apply --force ~/.config/opencode/opencode.jsonc
+  ```
+- **macOS**
+  ```sh
+  curl -fsSL https://opencode.ai/browse/install | bash
+  chezmoi apply --force ~/.config/opencode/opencode.jsonc
+  ```
+- **WSL**（Windows 側でペアリング済みの前提）
 
-```powershell
-irm https://opencode.ai/browse/install.ps1 | iex
-```
+  ```sh
+  curl -fsSL https://opencode.ai/browse/install | bash -s -- --no-setup
+  browse install --no-open
+  chezmoi apply
+  browse status
+  ```
 
-macOS / Linux:
+- インストーラが開くページから Chrome 拡張を追加すると自動でペアリングされる
+- インストーラが `opencode.jsonc` に固定パスを書くため、`chezmoi apply --force` でテンプレートに戻す
 
-```sh
-curl -fsSL https://opencode.ai/browse/install | bash
-```
+### 運用メモ
 
-インストーラがやること:
-
-- バイナリを `~/.local/bin/browse`（Windows は `browse.exe`）に配置
-- 実行中のエージェント（OpenCode など）に MCP サーバーとして登録
-- Chrome を開いて拡張機能とペアリング（接続待ちは最大 90 秒程度）
-
-Chrome に拡張機能が入っていない場合は、開いたページ（Chrome Web Store）から追加する。追加すると自動で接続される。
-
-> [!NOTE]
-> `~/.config/opencode/opencode.jsonc` は chezmoi 管理。インストーラは Windows 固定パス（`C:\Users\...`）を書き込むが、テンプレート側に browse のエントリを含めてあるので、インストール後に `chezmoi apply --force ~/.config/opencode/opencode.jsonc` でテンプレートの内容（`.chezmoi.homeDir` 由来のパス）に戻す。
-> 再度 `browse install` を実行しても、既存の `browse` エントリは「different server」として変更されない。
-
-### WSL から Windows の Chrome を使う
-
-WSL に Linux の Chrome が入っていると、`browse install` / `browse extension` はそちらを開こうとする。実際の操作対象は relay につながった Chrome 拡張なので、relay を Windows 側に 1 つだけ置いて WSL から共有する。
-
-| 役割 | 実体 | chezmoi |
-| --- | --- | --- |
-| relay と拡張機能のペアリング | Windows (`browse.exe serve`) | `home/AppData/Roaming/Microsoft/Windows/readonly_Start Menu/readonly_Programs/readonly_Startup/browse-relay.vbs` |
-| relay トークンの同期 | WSL (`~/.local/share/browse/relay-token`) | `home/.chezmoiscripts/2_wsl/run_always_after_02_browse-relay-token.sh` |
-
-- Windows はログオン時に relay を非表示で自動起動する（`%USERPROFILE%\.local\bin\browse.exe serve`）
-- WSL は mirrored ネットワークで `127.0.0.1:19988` を共有し、Windows 側の `relay-token` を `chezmoi apply` のたびに同期する
-
-初回の順番:
-
-1. Windows: `browse install`（Chrome 拡張とペアリング）
-2. WSL: `browse install --no-open`（MCP 登録のみ。Linux のブラウザを開かない）
-3. WSL: `chezmoi apply`（relay トークンを同期）
-4. WSL: `browse status` で `Relay: http://127.0.0.1:19988` と `Extension: connected` を確認
-
-> [!WARNING]
-> WSL で `browse restart` を実行しない。Windows の relay を止めて WSL 側に別 relay を立ててしまい、拡張機能の再ペアリングが必要になる。再起動は Windows のターミナルで `browse restart`（`browse-relay.vbs` の `browse.exe serve` で古い relay が残っている場合は `Stop-Process -Name browse` で止めてから `browse restart`）。
->
-> Windows 側の browse を再インストールしてトークンが変わった場合は、WSL で `chezmoi apply` すれば再同期される。
-
-### 動作確認
-
-```sh
-browse status
-```
-
-以下が出ていれば OK。
-
-- `Extension: connected`
-- `Relay: http://127.0.0.1:19988 ...`
-- `Sessions` / `Targets` が想定どおり
-
-接続できないとき:
-
-```sh
-browse status    # セットアップ・relay・拡張機能の状態確認
-browse pair      # 拡張機能の再ペアリング
-browse install   # 再セットアップ
-```
-
-### 他のエージェントにも追加
-
-pi（`~/.pi/agent/mcp.json`）と Antigravity（`~/.gemini/config/mcp_config.json`）は chezmoi で管理しているので、`browse install` による登録は不要。
-
-- `browse install` は pi を検出するが、既存の `browse` エントリは「different server」として変更しない（`description` 付きのためテンプレート由来の定義がそのまま残る）
-- インストーラは「バイナリ配置 + Chrome 拡張のペアリング」だけに使えばよい。`--no-setup` でバイナリのみ入れて `browse install -y` でペアリングする手順でもよい
-
-```sh
-browse install --agent claude
-browse install --agent codex
-browse install --agent vscode
-browse install --agent claude-desktop
-browse install --agent gemini
-browse install --agent kiro
-browse install --agent copilot
-browse install --agent lm-studio
-browse install --agent antigravity
-```
-
-### 設定
-
-```sh
-browse settings
-```
-
-- エージェント用タブを開くウィンドウ（現在のウィンドウ / 専用ウィンドウ）
-- タブのグループ化（共有 / セッションごと / なし）
-- 未使用タブの自動クローズ（10 / 30 / 60 分 / なし）
-- エージェントカーソルの表示、ヒューマンライク入力、ハンドオフ通知
-
-### アンインストール
-
-```sh
-browse uninstall
-```
+- **WSL で `browse restart` を実行しない**: Windows の relay を止めて WSL 側に別 relay を立ててしまう。再起動は Windows 側で行う（古い relay が残る場合は `Stop-Process -Name browse` 後に `browse restart`）
+- 接続できないとき: `browse status` / `browse pair`
 
 ## Google Workspace CLI (gws)
 
-Gmail などを CLI から操作するための `gws`。MCP サーバーではない（`gws mcp` は v0.8.0 で削除）。Google 公式サポート製品ではない点に注意。
-
-### インストール
-
-```powershell
-npm install -g --allow-scripts=@googleworkspace/cli @googleworkspace/cli
-gws --version
-```
-
-- npm 11 以降は postinstall script が既定でブロックされるため、バイナリを取得する `--allow-scripts` が必要
-- npm の global prefix は `%APPDATA%\npm` に固定済み（[Windows セットアップ](windows.md) の Node.js / npm を参照）
-- 更新も同じコマンドを再実行
-
-#### WSL / Linux
-
-```sh
-npm install -g --allow-scripts=@googleworkspace/cli @googleworkspace/cli
-gws --version
-```
-
-- mise 管理の node（`node = "lts"`）側に入る。node のバージョンを切り替えると `gws is not provided by the active node` になるので、その node で入れ直す
-- OAuth クライアントは Windows 側の `%USERPROFILE%\.config\gws\client_secret.json` を `~/.config/gws/` にコピーしてもよいし、WSL から `ksec` で取り出してもよい（[ksec](./ksec.md)）
-- `op.exe run` は Windows プロセスとして起動するため WSL の `gws` は渡せない。`op.exe read` も 1Password アプリのオートロック（既定 10 分）に追随し、間隔をあけるたびに PIN を要求される
-- WSL では **初回だけ** `ksec from-op` で取り出し、以後は `ksec get`（PIN なし）を環境変数に入れる
-
-```sh
-# 初回だけ。このときだけ 1Password のロック解除を求められる
-ksec from-op GWS_CLIENT_ID     'op://Personal/google-workspace-mcp/username'
-ksec from-op GWS_CLIENT_SECRET 'op://Personal/google-workspace-mcp/password'
-
-# 以後は PIN 入力なしで読める
-export GOOGLE_WORKSPACE_CLI_CLIENT_ID="$(ksec get GWS_CLIENT_ID)"
-export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(ksec get GWS_CLIENT_SECRET)"
-gws auth login --readonly --services gmail
-```
-
-- `GOOGLE_WORKSPACE_CLI_CLIENT_ID` / `GOOGLE_WORKSPACE_CLI_CLIENT_SECRET` があれば `client_secret.json` 無しでもログインできる（ログイン時に `~/.config/gws/client_secret.json` が作られる）
-- `gws auth login` は `http://localhost:<port>` でコールバックを待つ。WSL のブラウザが開かない場合は、表示された URL を Windows 側のブラウザで開く
+OAuth 認証と秘密情報のみ手動（ツール本体とスキル `gws-*` は chezmoi 管理）。
 
 ### OAuth クライアント
 
-GCP プロジェクトで Gmail API を有効化し、OAuth クライアント（デスクトップ アプリ）を作成しておく。
-
-- GCP プロジェクト: `hobby-487823`
+- GCP プロジェクト: `hobby-487823`（Gmail API 有効化済み）
 - OAuth クライアント: `gws CLI`（デスクトップ アプリ）
-- 1Password: `Personal/google-workspace-mcp`（username = client ID、password = client secret）
-- 同意画面: External / 本番環境（未確認アプリ。ブランディングにホームページ / プライバシーポリシーとして `https://zatsuni.dev/`、承認済みドメインに `zatsuni.dev` を設定して公開済み）
-  - 認可時に「このアプリは Google で確認されていません」画面が出たら「詳細」→「gws CLI（安全ではないページ）に移動」で続行する（未確認アプリのユーザー上限は 100）
+- 1Password: `Personal/google-workspace-mcp`（username = client ID / password = client secret）
+- 同意画面: External / 本番環境（未確認アプリのため、認可画面では「詳細」→「gws CLI（安全ではないページ）に移動」で続行）
 
-初回ログイン時だけ 1Password から環境変数として注入する。
+### ログイン / 再認証
 
-```powershell
-op run --env-file="$HOME\.config\opencode\secrets.env" -- gws auth login --readonly --services gmail
-```
+トークン（`~/.config/gws/credentials.enc`）は OS ごとの鍵で暗号化されるため、Windows と WSL でそれぞれログインする。
 
-- `--scopes gmail` は v0.22.5 ではサービス名を解決せず、そのまま OAuth スコープとして送るため使わない。`--services gmail` と `--readonly` を使う
-- ログイン後、gws が client ID/secret を `~/.config/gws/client_secret.json` に保存する（リポジトリには置かない）
-- トークンは `~/.config/gws/credentials.enc` に OS キーリングの鍵で AES-256-GCM 暗号化して保存される
-- WSL 側の鍵は `~/.config/gws/.encryption_key`（ファイル）。Windows 側の `credentials.enc` は復号できないので、WSL では別途ログインが必要
+- **Windows**
+  ```powershell
+  op run --env-file="$HOME\.config\opencode\secrets.env" -- gws auth login --readonly --services gmail
+  ```
+- **WSL / Linux**（初回は `GWS_CLIENT_ID` / `GWS_CLIENT_SECRET` を [ksec](./ksec.md) へ登録）
+  ```sh
+  export GOOGLE_WORKSPACE_CLI_CLIENT_ID="$(ksec get GWS_CLIENT_ID)"
+  export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(ksec get GWS_CLIENT_SECRET)"
+  gws auth login
+  ```
 
-### 認証状態と動作確認
+### 注意点
 
-```powershell
-gws auth status
-gws gmail users messages list --params '{\"userId\":\"me\",\"maxResults\":5}'
-gws gmail +triage --max 5
-```
-
-```sh
-# WSL / Linux (bash) は JSON をそのまま渡せる
-gws gmail users messages list --params '{"userId":"me","maxResults":5}'
-```
-
-> [!NOTE]
-> PowerShell から `--params` に JSON を渡すときは、内側の `"` を `\"` でエスケープする（そのまま `'{"..."}'` だと quote が剥がれて `Invalid --params JSON` になる）。
-
-> [!NOTE]
-> `gws auth status` の `token_error: "The OAuth client was deleted."` は、保存済み `client_secret.json` の OAuth クライアントが GCP 側で削除された状態。`client_secret.json` を差し替えて `gws auth login` し直す。
-
-### 再認証
-
-OAuth 同意画面は「本番環境」に公開済みのため 7 日失効はしない（テスト中に戻すとリフレッシュトークンが 7 日で失効する）。スコープ変更や `invalid_grant` などの認証エラーが出たときは再ログインする。
-
-```powershell
-op run --env-file="$HOME\.config\opencode\secrets.env" -- gws auth login --readonly --services gmail
-```
-
-```sh
-# WSL / Linux は ksec から環境変数に入れてから実行（初回は ksec from-op で登録）
-export GOOGLE_WORKSPACE_CLI_CLIENT_ID="$(ksec get GWS_CLIENT_ID)"
-export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(ksec get GWS_CLIENT_SECRET)"
-gws auth login --readonly --services gmail
-```
-
-### Agent Skills
-
-chezmoi 管理: `home/dot_agents/skills/gws-*` → `~/.agents/skills/`。
-
-- `gws-shared`: 認証・グローバルフラグ・セキュリティ規則
-- `gws-gmail`: Gmail API 全体
-- `gws-gmail-triage`: 未読サマリー（`+triage`）
-- `gws-gmail-read`: 本文・ヘッダー抽出（`+read`）
-
-追加で取得する場合:
-
-```powershell
-npx skills add https://github.com/googleworkspace/cli/tree/main/skills/gws-gmail -g --copy -y
-chezmoi add --recursive ~/.agents/skills/gws-gmail
-```
-
-送信・削除などの書き込み系（`gws-gmail-send` など）は、読み取り運用が安定してから追加する。
-
+- PowerShell から `--params` に JSON を渡すときは内側の `"` を `\"` でエスケープする
+- `gws auth status` で `The OAuth client was deleted.` が出たら `client_secret.json` を差し替えて再ログインする

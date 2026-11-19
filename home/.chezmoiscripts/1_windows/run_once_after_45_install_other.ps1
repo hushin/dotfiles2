@@ -6,3 +6,12 @@ if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
 } else {
     Write-Host "Claude Code は既にインストールされています。" -ForegroundColor Green
 }
+
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" +
+    [System.Environment]::GetEnvironmentVariable("Path", "User")
+
+# Google Workspace CLI (gws)
+if (-not (Get-Command gws -ErrorAction SilentlyContinue) -and (Get-Command npm -ErrorAction SilentlyContinue)) {
+    Write-Host "Installing @googleworkspace/cli (gws)..." -ForegroundColor Yellow
+    npm install -g --allow-scripts=@googleworkspace/cli @googleworkspace/cli
+}

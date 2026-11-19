@@ -2,6 +2,11 @@
   "allowNonWorkspaceAccess": true,
   "model": "Gemini 4 Neon (High)",
   "agentMode": "auto",
+  "permissions": {
+    "allow": [
+      "mcp(*)"
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "~/.gemini/antigravity-cli/statusline.sh",

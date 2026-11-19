@@ -85,7 +85,7 @@ export GOOGLE_WORKSPACE_CLI_CLIENT_SECRET="$(ksec get GWS_CLIENT_SECRET)"
 |---|---|---|
 | `GWS_CLIENT_ID` / `GWS_CLIENT_SECRET` | `op://Personal/google-workspace-mcp/{username,password}` | gws の再ログイン（[ai-agent.md](./ai-agent.md)） |
 | `JINA_API_KEY` | `op://Personal/JINA_API_KEY/password` | `~/bin/jsearch`（`$JINA_API_KEY` → ksec → `op` の順に解決） |
-| `DEPLOY_API_KEY` | `op://Personal/deploy/password` | `~/.pi/agent/models.json` の `apiKey` |
+| `DEPLOY_API_KEY` | `op://Personal/deploy com api key/credential` | `~/.pi/agent/models.json` の `apiKey` |
 
 ## 1Password からの移行
 

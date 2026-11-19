@@ -30,6 +30,14 @@ opencode auth login opencode
 - モデルや MCP サーバーを変えるときは chezmoi ソース側（`.tmpl`）を編集して `chezmoi apply` する
 - 直接 `~/.config/opencode/opencode.jsonc` を編集した場合は `chezmoi diff` で確認して取り込む
 
+## Antigravity
+
+設定ファイルは chezmoi 管理（`~/.gemini/config/mcp_config.json`）。
+
+- MCP サーバーは `~/.gemini/config/mcp_config.json`（`home/dot_gemini/config/mcp_config.json.tmpl` から生成）
+- `browse` の `command` はテンプレートで `.chezmoi.homeDir` 由来の絶対パス（Windows は `browse.exe`）に展開される
+- 確認は `agy mcp list`、またはセッション内で `/mcp`
+
 ## apm
 
 ```sh
@@ -112,7 +120,7 @@ browse install   # 拡張機能の再ペアリング
 
 ### 他のエージェントにも追加
 
-pi は `~/.pi/agent/mcp.json` を chezmoi で管理しているので、`browse install` による登録は不要。
+pi（`~/.pi/agent/mcp.json`）と Antigravity（`~/.gemini/config/mcp_config.json`）は chezmoi で管理しているので、`browse install` による登録は不要。
 
 - `browse install` は pi を検出するが、既存の `browse` エントリは「different server」として変更しない（`description` 付きのためテンプレート由来の定義がそのまま残る）
 - インストーラは「バイナリ配置 + Chrome 拡張のペアリング」だけに使えばよい。`--no-setup` でバイナリのみ入れて `browse install -y` でペアリングする手順でもよい

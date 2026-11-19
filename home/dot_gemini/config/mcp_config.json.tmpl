@@ -1,0 +1,10 @@
+{
+  "mcpServers": {
+    "browse": {
+      "command": "{{ .chezmoi.homeDir }}/.local/bin/browse{{ if eq .chezmoi.os "windows" }}.exe{{ end }}",
+      "args": [
+        "mcp"
+      ]
+    }
+  }
+}

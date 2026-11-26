@@ -1,11 +1,9 @@
 {
   "allowNonWorkspaceAccess": true,
-  "model": "Gemini 4 Neon (High)",
+  "model": "Gemini 4 Neon (Medium)",
   "agentMode": "auto",
   "permissions": {
-    "allow": [
-      "mcp(*)"
-    ]
+    "allow": ["mcp(*)"]
   },
   "statusLine": {
     "type": "command",
